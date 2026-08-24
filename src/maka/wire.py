@@ -11,6 +11,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from maka import trace
+
 PAPER_SIZES = {
     "id": 160,
     "nonce": 160,
@@ -38,6 +40,13 @@ class Sized:
         if isinstance(self.value, bytes):
             return self.value
         return repr(self.value).encode()
+
+
+def _render_sized(obj: "Sized", verbosity: int) -> str:
+    return f"{trace.render(obj.value, verbosity)}  ({obj.bits} bits, paper model)"
+
+
+trace.register_renderer("Sized", _render_sized)
 
 
 def _paper_bits(item: Any) -> int:

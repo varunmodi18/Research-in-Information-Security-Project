@@ -7,7 +7,7 @@ P13.6 — until then, entries are populated as the phase that implements them la
 
 ## ER — genuine errata (5)
 
-- [ ] ER-01 — RP9 §5.4.1, `A4` subscript typo
+- [x] ER-01 — RP9 §5.4.1, `A4` subscript typo (`src/maka/protocol/p4_node_authentication.py`; `tests/test_phase_authentication.py`)
 - [ ] ER-02 — RP9 §8 Table 5, `T_SM`/`T_PA` rows
 - [x] ER-03 — RP9 §2.2, non-degeneracy vs alternating (`src/maka/pairing.py::selftest` tests 5-6; `tests/test_pairing.py`)
 - [ ] ER-04 — RP9 §3 step 5(d), missing exponent
@@ -16,11 +16,11 @@ P13.6 — until then, entries are populated as the phase that implements them la
 ## AM — ambiguity or underspecification (9)
 
 - [x] AM-01 — Enc/Dec abstract (resolved by IA-03)
-- [ ] AM-02 — "sent securely" mechanism
-- [ ] AM-03 — `Nc` reused symbol
+- [x] AM-02 — "sent securely" mechanism (resolved by IA-04)
+- [x] AM-03 — `Nc` reused symbol (resolved by IA-05)
 - [ ] AM-04 — Table 5 vs Table 2 accounting boundary
-- [ ] AM-05 — Aggregate operation unspecified
-- [ ] AM-06 — cost-table topology unstated
+- [x] AM-05 — Aggregate operation unspecified (`src/maka/protocol/data_transmission.py`; not resolved, halt demonstrated)
+- [x] AM-06 — cost-table topology unstated (`src/maka/fixtures.py`)
 - [ ] AM-07 — Table 4 storage not itemised
 - [ ] AM-08 — ICMDS coefficients delegated to [26]
 - [ ] AM-09 — `x_i` unresolved G_2 -> scalar type
@@ -30,21 +30,21 @@ P13.6 — until then, entries are populated as the phase that implements them la
 - [x] IA-01 — language/dependency policy (`pyproject.toml`)
 - [x] IA-02 — pairing instantiation, scalar domain Z_r (`src/maka/curve.py`, `src/maka/pairing.py`, `src/maka/params.py`)
 - [x] IA-03 — Enc/Dec instantiation (BF-IBE hybrid) (`src/maka/ibe.py`)
-- [ ] IA-04 — "sent securely" instantiation
-- [ ] IA-05 — nonce instances
+- [x] IA-04 — "sent securely" instantiation (`src/maka/protocol/p3_node_registration.py`, via `ibe.encrypt`)
+- [x] IA-05 — nonce instances (N_reg/N_auth_CH/N_auth_CM in `src/maka/protocol/p3_node_registration.py`, `p4_node_authentication.py`)
 - [x] IA-06 — symmetric layer for sensed data (`src/maka/aead.py`)
 - [x] IA-07 — parameter sets (`tools/gen_params.py`, `src/maka/params.py`, `docs/PARAMETERS.md`)
-- [ ] IA-08 — channel model
+- [x] IA-08 — channel model (`src/maka/channel.py`)
 - [x] IA-09 — hash constructions (H1, H2) (`src/maka/hashing.py`)
 - [ ] IA-10 — ICMDS coefficient computation
 - [ ] IA-11 — two-track x_i handling
 
 ## OB — observations (6)
 
-- [ ] OB-01 — master key k held until destruction
-- [ ] OB-02 — no forward secrecy in SK_{i-BS}
+- [x] OB-01 — master key k held until destruction (`src/maka/entities/node.py`, `base_station.py`)
+- [x] OB-02 — no forward secrecy in SK_{i-BS} (`src/maka/protocol/p5_session_key_agreement.py`)
 - [ ] OB-03 — 320-bit sizing vs k=2 pairing curve
-- [ ] OB-04 — g is public; A1 alone is not the obstacle
+- [x] OB-04 — g is public; A1 alone is not the obstacle (`src/maka/protocol/p4_node_authentication.py::_negative_paths`)
 - [ ] OB-05 — no revocation mechanism
 - [ ] OB-06 — `R` point/scalar collision
 
