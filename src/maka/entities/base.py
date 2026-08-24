@@ -7,11 +7,13 @@ are storage-relevant via STORAGE_FIELDS = [(attr_name, paper_bits), ...].
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from maka import trace
 
 
 class Entity:
-    STORAGE_FIELDS: list[tuple[str, int]] = []
+    STORAGE_FIELDS: ClassVar[list[tuple[str, int]]] = []
 
     def __init__(self, identity: str) -> None:
         self.identity = identity

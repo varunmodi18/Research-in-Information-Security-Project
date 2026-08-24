@@ -53,7 +53,7 @@ class Rng:
         val = int.from_bytes(self.bytes(nbytes), "big")
         return val % n
 
-    def spawn(self, label: str) -> "Rng":
+    def spawn(self, label: str) -> Rng:
         """Deterministic sub-stream, domain-separated by label."""
         h = hashlib.sha256()
         h.update(b"MAKA-RNG-SPAWN")

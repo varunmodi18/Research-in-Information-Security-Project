@@ -41,36 +41,36 @@ class Fp:
     def __post_init__(self) -> None:
         object.__setattr__(self, "val", self.val % self.p_field)
 
-    def _check_field(self, other: "Fp") -> None:
+    def _check_field(self, other: Fp) -> None:
         if self.p_field != other.p_field:
             raise ValueError("operands drawn from different fields (mismatched p_field)")
 
-    def __add__(self, other: "Fp") -> "Fp":
+    def __add__(self, other: Fp) -> Fp:
         self._check_field(other)
         return Fp((self.val + other.val) % self.p_field, self.p_field)
 
-    def __sub__(self, other: "Fp") -> "Fp":
+    def __sub__(self, other: Fp) -> Fp:
         self._check_field(other)
         return Fp((self.val - other.val) % self.p_field, self.p_field)
 
-    def __neg__(self) -> "Fp":
+    def __neg__(self) -> Fp:
         return Fp((-self.val) % self.p_field, self.p_field)
 
-    def __mul__(self, other: "Fp") -> "Fp":
+    def __mul__(self, other: Fp) -> Fp:
         self._check_field(other)
         return Fp((self.val * other.val) % self.p_field, self.p_field)
 
-    def __pow__(self, e: int) -> "Fp":
+    def __pow__(self, e: int) -> Fp:
         return Fp(pow(self.val, e, self.p_field), self.p_field)
 
-    def inverse(self) -> "Fp":
+    def inverse(self) -> Fp:
         if self.val == 0:
             raise ZeroDivisionError("no inverse of 0 in Fp")
         g, x, _ = extended_gcd(self.val, self.p_field)
         assert g == 1
         return Fp(x % self.p_field, self.p_field)
 
-    def __truediv__(self, other: "Fp") -> "Fp":
+    def __truediv__(self, other: Fp) -> Fp:
         return self * other.inverse()
 
     def is_zero(self) -> bool:
@@ -83,7 +83,7 @@ class Fp:
         r = pow(self.val, (self.p_field - 1) // 2, self.p_field)
         return -1 if r == self.p_field - 1 else r
 
-    def sqrt(self) -> "Fp":
+    def sqrt(self) -> Fp:
         """Square root, requiring p_field = 3 (mod 4) (guaranteed by IA-02's curve choice)."""
         if self.p_field % 4 != 3:
             raise ValueError("sqrt() requires p_field = 3 (mod 4); see IA-02")
@@ -111,28 +111,28 @@ class Fp2:
     a: Fp
     b: Fp
 
-    def _check_field(self, other: "Fp2") -> None:
+    def _check_field(self, other: Fp2) -> None:
         if self.a.p_field != other.a.p_field:
             raise ValueError("operands drawn from different fields (mismatched p_field)")
 
-    def __add__(self, other: "Fp2") -> "Fp2":
+    def __add__(self, other: Fp2) -> Fp2:
         self._check_field(other)
         return Fp2(self.a + other.a, self.b + other.b)
 
-    def __sub__(self, other: "Fp2") -> "Fp2":
+    def __sub__(self, other: Fp2) -> Fp2:
         self._check_field(other)
         return Fp2(self.a - other.a, self.b - other.b)
 
-    def __neg__(self) -> "Fp2":
+    def __neg__(self) -> Fp2:
         return Fp2(-self.a, -self.b)
 
-    def __mul__(self, other: "Fp2") -> "Fp2":
+    def __mul__(self, other: Fp2) -> Fp2:
         self._check_field(other)
         # (a + bi)(c + di) = (ac - bd) + (ad + bc)i, since i^2 = -1
         a, b, c, d = self.a, self.b, other.a, other.b
         return Fp2(a * c - b * d, a * d + b * c)
 
-    def __pow__(self, e: int) -> "Fp2":
+    def __pow__(self, e: int) -> Fp2:
         if e < 0:
             return self.inverse() ** (-e)
         result = Fp2(Fp(1, self.a.p_field), Fp(0, self.a.p_field))
@@ -144,7 +144,7 @@ class Fp2:
             e >>= 1
         return result
 
-    def conjugate(self) -> "Fp2":
+    def conjugate(self) -> Fp2:
         """The Frobenius map x -> x^p_field, which on Fp2 = Fp[i] is (a+bi) -> (a-bi)."""
         return Fp2(self.a, -self.b)
 
@@ -154,14 +154,14 @@ class Fp2:
         assert prod.b.is_zero()
         return prod.a
 
-    def inverse(self) -> "Fp2":
+    def inverse(self) -> Fp2:
         # (a+bi)^-1 = (a-bi) / N(a+bi)
         n = self.norm()
         conj = self.conjugate()
         n_inv = n.inverse()
         return Fp2(conj.a * n_inv, conj.b * n_inv)
 
-    def __truediv__(self, other: "Fp2") -> "Fp2":
+    def __truediv__(self, other: Fp2) -> Fp2:
         return self * other.inverse()
 
     def is_zero(self) -> bool:

@@ -3,8 +3,6 @@ rejection prints."""
 
 from __future__ import annotations
 
-import pytest
-
 from maka import fixtures, params, rng, trace
 from maka.protocol import p1_initialization, p2_key_generation, p3_node_registration
 

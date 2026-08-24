@@ -26,7 +26,7 @@ def run(curve: CurveParams, g: Point) -> str:
         caveat="this does not imply the literal §3 protocol can reach this state; §4.7 tests "
                "that separately in a7_sk_impossible.py",
     )
-    scn = _scenario.build(curve, g)
+    _scenario.build(curve, g)
 
     # Seeded directly as the premise -- NOT produced by icmds.session_key's decryption path.
     seeded_s_k = rng.current().bytes(16)

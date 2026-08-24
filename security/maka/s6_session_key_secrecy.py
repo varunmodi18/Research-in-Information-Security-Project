@@ -6,7 +6,7 @@ alongside OB-02. States both; concludes nothing beyond what is demonstrated.
 
 from __future__ import annotations
 
-from maka import fixtures, hashing, pairing, params, rng, trace
+from maka import fixtures, pairing, params, rng, trace
 from maka.protocol import (
     p1_initialization,
     p2_key_generation,

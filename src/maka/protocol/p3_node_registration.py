@@ -52,7 +52,7 @@ def run(net: Network, fixture: str) -> None:
                 net.channel.total_bits(["BEACON", "PSEUDO_BS_CH", "PSEUDO_CH_CM"]))
 
 
-def _send_beacon(net: Network, ch: "object", n_reg: bytes) -> "object":
+def _send_beacon(net: Network, ch: object, n_reg: bytes) -> object:
     curve = net.bs.curve
     member_ids = list(ch.members.keys())
     plaintext_summary = {
@@ -70,7 +70,7 @@ def _send_beacon(net: Network, ch: "object", n_reg: bytes) -> "object":
     return ciphertext
 
 
-def _register_cluster(net: Network, ch: "object", curve: "object") -> None:
+def _register_cluster(net: Network, ch: object, curve: object) -> None:
     t = trace.active()
     for cm in net.cluster_members[ch.identity].values():
         ch.add_member(cm.identity, cm.pu_i)
@@ -111,7 +111,7 @@ def _register_cluster(net: Network, ch: "object", curve: "object") -> None:
     _demonstrate_replay_rejection(net, ch, n_reg)
 
 
-def _demonstrate_replay_rejection(net: Network, ch: "object", n_reg: bytes) -> None:
+def _demonstrate_replay_rejection(net: Network, ch: object, n_reg: bytes) -> None:
     t = trace.active()
     t.step("adversary", f"replaying the {ch.identity} beacon's N_reg")
     accepted = net.bs.check_and_cache_nonce(n_reg)

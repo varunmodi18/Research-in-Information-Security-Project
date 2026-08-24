@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from icmds import scheme
 from attacks.framework import verdict
 from attacks.icmds import _scenario
+from icmds import scheme
 from maka import trace
 from maka.curve import CurveParams, Point
 
@@ -12,7 +12,7 @@ from maka.curve import CurveParams, Point
 def run(curve: CurveParams, g: Point, n_fake: int = 5) -> str:
     verdict("a5_sybil", "RP9 §4.5", f"Intercepting distribution and instantiating {n_fake} fake identities")
     t = trace.active()
-    scn = _scenario.build(curve, g)
+    _scenario.build(curve, g)
 
     accepted = []
     for i in range(n_fake):

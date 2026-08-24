@@ -6,11 +6,9 @@ energy/exhaustion model exists anywhere in the codebase."""
 from __future__ import annotations
 
 import ast
-import inspect
 from pathlib import Path
 
 import pytest
-
 from attacks.icmds import (
     a1_replay,
     a2_dos,
@@ -20,6 +18,7 @@ from attacks.icmds import (
     a6_node_capture,
     a7_sk_impossible,
 )
+
 from maka import params, rng, trace
 
 REPO_ROOT = Path(__file__).resolve().parent.parent

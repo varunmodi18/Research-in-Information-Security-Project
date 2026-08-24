@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-from maka import hashing, ledger, pairing, trace
+from typing import ClassVar
+
+from maka import hashing, trace
 from maka.curve import CurveParams, Point
 from maka.entities.base import Entity
 from maka.wire import PAPER_SIZES
 
 
 class BaseStation(Entity):
-    STORAGE_FIELDS = [
+    STORAGE_FIELDS: ClassVar[list[tuple[str, int]]] = [
         ("id_bs", PAPER_SIZES["id"]),
         ("g", PAPER_SIZES["point"]),
         ("k", PAPER_SIZES["point"]),  # destroyed after key generation (OB-01)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from maka import hashing, trace
 from maka.curve import CurveParams, Point
 from maka.entities.base import Entity
@@ -9,7 +11,7 @@ from maka.wire import PAPER_SIZES
 
 
 class Node(Entity):
-    STORAGE_FIELDS = [
+    STORAGE_FIELDS: ClassVar[list[tuple[str, int]]] = [
         ("identity_field", PAPER_SIZES["id"]),
         ("curve_g", PAPER_SIZES["point"]),
         ("k", PAPER_SIZES["point"]),  # destroyed after key generation (OB-01)

@@ -28,7 +28,7 @@ class Channel:
     frames: list[Frame] = field(default_factory=list)
 
     def send(self, label: str, src: str, dst: str, payload: object, body: dict[str, object]) -> Frame:
-        nbits, itemisation = size([(k, v) for k, v in body.items()], sizing="paper")
+        nbits, _itemisation = size([(k, v) for k, v in body.items()], sizing="paper")
         frame = Frame(label=label, src=src, dst=dst, payload=payload, nbits=nbits)
         self.frames.append(frame)
         t = trace.active()

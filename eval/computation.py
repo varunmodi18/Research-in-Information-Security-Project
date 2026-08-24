@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from eval import cost_model
 from maka import fixtures, ledger, params, trace
+from maka.network import Network
 from maka.protocol import (
     data_transmission,
     p1_initialization,
@@ -12,14 +14,11 @@ from maka.protocol import (
     p5_session_key_agreement,
 )
 
-from eval import cost_model
-
 CM_FORMULA = {"T_HG": 1, "T_SM": 4, "T_E/D": 2, "T_P": 1}
 CH_FORMULA = {"T_HG": 1, "T_SM": 4, "T_E/D": 4, "T_P": 1}
 
 
-def _run_paper_fixture(params_name: str) -> "Network":
-    from maka.network import Network
+def _run_paper_fixture(params_name: str) -> Network:
 
     p = params.get(params_name)
     net = p1_initialization.run(p.curve, p.g, fixtures.PAPER)

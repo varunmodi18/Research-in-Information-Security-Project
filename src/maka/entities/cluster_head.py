@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from maka.curve import CurveParams, Point
 from maka.entities.node import Node
 from maka.wire import PAPER_SIZES
 
 
 class ClusterHead(Node):
-    STORAGE_FIELDS = Node.STORAGE_FIELDS + [
+    STORAGE_FIELDS: ClassVar[list[tuple[str, int]]] = Node.STORAGE_FIELDS + [
         ("p_ch", PAPER_SIZES["point"]),
         ("p_cm_table_summary", 0),  # itemised separately per member; see P12.4
     ]

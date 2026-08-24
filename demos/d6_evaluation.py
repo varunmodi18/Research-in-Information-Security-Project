@@ -9,7 +9,8 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from eval import comparison, computation, communication, figures, storage
+from eval import communication, comparison, computation, figures, storage
+
 from maka import trace
 
 TABLES_DIR = Path("artifacts/tables")

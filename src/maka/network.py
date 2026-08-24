@@ -1,4 +1,5 @@
-"""Network container and ASCII rendering of RP9 Fig. 1 (P5.6)."""
+"""Network container and ASCII rendering of RP9 §2.3's clustered-WSN architecture (Fig. 1),
+per P5.6: one base station, cluster heads, and cluster members."""
 
 from __future__ import annotations
 
@@ -27,7 +28,7 @@ class Network:
 
     def render_ascii(self) -> str:
         lines = [f"BS({self.bs.identity})"]
-        for ch_id, ch in self.cluster_heads.items():
+        for ch_id in self.cluster_heads:
             lines.append(f"  |-- CH({ch_id})")
             for cm_id in self.cluster_members.get(ch_id, {}):
                 lines.append(f"  |     |-- CM({cm_id})")

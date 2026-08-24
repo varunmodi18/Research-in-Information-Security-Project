@@ -42,7 +42,7 @@ class Sized:
         return repr(self.value).encode()
 
 
-def _render_sized(obj: "Sized", verbosity: int) -> str:
+def _render_sized(obj: Sized, verbosity: int) -> str:
     return f"{trace.render(obj.value, verbosity)}  ({obj.bits} bits, paper model)"
 
 

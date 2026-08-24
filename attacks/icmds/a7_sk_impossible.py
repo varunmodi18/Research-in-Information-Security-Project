@@ -18,9 +18,9 @@ Neither branch adjudicates what ICMDS intended, and neither depends on IA-11's T
 
 from __future__ import annotations
 
-from icmds import session_key
 from attacks.framework import verdict
 from attacks.icmds import _scenario
+from icmds import session_key
 from maka import rng, trace
 from maka.curve import CurveParams, Point
 
@@ -33,7 +33,7 @@ def _literal_branch(curve: CurveParams, g: Point) -> str:
 
     q_ids = {}
     for nid in scn.node_ids:
-        q_id, s_id = session_key.gateway_key(curve, setup_params, nid)
+        q_id, _s_id = session_key.gateway_key(curve, setup_params, nid)
         q_ids[nid] = q_id
 
     roots = [rng.current().below(curve.r_group) or 1 for _ in range(3)]

@@ -7,8 +7,6 @@ import ast
 from pathlib import Path
 
 import pytest
-
-from maka import rng, trace
 from security.maka import (
     s1_replay,
     s2_dos,
@@ -18,6 +16,8 @@ from security.maka import (
     s6_session_key_secrecy,
     s7_eavesdropping,
 )
+
+from maka import rng, trace
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 MODULES = [s1_replay, s2_dos, s3_ch_impersonation, s4_mutual_authentication,

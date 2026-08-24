@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from formal.avispa import syntax_check
 from formal.ban import maka_proof
+
 from maka import trace
 
 

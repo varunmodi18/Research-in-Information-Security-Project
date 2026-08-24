@@ -15,8 +15,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from maka.curve import CurveParams, Point  # noqa: E402
-from maka.field import Fp  # noqa: E402
+from maka.curve import CurveParams, Point
+from maka.field import Fp
 
 
 def isprime(n: int, rounds: int = 40) -> bool:

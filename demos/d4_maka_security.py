@@ -5,7 +5,6 @@ Realises: PLAN.md P11.1, P11.2.
 
 from __future__ import annotations
 
-from maka import trace
 from security.maka import (
     s1_replay,
     s2_dos,
@@ -15,6 +14,8 @@ from security.maka import (
     s6_session_key_secrecy,
     s7_eavesdropping,
 )
+
+from maka import trace
 
 CORRESPONDENCE = [
     ("Replay", "§4.1", "§6.1.1"),

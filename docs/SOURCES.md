@@ -28,4 +28,5 @@ where a stated erratum makes RP9's own summary literally inexecutable (ER-04 onl
 | ER-05 | RP9 §3 step 5(a) vs ICMDS-P §3(1), actor selecting `s` |
 | OB-06 | `R` used as both point and scalar in ICMDS-P |
 
-This file is finalised in P13.6 as phases land.
+Finalised at P13.6. No other file under `src/`, `attacks/`, `security/`, `formal/`, or `eval/`
+references ICMDS-P; both tables above are exhaustive.

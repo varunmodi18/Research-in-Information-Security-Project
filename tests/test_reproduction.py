@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
-import pytest
+from eval import communication, comparison, computation, storage
 
-from eval import comparison, computation, communication, storage
 from maka import rng, trace
 
 

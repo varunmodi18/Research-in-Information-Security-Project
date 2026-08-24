@@ -9,8 +9,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from maka import hashing, trace
-from maka.curve import CurveParams, Point
+from maka import trace
+from maka.curve import CurveParams
 
 
 @dataclass

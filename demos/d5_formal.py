@@ -29,7 +29,7 @@ def run(ban: bool = True, avispa: bool = True) -> None:
         syntax_check.run()
         script = Path(__file__).resolve().parent.parent / "formal" / "avispa" / "run_ofmc.sh"
         t.step("run_ofmc.sh", f"invoking {script}")
-        result = subprocess.run([str(script)], capture_output=True, text=True, timeout=60)
+        result = subprocess.run([str(script)], capture_output=True, text=True, timeout=60, check=False)
         for line in result.stdout.splitlines():
             t.step("ofmc", line)
 

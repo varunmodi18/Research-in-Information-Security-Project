@@ -47,7 +47,7 @@ def _em_body(a: object, b: object, nonce: bytes) -> dict[str, object]:
     return {"A": Sized(a, PAPER_SIZES["point"]), "B": Sized(b, PAPER_SIZES["point"]), "N": nonce}
 
 
-def _authenticate_pair(net: Network, ch: "object", cm: "object", curve: "object") -> list[list[object]]:
+def _authenticate_pair(net: Network, ch: object, cm: object, curve: object) -> list[list[object]]:
     t = trace.active()
     rows: list[list[object]] = []
 
@@ -117,7 +117,7 @@ def _authenticate_pair(net: Network, ch: "object", cm: "object", curve: "object"
     return rows
 
 
-def _negative_paths(net: Network, curve: "object") -> None:
+def _negative_paths(net: Network, curve: object) -> None:
     t = trace.active()
     t.section("5.4-negative", "Negative paths")
     ch = next(iter(net.cluster_heads.values()))

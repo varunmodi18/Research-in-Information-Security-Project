@@ -11,7 +11,7 @@ from maka import hashing, ibe, pairing, params, rng, trace
 
 def run(params_name: str = "demo", verbosity: int = 2) -> None:
     t = trace.active()
-    t.banner("D1 -- Primitives", f"RP9 sect 2.1-2.2 preliminaries, instantiated per IA-02/IA-03/IA-06/IA-09")
+    t.banner("D1 -- Primitives", "RP9 sect 2.1-2.2 preliminaries, instantiated per IA-02/IA-03/IA-06/IA-09")
     p = params.get(params_name)
     c, g = p.curve, p.g
 

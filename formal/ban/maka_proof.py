@@ -28,23 +28,23 @@ def derive() -> dict[int, Belief]:
     t = trace.active()
     t.banner("MAKA BAN derivation", "RP9 §6.2 idealisation of §5.4's node-authentication exchange")
 
-    r1 = apply("R1 seeing", lambda: M1, )
+    apply("R1 seeing", lambda: M1)
     r2 = apply("R2 message-meaning", message_meaning, M1, AS1)  # CM |= CH said {A1,A2,Nc_CH}
     r3 = apply("R3 nonce-verification", nonce_verification, r2, AS5, goal=3)  # CM |= CH |= (A1,A2,Nc_CH)
     r4 = apply("R4 jurisdiction", jurisdiction, AS4, r3, goal=1)  # CM |= (A1,A2,Nc_CH)  [Goal 1]
 
-    r5 = apply("R5 seeing", lambda: M3, )
+    apply("R5 seeing", lambda: M3)
     r6 = apply("R6 message-meaning", message_meaning, M3, AS3)  # CH |= CM said {A3,A4,Nc_CM}
     r7 = apply("R7 nonce-verification", nonce_verification, r6, AS6, goal=4)  # CH |= CM |= (A3,A4,Nc_CM)  [Goal 4]
     AS_CH_ctrl = Belief("CH", "CM controls (A3,A4)")
     r8 = apply("R8 jurisdiction", jurisdiction, AS_CH_ctrl, r7, goal=2)  # CH |= (A3,A4,Nc_CM)  [Goal 2]
 
-    r9 = apply("R9 seeing", lambda: M2, )
+    apply("R9 seeing", lambda: M2)
     r10 = apply("R10 message-meaning", message_meaning, M2, AS2)  # BS |= CH said {A1,A2,Nc_CH}
     AS_BS_fresh = Belief("BS", "fresh(Nc_CH)")
     r11 = apply("R11 nonce-verification", nonce_verification, r10, AS_BS_fresh)  # BS |= CH |= (A1,A2,Nc_CH)
     AS_BS_ctrl = Belief("BS", "CH controls (A1,A2)")
-    r12 = apply("R12 jurisdiction", jurisdiction, AS_BS_ctrl, r11)  # BS |= (A1,A2,Nc_CH)
+    apply("R12 jurisdiction", jurisdiction, AS_BS_ctrl, r11)  # BS |= (A1,A2,Nc_CH)
 
     return {1: r4, 2: r8, 3: r3, 4: r7}
 

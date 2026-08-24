@@ -8,8 +8,9 @@ from __future__ import annotations
 
 import functools
 from collections import defaultdict
+from collections.abc import Callable
 from contextvars import ContextVar
-from typing import Callable, TypeVar
+from typing import Self, TypeVar
 
 OPS = ("T_HG", "T_SM", "T_PA", "T_E/D", "T_P", "T_S", "T_H", "T_MAC")
 
@@ -55,7 +56,7 @@ class LedgerScope:
         self.phase = phase
         self._token = None
 
-    def __enter__(self) -> "LedgerScope":
+    def __enter__(self) -> Self:
         self._token = _scope.set((self.entity, self.phase))
         return self
 
@@ -71,7 +72,7 @@ class suppressed:
     (e.g. IBE's internal pairing) -- RP9's Table 2 treats T_E/D and T_P as independent line
     items, so counting the inner call again as T_P would double-charge one RP9 operation."""
 
-    def __enter__(self) -> "suppressed":
+    def __enter__(self) -> Self:
         self._token = _scope.set(None)
         return self
 

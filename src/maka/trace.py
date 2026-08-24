@@ -39,8 +39,10 @@ class Tracer:
 
     def __post_init__(self) -> None:
         self.out_dir.mkdir(parents=True, exist_ok=True)
-        self._log_fh = open(self.out_dir / f"{self.run_id}.log", "a", encoding="utf-8")
-        self._jsonl_fh = open(self.out_dir / f"{self.run_id}.jsonl", "a", encoding="utf-8")
+        # Held open for the Tracer's lifetime (closed explicitly by close()), not scoped to a
+        # single call -- a `with` block doesn't fit this usage.
+        self._log_fh = open(self.out_dir / f"{self.run_id}.log", "a", encoding="utf-8")  # noqa: SIM115
+        self._jsonl_fh = open(self.out_dir / f"{self.run_id}.jsonl", "a", encoding="utf-8")  # noqa: SIM115
 
     def _emit(self, text: str, event: dict[str, Any]) -> None:
         print(text)

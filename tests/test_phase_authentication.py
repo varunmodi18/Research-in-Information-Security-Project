@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 from maka import fixtures, params, rng, trace
-from maka.protocol import p1_initialization, p2_key_generation, p3_node_registration, p4_node_authentication
+from maka.protocol import (
+    p1_initialization,
+    p2_key_generation,
+    p3_node_registration,
+    p4_node_authentication,
+)
 
 
 def _build():

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from maka import params, pairing, rng, trace
+from maka import pairing, params, rng, trace
 
 
 @pytest.fixture(autouse=True)

@@ -52,7 +52,7 @@ class Point:
     params: CurveParams
 
     @staticmethod
-    def infinity(params: CurveParams) -> "Point":
+    def infinity(params: CurveParams) -> Point:
         return Point(None, None, params)
 
     def is_infinity(self) -> bool:
@@ -75,19 +75,19 @@ class Point:
             return self.is_infinity() == other.is_infinity()
         return self.x == other.x and self.y == other.y
 
-    def __neg__(self) -> "Point":
+    def __neg__(self) -> Point:
         if self.is_infinity():
             return self
         assert self.y is not None
         return Point(self.x, -self.y, self.params)
 
     @ledger.counts("T_PA")
-    def __add__(self, other: "Point") -> "Point":
+    def __add__(self, other: Point) -> Point:
         result = self._add_impl(other)
         assert result.is_on_curve(), "point addition left the curve -- arithmetic bug"
         return result
 
-    def _add_impl(self, other: "Point") -> "Point":
+    def _add_impl(self, other: Point) -> Point:
         if self.is_infinity():
             return other
         if other.is_infinity():
@@ -105,7 +105,7 @@ class Point:
             t.value("slope (add)", trace.render(slope, t.verbosity))
         return Point(x3, y3, self.params)
 
-    def _double_impl(self) -> "Point":
+    def _double_impl(self) -> Point:
         assert self.x is not None and self.y is not None
         three = small_const(self.x, 3)
         a_elem = small_const(self.x, self.params.a)
@@ -119,18 +119,18 @@ class Point:
         return Point(x3, y3, self.params)
 
     @ledger.counts("T_SM")
-    def __rmul__(self, scalar: int) -> "Point":
+    def __rmul__(self, scalar: int) -> Point:
         """Scalar multiplication scalar * self, double-and-add MSB-first (IA-02: scalar in Z_r_group)."""
         return self._scalar_mul_impl(scalar)
 
-    def scalar_mul_unaccounted(self, scalar: int) -> "Point":
+    def scalar_mul_unaccounted(self, scalar: int) -> Point:
         """Scalar multiplication with no T_SM ledger entry. Used solely for cofactor clearing
         inside hash-to-point (hashing.py): RP9's published T_HG benchmark already prices the
         full map-to-point operation including cofactor clearing, so counting it a second time
         as a separate T_SM would double-charge one physical operation."""
         return self._scalar_mul_impl(scalar)
 
-    def _scalar_mul_impl(self, scalar: int) -> "Point":
+    def _scalar_mul_impl(self, scalar: int) -> Point:
         if scalar < 0:
             return (-self)._scalar_mul_impl(-scalar)
         result = Point.infinity(self.params)

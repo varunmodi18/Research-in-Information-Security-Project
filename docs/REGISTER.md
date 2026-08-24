@@ -2,8 +2,8 @@
 
 Five-way classification of every place this implementation had to make a decision RP9 does not
 make for it, per `PLAN.md` §0 rule 3 and §5. Each entry: exact passage at issue, class, resolution,
-and a runnable demonstration under `tests/register/`. This file is stubbed in P0.6 and finalised in
-P13.6 — until then, entries are populated as the phase that implements them lands.
+and a runnable demonstration under `tests/register/`. Finalised at P13.6: all 32 entries (5 ER,
+9 AM, 11 IA, 6 OB, 1 SD) implemented and demonstrated.
 
 ## ER — genuine errata (5)
 
@@ -45,7 +45,7 @@ P13.6 — until then, entries are populated as the phase that implements them la
 - [x] OB-02 — no forward secrecy in SK_{i-BS} (`src/maka/protocol/p5_session_key_agreement.py`)
 - [x] OB-03 — 320-bit sizing vs k=2 pairing curve (`eval/communication.py`, `--sizing actual`)
 - [x] OB-04 — g is public; A1 alone is not the obstacle (`src/maka/protocol/p4_node_authentication.py::_negative_paths`)
-- [ ] OB-05 — no revocation mechanism
+- [x] OB-05 — no revocation mechanism (recorded, nothing built; `tests/register/test_all_entries.py::test_ob05_no_revocation_mechanism_exists`)
 - [x] OB-06 — `R` point/scalar collision (`src/icmds/session_key.py::encrypt_literal`; `attacks/icmds/a7_sk_impossible.py`)
 
 ## SD — secondary-source dependency (1)

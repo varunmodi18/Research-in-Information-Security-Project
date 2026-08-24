@@ -13,7 +13,12 @@ or add some values into its memory"). No agreement is forced.
 from __future__ import annotations
 
 from maka import fixtures, params, trace
-from maka.protocol import p1_initialization, p2_key_generation, p3_node_registration, p4_node_authentication
+from maka.protocol import (
+    p1_initialization,
+    p2_key_generation,
+    p3_node_registration,
+    p4_node_authentication,
+)
 
 PUBLISHED = [1440, 2240, 640, 160]  # RP9 Table 4, rows 1-4
 
@@ -29,7 +34,6 @@ def run(params_name: str = "demo") -> None:
     p = params.get(params_name)
     net = p1_initialization.run(p.curve, p.g, fixtures.PAPER)
     p2_key_generation.run(net)
-    ch = next(iter(net.cluster_heads.values()))
 
     # candidate itemisation after keygen: Pu_i + Pr_i + Pu_BS + g + ID = 4*320 + 160 = 1440
     row1 = 4 * 320 + 160
