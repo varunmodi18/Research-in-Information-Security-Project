@@ -1,0 +1,89 @@
+%% HLPSL specification of MAKA's node-registration/authentication exchange (RP9 §5.3-5.4,
+%% Figs. 4-8, transcribed with identifiers em1, em2, em3, sec1, sec2, sec3 preserved per RP9's
+%% own figures, per P11.5). Five roles: base station, cluster head, cluster member, session,
+%% environment/goal.
+
+role basestation(BS, CH, CM : agent,
+                  PuBS, PrBS : public_key,
+                  Snd, Rcv : channel(dy))
+played_by BS
+def=
+  local State : nat,
+        A1, A2, NcCH : text
+  init  State := 0
+  transition
+    1. State = 0 /\ Rcv({A1'.A2'.NcCH'}_PuBS) =|>
+       State' := 1 /\ secret(NcCH', sec2, {BS,CH})
+
+end role
+
+role clusterhead(CH, BS, CM : agent,
+                  PuCH, PrCH, PuCM, PuBS : public_key,
+                  Snd, Rcv : channel(dy))
+played_by CH
+def=
+  local State : nat,
+        A1, A2, A3, A4, NcCH, NcCM : text
+  init  State := 0
+  transition
+    1. State = 0 =|>
+       State' := 1 /\ A1' := new() /\ A2' := new() /\ NcCH' := new()
+                   /\ Snd({A1'.A2'.NcCH'}_PuCM)
+                   /\ Snd({A1'.A2'.NcCH'}_PuBS)
+                   /\ witness(CH, CM, em1, A1'.A2'.NcCH')
+                   /\ secret(NcCH', sec1, {CH,CM})
+
+    2. State = 1 /\ Rcv({A3'.A4'.NcCM'}_PuCH) =|>
+       State' := 2 /\ request(CH, CM, em3, A3'.A4'.NcCM')
+                   /\ secret(NcCM', sec3, {CH,CM})
+
+end role
+
+role clustermember(CM, CH, BS : agent,
+                    PuCM, PrCM, PuCH : public_key,
+                    Snd, Rcv : channel(dy))
+played_by CM
+def=
+  local State : nat,
+        A1, A2, A3, A4, NcCH, NcCM : text
+  init  State := 0
+  transition
+    1. State = 0 /\ Rcv({A1'.A2'.NcCH'}_PuCM) =|>
+       State' := 1 /\ request(CM, CH, em1, A1'.A2'.NcCH')
+                   /\ A3' := new() /\ A4' := new() /\ NcCM' := new()
+                   /\ Snd({A3'.A4'.NcCM'}_PuCH)
+                   /\ witness(CM, CH, em3, A3'.A4'.NcCM')
+                   /\ secret(NcCM', sec3, {CH,CM})
+
+end role
+
+role session(BS, CH, CM : agent,
+             PuBS, PrBS, PuCH, PrCH, PuCM, PrCM : public_key)
+def=
+  local SB, RB, SC, RC, SM, RM : channel(dy)
+  composition
+    basestation(BS, CH, CM, PuBS, PrBS, SB, RB)
+    /\ clusterhead(CH, BS, CM, PuCH, PrCH, PuCM, PuBS, SC, RC)
+    /\ clustermember(CM, CH, BS, PuCM, PrCM, PuCH, SM, RM)
+end role
+
+role environment()
+def=
+  const bs, ch, cm : agent,
+        pubs, prbs, puch, prch, pucm, prcm : public_key,
+        em1, em3 : protocol_id,
+        sec1, sec2, sec3 : protocol_id
+  intruder_knowledge = {bs, ch, cm, pubs, puch, pucm}
+  composition
+    session(bs, ch, cm, pubs, prbs, puch, prch, pucm, prcm)
+end role
+
+goal
+  secrecy_of sec1
+  secrecy_of sec2
+  secrecy_of sec3
+  authentication_on em1
+  authentication_on em3
+end goal
+
+environment()
