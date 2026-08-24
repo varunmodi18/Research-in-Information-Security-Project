@@ -15,7 +15,7 @@ P13.6 — until then, entries are populated as the phase that implements them la
 
 ## AM — ambiguity or underspecification (9)
 
-- [ ] AM-01 — Enc/Dec abstract
+- [x] AM-01 — Enc/Dec abstract (resolved by IA-03)
 - [ ] AM-02 — "sent securely" mechanism
 - [ ] AM-03 — `Nc` reused symbol
 - [ ] AM-04 — Table 5 vs Table 2 accounting boundary
@@ -29,13 +29,13 @@ P13.6 — until then, entries are populated as the phase that implements them la
 
 - [x] IA-01 — language/dependency policy (`pyproject.toml`)
 - [x] IA-02 — pairing instantiation, scalar domain Z_r (`src/maka/curve.py`, `src/maka/pairing.py`, `src/maka/params.py`)
-- [ ] IA-03 — Enc/Dec instantiation (BF-IBE hybrid)
+- [x] IA-03 — Enc/Dec instantiation (BF-IBE hybrid) (`src/maka/ibe.py`)
 - [ ] IA-04 — "sent securely" instantiation
 - [ ] IA-05 — nonce instances
-- [ ] IA-06 — symmetric layer for sensed data
+- [x] IA-06 — symmetric layer for sensed data (`src/maka/aead.py`)
 - [x] IA-07 — parameter sets (`tools/gen_params.py`, `src/maka/params.py`, `docs/PARAMETERS.md`)
 - [ ] IA-08 — channel model
-- [ ] IA-09 — hash constructions (H1, H2)
+- [x] IA-09 — hash constructions (H1, H2) (`src/maka/hashing.py`)
 - [ ] IA-10 — ICMDS coefficient computation
 - [ ] IA-11 — two-track x_i handling
 

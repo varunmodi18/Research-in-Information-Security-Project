@@ -67,28 +67,28 @@ def main(argv: list[str] | None = None) -> int:
 def _run_primitives(args: argparse.Namespace, r: "rng.Rng") -> int:
     from demos import d1_primitives
 
-    d1_primitives.run(params=args.params, verbosity=args.verbosity)
+    d1_primitives.run(params_name=args.params, verbosity=args.verbosity)
     return 0
 
 
 def _run_protocol(args: argparse.Namespace, r: "rng.Rng") -> int:
     from demos import d2_maka_full
 
-    d2_maka_full.run(params=args.params, fixture=args.fixture, verbosity=args.verbosity)
+    d2_maka_full.run(params_name=args.params, fixture=args.fixture, verbosity=args.verbosity)
     return 0
 
 
 def _run_icmds(args: argparse.Namespace, r: "rng.Rng") -> int:
     from demos import d3_icmds_and_attacks
 
-    d3_icmds_and_attacks.run(params=args.params, verbosity=args.verbosity)
+    d3_icmds_and_attacks.run(params_name=args.params, verbosity=args.verbosity)
     return 0
 
 
 def _run_security(args: argparse.Namespace, r: "rng.Rng") -> int:
     from demos import d4_maka_security
 
-    d4_maka_security.run(params=args.params, fixture=args.fixture, verbosity=args.verbosity)
+    d4_maka_security.run(params_name=args.params, fixture=args.fixture, verbosity=args.verbosity)
     return 0
 
 
@@ -102,7 +102,7 @@ def _run_formal(args: argparse.Namespace, r: "rng.Rng") -> int:
 def _run_eval(args: argparse.Namespace, r: "rng.Rng") -> int:
     from demos import d6_evaluation
 
-    d6_evaluation.run(params=args.params, fixture=args.fixture, sizing=args.sizing)
+    d6_evaluation.run(params_name=args.params, fixture=args.fixture, sizing=args.sizing)
     return 0
 
 

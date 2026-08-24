@@ -176,6 +176,13 @@ class Fp2:
         return f"Fp2({self.a.val} + {self.b.val}*i)"
 
 
+def fp2_to_bytes(elem: Fp2) -> bytes:
+    """Canonical fixed-width big-endian encoding of a G_2 (pairing target) element, for
+    feeding into a KDF (IA-03, IA-06)."""
+    nbytes = (elem.a.p_field.bit_length() + 7) // 8
+    return elem.a.val.to_bytes(nbytes, "big") + elem.b.val.to_bytes(nbytes, "big")
+
+
 def _render_fp2(obj: Fp2, verbosity: int) -> str:
     return f"({obj.a.val} + {obj.b.val}*i)"
 
