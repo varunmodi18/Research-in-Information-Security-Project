@@ -10,8 +10,8 @@ P13.6 — until then, entries are populated as the phase that implements them la
 - [x] ER-01 — RP9 §5.4.1, `A4` subscript typo (`src/maka/protocol/p4_node_authentication.py`; `tests/test_phase_authentication.py`)
 - [ ] ER-02 — RP9 §8 Table 5, `T_SM`/`T_PA` rows
 - [x] ER-03 — RP9 §2.2, non-degeneracy vs alternating (`src/maka/pairing.py::selftest` tests 5-6; `tests/test_pairing.py`)
-- [ ] ER-04 — RP9 §3 step 5(d), missing exponent
-- [ ] ER-05 — RP9 §3 step 5(a) vs ICMDS-P §3(1), `s`-selection actor
+- [x] ER-04 — RP9 §3 step 5(d), missing exponent (`src/icmds/session_key.py::decrypt_identity_er04`; `tests/test_icmds_math.py`)
+- [x] ER-05 — RP9 §3 step 5(a) vs ICMDS-P §3(1), `s`-selection actor (`src/icmds/session_key.py::setup`; `attacks/icmds/a7_sk_impossible.py`)
 
 ## AM — ambiguity or underspecification (9)
 
@@ -22,8 +22,8 @@ P13.6 — until then, entries are populated as the phase that implements them la
 - [x] AM-05 — Aggregate operation unspecified (`src/maka/protocol/data_transmission.py`; not resolved, halt demonstrated)
 - [x] AM-06 — cost-table topology unstated (`src/maka/fixtures.py`)
 - [ ] AM-07 — Table 4 storage not itemised
-- [ ] AM-08 — ICMDS coefficients delegated to [26]
-- [ ] AM-09 — `x_i` unresolved G_2 -> scalar type
+- [x] AM-08 — ICMDS coefficients delegated to [26] (resolved by SD-01)
+- [x] AM-09 — `x_i` unresolved G_2 -> scalar type (`src/icmds/session_key.py::encryption_setup`; IA-11)
 
 ## IA — implementation assumptions (11)
 
@@ -36,8 +36,8 @@ P13.6 — until then, entries are populated as the phase that implements them la
 - [x] IA-07 — parameter sets (`tools/gen_params.py`, `src/maka/params.py`, `docs/PARAMETERS.md`)
 - [x] IA-08 — channel model (`src/maka/channel.py`)
 - [x] IA-09 — hash constructions (H1, H2) (`src/maka/hashing.py`)
-- [ ] IA-10 — ICMDS coefficient computation
-- [ ] IA-11 — two-track x_i handling
+- [x] IA-10 — ICMDS coefficient computation (`src/icmds/coefficients.py`)
+- [x] IA-11 — two-track x_i handling (`attacks/icmds/a7_sk_impossible.py::_literal_branch`/`_diagnostic_branch`; `src/icmds/session_key.py::to_scalar`)
 
 ## OB — observations (6)
 
@@ -46,8 +46,8 @@ P13.6 — until then, entries are populated as the phase that implements them la
 - [ ] OB-03 — 320-bit sizing vs k=2 pairing curve
 - [x] OB-04 — g is public; A1 alone is not the obstacle (`src/maka/protocol/p4_node_authentication.py::_negative_paths`)
 - [ ] OB-05 — no revocation mechanism
-- [ ] OB-06 — `R` point/scalar collision
+- [x] OB-06 — `R` point/scalar collision (`src/icmds/session_key.py::encrypt_literal`; `attacks/icmds/a7_sk_impossible.py`)
 
 ## SD — secondary-source dependency (1)
 
-- [ ] SD-01 — ICMDS coefficients a_0..a_m from ICMDS-P
+- [x] SD-01 — ICMDS coefficients a_0..a_m from ICMDS-P (`src/icmds/coefficients.py::compute_and_verify`)
