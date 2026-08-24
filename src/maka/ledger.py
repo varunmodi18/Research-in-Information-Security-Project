@@ -64,6 +64,21 @@ class LedgerScope:
         _scope.reset(self._token)
 
 
+class suppressed:
+    """Context manager: `@counts`-decorated calls inside become no-ops, regardless of any
+    enclosing LedgerScope. Used where an outer operation's ledger price (e.g. T_E/D for
+    Enc/Dec) already prices an inner operation our concrete instantiation happens to use
+    (e.g. IBE's internal pairing) -- RP9's Table 2 treats T_E/D and T_P as independent line
+    items, so counting the inner call again as T_P would double-charge one RP9 operation."""
+
+    def __enter__(self) -> "suppressed":
+        self._token = _scope.set(None)
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        _scope.reset(self._token)
+
+
 def bump(op: str, n: int = 1) -> None:
     """Increments `op` in the ledger under the active LedgerScope, if any. Used where a
     constituent operation (e.g. a point addition inside scalar multiplication) needs to be

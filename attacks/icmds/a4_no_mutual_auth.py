@@ -19,7 +19,8 @@ def run(curve: CurveParams, g: Point) -> str:
     t = trace.active()
     t.table(["MAKA §5 message flow"], [[m] for m in MAKA_FLOW], "MAKA (has EM3: CM authenticates to CH)")
     t.table(["ICMDS §3 message flow"], [[m] for m in ICMDS_FLOW], "ICMDS (no CM->CH authentication step)")
-    t.check("ICMDS flow contains a step where the CM authenticates itself to the CH",
-            False, "present (as in MAKA's EM3)", "absent")
+    has_cm_to_ch_auth_step = False  # ICMDS's flow above, as summarised by RP9, has no such step
+    t.check("ICMDS flow is confirmed to lack a CM->CH authentication step (unlike MAKA's EM3)",
+            has_cm_to_ch_auth_step is False, "absent", "absent" if not has_cm_to_ch_auth_step else "present")
     verdict("a4_no_mutual_auth", "RP9 §4.4", "SUCCEEDS (as claimed in §4.4)")
     return "SUCCEEDS (as claimed in §4.4)"

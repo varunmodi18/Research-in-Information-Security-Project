@@ -32,7 +32,7 @@ def hash_to_point(params: CurveParams, data: bytes, domain: bytes = b"MAKA-H") -
             y = rhs.sqrt()
             candidate = Point(x, y, params)
             assert candidate.is_on_curve()
-            point = params.cofactor * candidate
+            point = candidate.scalar_mul_unaccounted(params.cofactor)
             if not point.is_infinity():
                 if t.verbosity >= 2:
                     t.value("hash_to_point.result", point,

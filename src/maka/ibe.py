@@ -34,11 +34,17 @@ class Ciphertext:
 
 @ledger.counts("T_E/D")
 def encrypt(curve: CurveParams, g: Point, message: bytes, recipient_pu: Point, k_pub: Point) -> Ciphertext:
-    """Enc(message, Pu_recipient), under [IA-03]."""
+    """Enc(message, Pu_recipient), under [IA-03].
+
+    RP9's Table 2 prices Enc/Dec as a single flat T_E/D per call; the scalar multiplication
+    and pairing our concrete IBE instantiation performs internally are suppressed from the
+    ledger so they are not double-charged as separate T_SM/T_P entries alongside T_E/D.
+    """
     t = trace.active()
-    u_scalar = rng.current().below(curve.r_group)
-    u_point = u_scalar * g
-    shared = pairing.modified_pairing(curve, recipient_pu, k_pub) ** u_scalar
+    with ledger.suppressed():
+        u_scalar = rng.current().below(curve.r_group)
+        u_point = u_scalar * g
+        shared = pairing.modified_pairing(curve, recipient_pu, k_pub) ** u_scalar
     key = hashing.kdf(fp2_to_bytes(shared), b"MAKA-IBE-DEM", DEM_KEY_BYTES)
     body = aead_encrypt(key, message)
     if t.verbosity >= 2:
@@ -50,9 +56,10 @@ def encrypt(curve: CurveParams, g: Point, message: bytes, recipient_pu: Point, k
 
 @ledger.counts("T_E/D")
 def decrypt(curve: CurveParams, ciphertext: Ciphertext, recipient_pr: Point) -> bytes:
-    """Dec(ciphertext, Pr_recipient), under [IA-03]."""
+    """Dec(ciphertext, Pr_recipient), under [IA-03]. See encrypt() re: ledger suppression."""
     t = trace.active()
-    shared = pairing.modified_pairing(curve, recipient_pr, ciphertext.u_point)
+    with ledger.suppressed():
+        shared = pairing.modified_pairing(curve, recipient_pr, ciphertext.u_point)
     key = hashing.kdf(fp2_to_bytes(shared), b"MAKA-IBE-DEM", DEM_KEY_BYTES)
     if t.verbosity >= 2:
         t.value("ibe.DEM_key_fingerprint", key[:8])

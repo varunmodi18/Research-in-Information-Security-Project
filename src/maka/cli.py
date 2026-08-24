@@ -95,7 +95,7 @@ def _run_security(args: argparse.Namespace, r: "rng.Rng") -> int:
 def _run_formal(args: argparse.Namespace, r: "rng.Rng") -> int:
     from demos import d5_formal
 
-    d5_formal.run(ban=args.ban, avispa=args.avispa)
+    d5_formal.run(ban=getattr(args, "ban", True), avispa=getattr(args, "avispa", True))
     return 0
 
 

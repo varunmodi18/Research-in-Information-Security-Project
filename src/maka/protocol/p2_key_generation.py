@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from maka import ledger, pairing, trace
 from maka.network import Network
+from maka.wire import PAPER_SIZES, Sized
 
 
 def run(net: Network) -> None:
@@ -21,9 +22,13 @@ def run(net: Network) -> None:
     for ch in net.cluster_heads.values():
         with ledger.LedgerScope(ch.identity, "keygen"):
             ch.compute_keys_and_destroy_k()
+        net.channel.send("PUB_CH", ch.identity, net.bs.identity, ch.pu_i,
+                          {"Pu_CH": Sized(ch.pu_i, PAPER_SIZES["point"])})
         for cm in net.cluster_members[ch.identity].values():
             with ledger.LedgerScope(cm.identity, "keygen"):
                 cm.compute_keys_and_destroy_k()
+            net.channel.send("PUB_CM", cm.identity, ch.identity, cm.pu_i,
+                              {"Pu_CM": Sized(cm.pu_i, PAPER_SIZES["point"])})
 
     t.section("5.5-preview", "Cross-check e(Pr_i, Pu_BS) = e(Pu_i, Pr_BS)")
     for ch in net.cluster_heads.values():

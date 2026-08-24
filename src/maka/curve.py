@@ -121,8 +121,18 @@ class Point:
     @ledger.counts("T_SM")
     def __rmul__(self, scalar: int) -> "Point":
         """Scalar multiplication scalar * self, double-and-add MSB-first (IA-02: scalar in Z_r_group)."""
+        return self._scalar_mul_impl(scalar)
+
+    def scalar_mul_unaccounted(self, scalar: int) -> "Point":
+        """Scalar multiplication with no T_SM ledger entry. Used solely for cofactor clearing
+        inside hash-to-point (hashing.py): RP9's published T_HG benchmark already prices the
+        full map-to-point operation including cofactor clearing, so counting it a second time
+        as a separate T_SM would double-charge one physical operation."""
+        return self._scalar_mul_impl(scalar)
+
+    def _scalar_mul_impl(self, scalar: int) -> "Point":
         if scalar < 0:
-            return (-scalar) * (-self)
+            return (-self)._scalar_mul_impl(-scalar)
         result = Point.infinity(self.params)
         addend = self
         t = trace.active()

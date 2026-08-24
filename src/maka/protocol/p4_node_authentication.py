@@ -67,6 +67,9 @@ def _authenticate_pair(net: Network, ch: "object", cm: "object", curve: "object"
         net.channel.send("EM2", ch.identity, net.bs.identity, em2, _em_body(ch.a1, ch.a2, n_auth_ch))
 
     with ledger.LedgerScope(cm.identity, "authentication"):
+        em1_plaintext = ibe.decrypt(curve, em1, cm.pr_i)
+        t.check("CM decrypts EM1 to the plaintext CH sealed",
+                em1_plaintext == repr((ch.a1, ch.a2, n_auth_ch)).encode(), True, em1_plaintext == repr((ch.a1, ch.a2, n_auth_ch)).encode())
         fresh1 = cm.check_and_cache_nonce(n_auth_ch)
         a2_check = xor_to_scalar(net.bs.identity, ch.identity, curve.r_group) * ch.a1
         ok_cm_ch = fresh1 and (a2_check == ch.a2)
@@ -90,6 +93,9 @@ def _authenticate_pair(net: Network, ch: "object", cm: "object", curve: "object"
         net.channel.send("EM3", cm.identity, ch.identity, em3, _em_body(cm.a3, cm.a4, n_auth_cm))
 
     with ledger.LedgerScope(ch.identity, "authentication"):
+        em3_plaintext = ibe.decrypt(curve, em3, ch.pr_i)
+        t.check("CH decrypts EM3 to the plaintext CM sealed",
+                em3_plaintext == repr((cm.a3, cm.a4, n_auth_cm)).encode(), True, em3_plaintext == repr((cm.a3, cm.a4, n_auth_cm)).encode())
         fresh3 = ch.check_and_cache_nonce(n_auth_cm)
         a4_check = xor_to_scalar(ch.identity, cm.identity, curve.r_group) * cm.a3
         ok_ch_cm = fresh3 and (a4_check == cm.a4)
@@ -98,6 +104,9 @@ def _authenticate_pair(net: Network, ch: "object", cm: "object", curve: "object"
         rows.append([f"{ch.identity} -> {cm.identity}", "A4' == A4", "PASS" if ok_ch_cm else "FAIL"])
 
     with ledger.LedgerScope(net.bs.identity, "authentication"):
+        em2_plaintext = ibe.decrypt(curve, em2, net.bs.pr_bs)
+        t.check("BS decrypts EM2 to the plaintext CH sealed",
+                em2_plaintext == repr((ch.a1, ch.a2, n_auth_ch)).encode(), True, em2_plaintext == repr((ch.a1, ch.a2, n_auth_ch)).encode())
         fresh2 = net.bs.check_and_cache_nonce(n_auth_ch)
         a2_check_bs = xor_to_scalar(net.bs.identity, ch.identity, curve.r_group) * ch.a1
         ok_bs_ch = fresh2 and (a2_check_bs == ch.a2)

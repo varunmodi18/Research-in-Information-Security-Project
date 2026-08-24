@@ -12,6 +12,7 @@ artifacts/transcripts/*.log
 artifacts/transcripts/*.jsonl
 artifacts/tables/*.csv
 artifacts/figures/*.png
+artifacts/figures/*.caption.txt
 artifacts/submission/
 !artifacts/transcripts/.gitkeep
 !artifacts/tables/.gitkeep
