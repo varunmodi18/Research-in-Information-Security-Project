@@ -1,0 +1,6 @@
+{"ts": 1787562311.8478458, "type": "banner", "title": "Toy scenario", "subtitle": "P1.6 golden harness"}
+{"ts": 1787562311.8478634, "type": "section", "n": 1, "title": "Arithmetic"}
+{"ts": 1787562311.847871, "type": "step", "actor": "tester", "text": "computing 2 + 2"}
+{"ts": 1787562311.84788, "type": "value", "name": "result", "value": "4", "note": null}
+{"ts": 1787562311.8478887, "type": "check", "desc": "2 + 2 == 4", "ok": true, "expected": "4", "actual": "4"}
+{"ts": 1787562311.8478959, "type": "register", "id": "IA-01", "text": "language and dependency policy"}
