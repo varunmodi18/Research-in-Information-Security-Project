@@ -5,7 +5,7 @@ Original mode is lab-only (NFR-SEC-03): building it on a product bus is refused.
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass, field
 from typing import cast
@@ -54,6 +54,12 @@ class OriginalNetwork:
     def device(self, ident: str):  # type: ignore[no-untyped-def]
         return self.scheduler.devices[ident]
 
+    def _bs(self) -> OriginalBS:
+        return cast(OriginalBS, self.scheduler.devices[self.bs_id])
+
+    def _ch(self, ident: str) -> OriginalCH:
+        return cast(OriginalCH, self.scheduler.devices[ident])
+
     def start_onboarding(self) -> list[StepResult]:
         """RP9 §5.2 key generation on every device; the rest of §5.3-5.5 is event-driven."""
         with self.context():
@@ -63,9 +69,14 @@ class OriginalNetwork:
                 out.extend(self.scheduler.command(cm_id, "keygen") for cm_id in cms)
         return out
 
-    def run(self, max_steps: int = 20_000) -> list[StepResult]:
+    def run(self, max_steps: int = 20_000,
+            should_stop: Callable[[], bool] | None = None) -> list[StepResult]:
         with self.context():
-            return self.scheduler.run_until_quiescent(max_steps)
+            return self.scheduler.run_until_quiescent(max_steps, should_stop)
+
+    def step(self, n: int = 1) -> list[StepResult]:
+        with self.context():
+            return self.scheduler.run_steps(n)
 
     def onboard(self, max_steps: int = 20_000) -> list[StepResult]:
         return self.start_onboarding() + self.run(max_steps)
@@ -73,6 +84,30 @@ class OriginalNetwork:
     def send_reading(self, cm_id: str, value: str) -> StepResult:
         with self.context():
             return self.scheduler.command(cm_id, "send_reading", value)
+
+    # -- read-only views for the console (public metadata only) ---------------------------
+
+    def device_epoch(self, ident: str) -> int:
+        return 0  # RP9 has no revocation, so no epochs (OB-05)
+
+    def readings(self) -> list[dict[str, object]]:
+        return list(self._bs().readings)
+
+    def session_infos(self) -> list[dict[str, object]]:
+        """RP9 §5.5's static SK_{i-BS}, shown as a session per node that derived it. It is
+        'unconfirmed' unless the BS (for a CH) or the CH (for a CM) authenticated that node,
+        because RP9 gives no key confirmation (P-04)."""
+        out: list[dict[str, object]] = []
+        bs = self._bs()
+        for ch_id, cms in self.chs().items():
+            ch = self._ch(ch_id)
+            for ident, confirmed in [(ch_id, ch_id in bs.authenticated_chs)] + [
+                    (cm, cm in ch.authenticated_members) for cm in cms]:
+                if self.scheduler.devices[ident].keystore.has("ksym"):
+                    out.append({"a": ident, "b": self.bs_id, "purpose": "SK-BS",
+                                "state": "ESTABLISHED" if confirmed else "UNCONFIRMED", "sid_hex": "",
+                                "established_step": None, "epoch": 0, "sent": 0, "recv": 0})
+        return out
 
 
 def build(params_name: str, topology: str | dict[str, object], *, kind: str = LAB,

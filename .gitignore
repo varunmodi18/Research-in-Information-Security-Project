@@ -17,3 +17,10 @@ artifacts/submission/
 !artifacts/transcripts/.gitkeep
 !artifacts/tables/.gitkeep
 !artifacts/figures/.gitkeep
+var/
+.env
+web/node_modules/
+web/dist/
+web/test-results/
+web/playwright-report/
+artifacts/eval/*.png

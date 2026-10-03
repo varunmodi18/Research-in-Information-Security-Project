@@ -128,10 +128,20 @@ def using(source: RandomSource) -> Iterator[RandomSource]:
         _current.reset(token)
 
 
+_fallback: RandomSource | None = None
+
+
+def set_fallback(source: RandomSource | None) -> None:
+    """Process-wide source for contexts that never chose one (the server sets SystemSource,
+    so no request thread silently falls back to a fixed seed)."""
+    global _fallback
+    _fallback = source
+
+
 def current() -> RandomSource:
     source = _current.get()
     if source is None:
-        source = seed(0)
+        source = _fallback if _fallback is not None else seed(0)
     return source
 
 

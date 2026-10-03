@@ -266,8 +266,17 @@ def use(tracer: Tracer) -> Tracer:
     return tracer
 
 
+_fallback: Tracer | None = None
+
+
+def set_fallback(tracer: Tracer | None) -> None:
+    """Process-wide tracer for contexts that never chose one (the server sets NullTracer)."""
+    global _fallback
+    _fallback = tracer
+
+
 def active() -> Tracer:
     tracer = _active_var.get()
     if tracer is None:
-        tracer = init(run_id=f"adhoc-{int(time.time())}")
+        tracer = _fallback if _fallback is not None else init(run_id=f"adhoc-{int(time.time())}")
     return tracer
