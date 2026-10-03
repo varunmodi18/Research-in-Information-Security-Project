@@ -1580,6 +1580,56 @@
     ]
    }
   },
+  "/api/evaluation/reference": {
+   "get": {
+    "description": "RP9 table reproductions, formal results, parameter levels, latest comparison, limitations.",
+    "operationId": "get_reference_api_evaluation_reference_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Get Reference Api Evaluation Reference Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Get Reference",
+    "tags": [
+     "evaluation"
+    ]
+   }
+  },
+  "/api/evaluation/runs": {
+   "get": {
+    "operationId": "list_runs_api_evaluation_runs_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         "title": "Response List Runs Api Evaluation Runs Get",
+         "type": "array"
+        }
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "List Runs",
+    "tags": [
+     "evaluation"
+    ]
+   }
+  },
   "/api/evaluation/runs/{run_id}": {
    "get": {
     "operationId": "get_run_api_evaluation_runs__run_id__get",

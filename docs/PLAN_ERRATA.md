@@ -76,3 +76,16 @@ Each point below is implemented as described and covered by tests in `tests/enha
 6. **Clusters are named by their first CH.** A cluster keeps its label (e.g. `CH-01`) when the operator
    designates a replacement CH (`CH-01-r1`). Grants check a member's registry cluster label against
    the claiming CH's.
+
+## E-06 · §3.7 J5 and V-E2E-05: the browser journey runs a smaller comparison
+
+**Finding.** J5 names a `net`/`demo`/5-seed comparison. With three variants, one discarded warm-up
+and five seeds each, that is 18 onboardings of `net` at `demo` parameters, several minutes of
+pure-Python work. A Playwright test that waits on it would dominate the E2E run and time out on
+slower hosts.
+
+**Clarification.** The console accepts the full J5 configuration (and it is the form's default).
+V-E2E-05 drives the same form with `paper`/`toy`/1 seed, which exercises the same job, storage,
+charts, table view and threshold display. The full matrix, including `net`/`demo`/5 seeds, is
+produced by `eval/bench/compare.py` and committed under `artifacts/eval/`. The Evaluation page shows
+that artefact when no run has been made in the console.

@@ -6,6 +6,7 @@ PY="${PYTHON:-$ROOT/.venv/bin/python}"
 WORK="$(mktemp -d)"
 export MAKA_ENV=test MAKA_DB_URL="sqlite:///$WORK/e2e.db" MAKA_BIND="127.0.0.1:${E2E_PORT:-8765}"
 export MAKA_STATIC_DIR="$ROOT/web/dist" PYTHONPATH="$ROOT/src"
+cd "$ROOT"
 for u in admin operator viewer; do
   echo "e2e-${u}-password" | "$PY" -m maka_server create-user --username "e2e-$u" --role "$u" --password-stdin
 done

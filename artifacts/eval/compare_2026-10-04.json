@@ -1,0 +1,3405 @@
+{
+ "meta": {
+  "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+  "os": "Linux 7.0.0-34-generic",
+  "python": "3.12.3",
+  "commit": "28e8fe6",
+  "date": "2026-10-04",
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "quick": false
+ },
+ "results": [
+  {
+   "variant": "original+secure",
+   "topology": "paper",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.08287486799963517,
+    "q1": 0.08277131900103996,
+    "q3": 0.08354172600047605,
+    "iqr": 0.0007704069994360907
+   },
+   "steps": 10,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 2.0,
+      "T_PA": 187.0,
+      "T_S": 3.0,
+      "T_SM": 5.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 60.888,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 35,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 79,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 2,
+       "T_HG": 1,
+       "T_PA": 73,
+       "T_S": 2,
+       "T_SM": 2,
+       "T_SM_val": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 182.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 66.0,
+      "paper_bits_sent": 640.0
+     },
+     "keystore_bytes": 32,
+     "peak_keystore_bytes": 32
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 6.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 146.0,
+      "T_S": 6.0,
+      "T_SM": 4.0,
+      "T_SM_val": 7.0
+     },
+     "rp9_constant_ms_per_device": 65.844,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 101,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 45,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_S": 3,
+       "T_SM_val": 4
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 5.0,
+      "bytes_sent": 341.0,
+      "paper_bits_sent": 3200.0,
+      "frames_received": 3.0,
+      "bytes_received": 164.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 148.0,
+      "T_S": 3.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 52.054,
+     "phases": {
+      "authentication": {
+       "T_E/D": 2,
+       "T_PA": 103,
+       "T_S": 2,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 45,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 3
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 98.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 147.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 0.00011971700041613076,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+clear",
+   "topology": "paper",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.06172120399969572,
+    "q1": 0.06141959199885605,
+    "q3": 0.0619230959982815,
+    "iqr": 0.0005035039994254475
+   },
+   "steps": 10,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_PA": 176.0,
+      "T_S": 2.0,
+      "T_SM": 5.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 44.614,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 35,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 79,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_PA": 62,
+       "T_S": 1,
+       "T_SM": 2,
+       "T_SM_val": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 182.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 24.0,
+      "paper_bits_sent": 640.0
+     },
+     "keystore_bytes": 32,
+     "peak_keystore_bytes": 32
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 4.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 146.0,
+      "T_S": 4.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 55.908,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 101,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 45,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 3
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 5.0,
+      "bytes_sent": 299.0,
+      "paper_bits_sent": 3200.0,
+      "frames_received": 3.0,
+      "bytes_received": 122.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 148.0,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 5.0
+     },
+     "rp9_constant_ms_per_device": 45.973,
+     "phases": {
+      "authentication": {
+       "T_E/D": 2,
+       "T_PA": 103,
+       "T_S": 2,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 45,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_SM_val": 2
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 98.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 105.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 0.00010226300037174951,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "enhanced",
+   "topology": "paper",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.03783728400048858,
+    "q1": 0.037664994999431656,
+    "q3": 0.038275443999737035,
+    "iqr": 0.0006104490003053797
+   },
+   "steps": 24,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 5.0,
+      "T_HKDF": 4.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 301.0,
+      "T_S": 3.0,
+      "T_SM": 7.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 93.797,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 4,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 166,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 3
+      },
+      "provisioning": {
+       "T_HG": 3,
+       "T_PA": 135,
+       "T_SM": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 5.0,
+      "bytes_received": 367.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 408.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 203,
+     "peak_keystore_bytes": 235
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 166.0,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.86,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 5,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 166,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 2
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 687.0,
+      "paper_bits_sent": 0.0,
+      "frames_received": 8.0,
+      "bytes_received": 708.0
+     },
+     "keystore_bytes": 232,
+     "peak_keystore_bytes": 232
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 162.0,
+      "T_S": 1.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.855,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 5,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 162,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 4.0,
+      "bytes_received": 320.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 300.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 232,
+     "peak_keystore_bytes": 232
+    }
+   },
+   "pairings_per_cm": 2.0,
+   "per_reading_cm_ops": {
+    "T_MAC": 1,
+    "T_S": 1
+   },
+   "reading_s": 0.00022809700021753088,
+   "data_cm_bytes": 168,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+secure",
+   "topology": "small",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.1661209450012393,
+    "q1": 0.16610382699946058,
+    "q3": 0.16644469000129902,
+    "iqr": 0.00034086300183844287
+   },
+   "steps": 22,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 2.0,
+      "T_PA": 239.0,
+      "T_S": 3.0,
+      "T_SM": 7.0,
+      "T_SM_val": 8.0
+     },
+     "rp9_constant_ms_per_device": 69.792,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 35,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 79,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 2,
+       "T_HG": 1,
+       "T_PA": 125,
+       "T_S": 2,
+       "T_SM": 4,
+       "T_SM_val": 5
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 220.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 86.0,
+      "paper_bits_sent": 1280.0
+     },
+     "keystore_bytes": 32,
+     "peak_keystore_bytes": 32
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 12.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 198.0,
+      "T_S": 12.0,
+      "T_SM": 6.0,
+      "T_SM_val": 17.0
+     },
+     "rp9_constant_ms_per_device": 115.683,
+     "phases": {
+      "authentication": {
+       "T_E/D": 7,
+       "T_PA": 153,
+       "T_S": 7,
+       "T_SM": 5,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 45,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 5,
+       "T_S": 5,
+       "T_SM_val": 8
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 673.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 380.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    },
+    "CM": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 151.333,
+      "T_S": 3.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 52.054,
+     "phases": {
+      "authentication": {
+       "T_E/D": 6,
+       "T_PA": 319,
+       "T_S": 6,
+       "T_SM": 9,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 135,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_S": 3,
+       "T_SM_val": 9
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 98.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 147.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 6.110899994382635e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+clear",
+   "topology": "small",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.12672778600062884,
+    "q1": 0.1250167580001289,
+    "q3": 0.12774425099996733,
+    "iqr": 0.0027274929998384323
+   },
+   "steps": 22,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_PA": 228.0,
+      "T_S": 2.0,
+      "T_SM": 7.0,
+      "T_SM_val": 8.0
+     },
+     "rp9_constant_ms_per_device": 53.518,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 35,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 79,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_PA": 114,
+       "T_S": 1,
+       "T_SM": 4,
+       "T_SM_val": 5
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 220.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 44.0,
+      "paper_bits_sent": 1280.0
+     },
+     "keystore_bytes": 32,
+     "peak_keystore_bytes": 32
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 8.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 198.0,
+      "T_S": 8.0,
+      "T_SM": 6.0,
+      "T_SM_val": 16.0
+     },
+     "rp9_constant_ms_per_device": 98.039,
+     "phases": {
+      "authentication": {
+       "T_E/D": 7,
+       "T_PA": 153,
+       "T_S": 7,
+       "T_SM": 5,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 45,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 7
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 547.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 338.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    },
+    "CM": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 151.333,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 5.0
+     },
+     "rp9_constant_ms_per_device": 45.973,
+     "phases": {
+      "authentication": {
+       "T_E/D": 6,
+       "T_PA": 319,
+       "T_S": 6,
+       "T_SM": 9,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 135,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_SM_val": 6
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 98.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 105.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 6.632833295346548e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "enhanced",
+   "topology": "small",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.0909224480001285,
+    "q1": 0.08997621100024844,
+    "q3": 0.09126170400122646,
+    "iqr": 0.0012854930009780219
+   },
+   "steps": 48,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 4.0,
+      "T_HG": 9.0,
+      "T_HKDF": 8.0,
+      "T_MAC": 8.0,
+      "T_P": 4.0,
+      "T_PA": 539.0,
+      "T_S": 5.0,
+      "T_SM": 13.0,
+      "T_SM_val": 4.0
+     },
+     "rp9_constant_ms_per_device": 172.944,
+     "phases": {
+      "ake": {
+       "T_H": 4,
+       "T_HG": 4,
+       "T_HKDF": 8,
+       "T_MAC": 8,
+       "T_P": 4,
+       "T_PA": 314,
+       "T_SM": 8,
+       "T_SM_val": 4
+      },
+      "membership": {
+       "T_S": 5
+      },
+      "provisioning": {
+       "T_HG": 5,
+       "T_PA": 225,
+       "T_SM": 5
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 9.0,
+      "bytes_received": 707.0,
+      "frames_sent": 8.0,
+      "bytes_sent": 856.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 395,
+     "peak_keystore_bytes": 491
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 4.0,
+      "T_HG": 4.0,
+      "T_HKDF": 11.0,
+      "T_MAC": 8.0,
+      "T_P": 4.0,
+      "T_PA": 324.0,
+      "T_S": 2.0,
+      "T_SM": 8.0,
+      "T_SM_val": 4.0
+     },
+     "rp9_constant_ms_per_device": 99.713,
+     "phases": {
+      "ake": {
+       "T_H": 4,
+       "T_HG": 4,
+       "T_HKDF": 11,
+       "T_MAC": 8,
+       "T_P": 4,
+       "T_PA": 324,
+       "T_SM": 8,
+       "T_SM_val": 4
+      },
+      "membership": {
+       "T_S": 2
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 21.0,
+      "bytes_sent": 1667.0,
+      "paper_bits_sent": 0.0,
+      "frames_received": 20.0,
+      "bytes_received": 1756.0
+     },
+     "keystore_bytes": 488,
+     "peak_keystore_bytes": 488
+    },
+    "CM": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 156.0,
+      "T_S": 1.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.855,
+     "phases": {
+      "ake": {
+       "T_H": 6,
+       "T_HG": 6,
+       "T_HKDF": 15,
+       "T_MAC": 12,
+       "T_P": 6,
+       "T_PA": 468,
+       "T_SM": 12,
+       "T_SM_val": 6
+      },
+      "membership": {
+       "T_S": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 4.0,
+      "bytes_received": 320.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 300.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 232,
+     "peak_keystore_bytes": 232
+    }
+   },
+   "pairings_per_cm": 2.0,
+   "per_reading_cm_ops": {
+    "T_MAC": 1,
+    "T_S": 1
+   },
+   "reading_s": 0.00014247166654968169,
+   "data_cm_bytes": 168,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+secure",
+   "topology": "net",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.5038262049984041,
+    "q1": 0.5000105010003608,
+    "q3": 0.5040066719993774,
+    "iqr": 0.003996170999016613
+   },
+   "steps": 90,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 9.0,
+      "T_HG": 4.0,
+      "T_PA": 553.0,
+      "T_S": 9.0,
+      "T_SM": 17.0,
+      "T_SM_val": 24.0
+     },
+     "rp9_constant_ms_per_device": 175.633,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 102,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 9
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 79,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 6,
+       "T_HG": 3,
+       "T_PA": 372,
+       "T_S": 6,
+       "T_SM": 12,
+       "T_SM_val": 15
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 6.0,
+      "bytes_received": 660.0,
+      "frames_sent": 3.0,
+      "bytes_sent": 258.0,
+      "paper_bits_sent": 3840.0
+     },
+     "keystore_bytes": 32,
+     "peak_keystore_bytes": 32
+    },
+    "CH": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 12.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 194.667,
+      "T_S": 12.0,
+      "T_SM": 6.0,
+      "T_SM_val": 17.0
+     },
+     "rp9_constant_ms_per_device": 115.683,
+     "phases": {
+      "authentication": {
+       "T_E/D": 21,
+       "T_PA": 449,
+       "T_S": 21,
+       "T_SM": 15,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 135,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_E/D": 15,
+       "T_S": 15,
+       "T_SM_val": 24
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 673.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 380.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    },
+    "CM": {
+     "devices": 9,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 146.556,
+      "T_S": 3.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 52.054,
+     "phases": {
+      "authentication": {
+       "T_E/D": 18,
+       "T_PA": 914,
+       "T_S": 18,
+       "T_SM": 27,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 9,
+       "T_PA": 405,
+       "T_SM": 9
+      },
+      "registration": {
+       "T_E/D": 9,
+       "T_S": 9,
+       "T_SM_val": 27
+      },
+      "session_key": {
+       "T_P": 9
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 98.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 147.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 5.549388899655444e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+clear",
+   "topology": "net",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.3764955770002416,
+    "q1": 0.37585862500054645,
+    "q3": 0.37854771800084563,
+    "iqr": 0.002689093000299181
+   },
+   "steps": 90,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 6.0,
+      "T_HG": 1.0,
+      "T_PA": 520.0,
+      "T_S": 6.0,
+      "T_SM": 17.0,
+      "T_SM_val": 24.0
+     },
+     "rp9_constant_ms_per_device": 126.813,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 102,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 9
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 79,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_PA": 339,
+       "T_S": 3,
+       "T_SM": 12,
+       "T_SM_val": 15
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 6.0,
+      "bytes_received": 660.0,
+      "frames_sent": 3.0,
+      "bytes_sent": 132.0,
+      "paper_bits_sent": 3840.0
+     },
+     "keystore_bytes": 32,
+     "peak_keystore_bytes": 32
+    },
+    "CH": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 8.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 194.667,
+      "T_S": 8.0,
+      "T_SM": 6.0,
+      "T_SM_val": 16.0
+     },
+     "rp9_constant_ms_per_device": 98.039,
+     "phases": {
+      "authentication": {
+       "T_E/D": 21,
+       "T_PA": 449,
+       "T_S": 21,
+       "T_SM": 15,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 135,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_S": 3,
+       "T_SM_val": 21
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 547.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 338.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    },
+    "CM": {
+     "devices": 9,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 146.556,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 5.0
+     },
+     "rp9_constant_ms_per_device": 45.973,
+     "phases": {
+      "authentication": {
+       "T_E/D": 18,
+       "T_PA": 914,
+       "T_S": 18,
+       "T_SM": 27,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 9,
+       "T_PA": 405,
+       "T_SM": 9
+      },
+      "registration": {
+       "T_SM_val": 18
+      },
+      "session_key": {
+       "T_P": 9
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 98.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 105.0
+     },
+     "keystore_bytes": 64,
+     "peak_keystore_bytes": 64
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 5.449555545864213e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "enhanced",
+   "topology": "net",
+   "params": "toy",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 0.2698450900006719,
+    "q1": 0.26744974400025967,
+    "q3": 0.27034056399861583,
+    "iqr": 0.0028908199983561644
+   },
+   "steps": 136,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 12.0,
+      "T_HG": 25.0,
+      "T_HKDF": 24.0,
+      "T_MAC": 24.0,
+      "T_P": 12.0,
+      "T_PA": 1543.0,
+      "T_S": 15.0,
+      "T_SM": 37.0,
+      "T_SM_val": 12.0
+     },
+     "rp9_constant_ms_per_device": 489.543,
+     "phases": {
+      "ake": {
+       "T_H": 12,
+       "T_HG": 12,
+       "T_HKDF": 24,
+       "T_MAC": 24,
+       "T_P": 12,
+       "T_PA": 958,
+       "T_SM": 24,
+       "T_SM_val": 12
+      },
+      "membership": {
+       "T_S": 15
+      },
+      "provisioning": {
+       "T_HG": 13,
+       "T_PA": 585,
+       "T_SM": 13
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 27.0,
+      "bytes_received": 2121.0,
+      "frames_sent": 24.0,
+      "bytes_sent": 2568.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 1163,
+     "peak_keystore_bytes": 1451
+    },
+    "CH": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_H": 4.0,
+      "T_HG": 4.0,
+      "T_HKDF": 11.0,
+      "T_MAC": 8.0,
+      "T_P": 4.0,
+      "T_PA": 318.667,
+      "T_S": 2.0,
+      "T_SM": 8.0,
+      "T_SM_val": 4.0
+     },
+     "rp9_constant_ms_per_device": 99.713,
+     "phases": {
+      "ake": {
+       "T_H": 12,
+       "T_HG": 12,
+       "T_HKDF": 33,
+       "T_MAC": 24,
+       "T_P": 12,
+       "T_PA": 956,
+       "T_SM": 24,
+       "T_SM_val": 12
+      },
+      "membership": {
+       "T_S": 6
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 21.0,
+      "bytes_sent": 1667.0,
+      "paper_bits_sent": 0.0,
+      "frames_received": 20.0,
+      "bytes_received": 1756.0
+     },
+     "keystore_bytes": 488,
+     "peak_keystore_bytes": 488
+    },
+    "CM": {
+     "devices": 9,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 154.667,
+      "T_S": 1.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.855,
+     "phases": {
+      "ake": {
+       "T_H": 18,
+       "T_HG": 18,
+       "T_HKDF": 45,
+       "T_MAC": 36,
+       "T_P": 18,
+       "T_PA": 1392,
+       "T_SM": 36,
+       "T_SM_val": 18
+      },
+      "membership": {
+       "T_S": 9
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 4.0,
+      "bytes_received": 320.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 300.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 232,
+     "peak_keystore_bytes": 232
+    }
+   },
+   "pairings_per_cm": 2.0,
+   "per_reading_cm_ops": {
+    "T_MAC": 1,
+    "T_S": 1
+   },
+   "reading_s": 0.0001168191112002306,
+   "data_cm_bytes": 168,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+secure",
+   "topology": "paper",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 2.817880435000916,
+    "q1": 2.8145178430004307,
+    "q3": 2.8328639999999723,
+    "iqr": 0.018346156999541563
+   },
+   "steps": 10,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 2.0,
+      "T_PA": 1238.0,
+      "T_S": 3.0,
+      "T_SM": 5.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 60.888,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 158,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 761,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 2,
+       "T_HG": 1,
+       "T_PA": 319,
+       "T_S": 2,
+       "T_SM": 2,
+       "T_SM_val": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 462.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 234.0,
+      "paper_bits_sent": 640.0
+     },
+     "keystore_bytes": 256,
+     "peak_keystore_bytes": 256
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 6.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1302.0,
+      "T_S": 6.0,
+      "T_SM": 4.0,
+      "T_SM_val": 7.0
+     },
+     "rp9_constant_ms_per_device": 65.844,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 918,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 384,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_S": 3,
+       "T_SM_val": 4
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 5.0,
+      "bytes_sent": 957.0,
+      "paper_bits_sent": 3200.0,
+      "frames_received": 3.0,
+      "bytes_received": 556.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1294.0,
+      "T_S": 3.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 52.054,
+     "phases": {
+      "authentication": {
+       "T_E/D": 2,
+       "T_PA": 910,
+       "T_S": 2,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 384,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 3
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 322.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 427.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 0.00013132400090398733,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+clear",
+   "topology": "paper",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 2.1597643080003763,
+    "q1": 2.158244663000005,
+    "q3": 2.1679015909994632,
+    "iqr": 0.009656927999458276
+   },
+   "steps": 10,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_PA": 1231.0,
+      "T_S": 2.0,
+      "T_SM": 5.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 44.614,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 158,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 761,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_PA": 312,
+       "T_S": 1,
+       "T_SM": 2,
+       "T_SM_val": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 462.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 136.0,
+      "paper_bits_sent": 640.0
+     },
+     "keystore_bytes": 256,
+     "peak_keystore_bytes": 256
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 4.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1302.0,
+      "T_S": 4.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 55.908,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 918,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 384,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 3
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 5.0,
+      "bytes_sent": 859.0,
+      "paper_bits_sent": 3200.0,
+      "frames_received": 3.0,
+      "bytes_received": 458.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1294.0,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 5.0
+     },
+     "rp9_constant_ms_per_device": 45.973,
+     "phases": {
+      "authentication": {
+       "T_E/D": 2,
+       "T_PA": 910,
+       "T_S": 2,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 384,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_SM_val": 2
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 322.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 329.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 0.00013338499957171734,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "enhanced",
+   "topology": "paper",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 1.3131289230004768,
+    "q1": 1.3041468899991742,
+    "q3": 1.3242861269991408,
+    "iqr": 0.02013923699996667
+   },
+   "steps": 24,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 5.0,
+      "T_HKDF": 4.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 2620.0,
+      "T_S": 3.0,
+      "T_SM": 7.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 93.797,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 4,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 1468,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 3
+      },
+      "provisioning": {
+       "T_HG": 3,
+       "T_PA": 1152,
+       "T_SM": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 5.0,
+      "bytes_received": 479.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 520.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 320
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 1534.0,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.86,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 5,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 1534,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 2
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 911.0,
+      "paper_bits_sent": 0.0,
+      "frames_received": 8.0,
+      "bytes_received": 932.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 1510.0,
+      "T_S": 1.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.855,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 5,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 1510,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 4.0,
+      "bytes_received": 432.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 412.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 2.0,
+   "per_reading_cm_ops": {
+    "T_MAC": 1,
+    "T_S": 1
+   },
+   "reading_s": 0.00023469900042982772,
+   "data_cm_bytes": 168,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+secure",
+   "topology": "small",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 5.880021394999858,
+    "q1": 5.830759698001202,
+    "q3": 5.893164443999922,
+    "iqr": 0.06240474599871959
+   },
+   "steps": 22,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 2.0,
+      "T_PA": 1547.0,
+      "T_S": 3.0,
+      "T_SM": 7.0,
+      "T_SM_val": 8.0
+     },
+     "rp9_constant_ms_per_device": 69.792,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 158,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 761,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 2,
+       "T_HG": 1,
+       "T_PA": 628,
+       "T_S": 2,
+       "T_SM": 4,
+       "T_SM_val": 5
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 612.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 366.0,
+      "paper_bits_sent": 1280.0
+     },
+     "keystore_bytes": 256,
+     "peak_keystore_bytes": 256
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 12.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1611.0,
+      "T_S": 12.0,
+      "T_SM": 6.0,
+      "T_SM_val": 17.0
+     },
+     "rp9_constant_ms_per_device": 115.683,
+     "phases": {
+      "authentication": {
+       "T_E/D": 7,
+       "T_PA": 1227,
+       "T_S": 7,
+       "T_SM": 5,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 384,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 5,
+       "T_S": 5,
+       "T_SM_val": 8
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 1961.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 1332.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    },
+    "CM": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1278.0,
+      "T_S": 3.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 52.054,
+     "phases": {
+      "authentication": {
+       "T_E/D": 6,
+       "T_PA": 2682,
+       "T_S": 6,
+       "T_SM": 9,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 1152,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_S": 3,
+       "T_SM_val": 9
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 322.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 427.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 7.70056667533936e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+clear",
+   "topology": "small",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 4.539497154999481,
+    "q1": 4.517872690999866,
+    "q3": 4.558043330000146,
+    "iqr": 0.04017063900028006
+   },
+   "steps": 22,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_PA": 1540.0,
+      "T_S": 2.0,
+      "T_SM": 7.0,
+      "T_SM_val": 8.0
+     },
+     "rp9_constant_ms_per_device": 53.518,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 158,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 761,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_PA": 621,
+       "T_S": 1,
+       "T_SM": 4,
+       "T_SM_val": 5
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 612.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 268.0,
+      "paper_bits_sent": 1280.0
+     },
+     "keystore_bytes": 256,
+     "peak_keystore_bytes": 256
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 8.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1611.0,
+      "T_S": 8.0,
+      "T_SM": 6.0,
+      "T_SM_val": 16.0
+     },
+     "rp9_constant_ms_per_device": 98.039,
+     "phases": {
+      "authentication": {
+       "T_E/D": 7,
+       "T_PA": 1227,
+       "T_S": 7,
+       "T_SM": 5,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 384,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 7
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 1667.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 1234.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    },
+    "CM": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1278.0,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 5.0
+     },
+     "rp9_constant_ms_per_device": 45.973,
+     "phases": {
+      "authentication": {
+       "T_E/D": 6,
+       "T_PA": 2682,
+       "T_S": 6,
+       "T_SM": 9,
+       "T_SM_val": 9
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 1152,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_SM_val": 6
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 322.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 329.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 7.56906665628776e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "enhanced",
+   "topology": "small",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 3.1255773270004283,
+    "q1": 3.114872642001501,
+    "q3": 3.1468793349995394,
+    "iqr": 0.03200669299803849
+   },
+   "steps": 48,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 4.0,
+      "T_HG": 9.0,
+      "T_HKDF": 8.0,
+      "T_MAC": 8.0,
+      "T_P": 4.0,
+      "T_PA": 4922.0,
+      "T_S": 5.0,
+      "T_SM": 13.0,
+      "T_SM_val": 4.0
+     },
+     "rp9_constant_ms_per_device": 172.944,
+     "phases": {
+      "ake": {
+       "T_H": 4,
+       "T_HG": 4,
+       "T_HKDF": 8,
+       "T_MAC": 8,
+       "T_P": 4,
+       "T_PA": 3002,
+       "T_SM": 8,
+       "T_SM_val": 4
+      },
+      "membership": {
+       "T_S": 5
+      },
+      "provisioning": {
+       "T_HG": 5,
+       "T_PA": 1920,
+       "T_SM": 5
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 9.0,
+      "bytes_received": 931.0,
+      "frames_sent": 8.0,
+      "bytes_sent": 1080.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 480,
+     "peak_keystore_bytes": 576
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 4.0,
+      "T_HG": 4.0,
+      "T_HKDF": 11.0,
+      "T_MAC": 8.0,
+      "T_P": 4.0,
+      "T_PA": 3042.0,
+      "T_S": 2.0,
+      "T_SM": 8.0,
+      "T_SM_val": 4.0
+     },
+     "rp9_constant_ms_per_device": 99.713,
+     "phases": {
+      "ake": {
+       "T_H": 4,
+       "T_HG": 4,
+       "T_HKDF": 11,
+       "T_MAC": 8,
+       "T_P": 4,
+       "T_PA": 3042,
+       "T_SM": 8,
+       "T_SM_val": 4
+      },
+      "membership": {
+       "T_S": 2
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 21.0,
+      "bytes_sent": 2227.0,
+      "paper_bits_sent": 0.0,
+      "frames_received": 20.0,
+      "bytes_received": 2316.0
+     },
+     "keystore_bytes": 544,
+     "peak_keystore_bytes": 544
+    },
+    "CM": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 1518.0,
+      "T_S": 1.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.855,
+     "phases": {
+      "ake": {
+       "T_H": 6,
+       "T_HG": 6,
+       "T_HKDF": 15,
+       "T_MAC": 12,
+       "T_P": 6,
+       "T_PA": 4554,
+       "T_SM": 12,
+       "T_SM_val": 6
+      },
+      "membership": {
+       "T_S": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 4.0,
+      "bytes_received": 432.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 412.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 2.0,
+   "per_reading_cm_ops": {
+    "T_MAC": 1,
+    "T_S": 1
+   },
+   "reading_s": 0.00013977699988269401,
+   "data_cm_bytes": 168,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+secure",
+   "topology": "net",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 17.549357980999048,
+    "q1": 17.51208132299871,
+    "q3": 17.554755097999077,
+    "iqr": 0.04267377500036673
+   },
+   "steps": 90,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 9.0,
+      "T_HG": 4.0,
+      "T_PA": 3125.0,
+      "T_S": 9.0,
+      "T_SM": 17.0,
+      "T_SM_val": 24.0
+     },
+     "rp9_constant_ms_per_device": 175.633,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 477,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 9
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 761,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 6,
+       "T_HG": 3,
+       "T_PA": 1887,
+       "T_S": 6,
+       "T_SM": 12,
+       "T_SM_val": 15
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 6.0,
+      "bytes_received": 1836.0,
+      "frames_sent": 3.0,
+      "bytes_sent": 1098.0,
+      "paper_bits_sent": 3840.0
+     },
+     "keystore_bytes": 256,
+     "peak_keystore_bytes": 256
+    },
+    "CH": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 12.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1597.667,
+      "T_S": 12.0,
+      "T_SM": 6.0,
+      "T_SM_val": 17.0
+     },
+     "rp9_constant_ms_per_device": 115.683,
+     "phases": {
+      "authentication": {
+       "T_E/D": 21,
+       "T_PA": 3641,
+       "T_S": 21,
+       "T_SM": 15,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 1152,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_E/D": 15,
+       "T_S": 15,
+       "T_SM_val": 24
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 1961.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 1332.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    },
+    "CM": {
+     "devices": 9,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1288.111,
+      "T_S": 3.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 52.054,
+     "phases": {
+      "authentication": {
+       "T_E/D": 18,
+       "T_PA": 8137,
+       "T_S": 18,
+       "T_SM": 27,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 9,
+       "T_PA": 3456,
+       "T_SM": 9
+      },
+      "registration": {
+       "T_E/D": 9,
+       "T_S": 9,
+       "T_SM_val": 27
+      },
+      "session_key": {
+       "T_P": 9
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 322.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 427.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 6.114566672800315e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+clear",
+   "topology": "net",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 13.410094113000014,
+    "q1": 13.364047117000155,
+    "q3": 13.493128513999181,
+    "iqr": 0.12908139699902677
+   },
+   "steps": 90,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 6.0,
+      "T_HG": 1.0,
+      "T_PA": 3104.0,
+      "T_S": 6.0,
+      "T_SM": 17.0,
+      "T_SM_val": 24.0
+     },
+     "rp9_constant_ms_per_device": 126.813,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 477,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 9
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 761,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_PA": 1866,
+       "T_S": 3,
+       "T_SM": 12,
+       "T_SM_val": 15
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 6.0,
+      "bytes_received": 1836.0,
+      "frames_sent": 3.0,
+      "bytes_sent": 804.0,
+      "paper_bits_sent": 3840.0
+     },
+     "keystore_bytes": 256,
+     "peak_keystore_bytes": 256
+    },
+    "CH": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_E/D": 8.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1597.667,
+      "T_S": 8.0,
+      "T_SM": 6.0,
+      "T_SM_val": 16.0
+     },
+     "rp9_constant_ms_per_device": 98.039,
+     "phases": {
+      "authentication": {
+       "T_E/D": 21,
+       "T_PA": 3641,
+       "T_S": 21,
+       "T_SM": 15,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 3,
+       "T_PA": 1152,
+       "T_SM": 3
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_S": 3,
+       "T_SM_val": 21
+      },
+      "session_key": {
+       "T_P": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 1667.0,
+      "paper_bits_sent": 6720.0,
+      "frames_received": 7.0,
+      "bytes_received": 1234.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    },
+    "CM": {
+     "devices": 9,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 1288.111,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 5.0
+     },
+     "rp9_constant_ms_per_device": 45.973,
+     "phases": {
+      "authentication": {
+       "T_E/D": 18,
+       "T_PA": 8137,
+       "T_S": 18,
+       "T_SM": 27,
+       "T_SM_val": 27
+      },
+      "keygen": {
+       "T_HG": 9,
+       "T_PA": 3456,
+       "T_SM": 9
+      },
+      "registration": {
+       "T_SM_val": 18
+      },
+      "session_key": {
+       "T_P": 9
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 322.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 329.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 5.800388882764512e-05,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "enhanced",
+   "topology": "net",
+   "params": "demo",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 9.25103219599987,
+    "q1": 9.229728144999171,
+    "q3": 9.327891840999655,
+    "iqr": 0.09816369600048347
+   },
+   "steps": 136,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 12.0,
+      "T_HG": 25.0,
+      "T_HKDF": 24.0,
+      "T_MAC": 24.0,
+      "T_P": 12.0,
+      "T_PA": 14104.0,
+      "T_S": 15.0,
+      "T_SM": 37.0,
+      "T_SM_val": 12.0
+     },
+     "rp9_constant_ms_per_device": 489.543,
+     "phases": {
+      "ake": {
+       "T_H": 12,
+       "T_HG": 12,
+       "T_HKDF": 24,
+       "T_MAC": 24,
+       "T_P": 12,
+       "T_PA": 9112,
+       "T_SM": 24,
+       "T_SM_val": 12
+      },
+      "membership": {
+       "T_S": 15
+      },
+      "provisioning": {
+       "T_HG": 13,
+       "T_PA": 4992,
+       "T_SM": 13
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 27.0,
+      "bytes_received": 2793.0,
+      "frames_sent": 24.0,
+      "bytes_sent": 3240.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 1248,
+     "peak_keystore_bytes": 1536
+    },
+    "CH": {
+     "devices": 3,
+     "ops_per_device": {
+      "T_H": 4.0,
+      "T_HG": 4.0,
+      "T_HKDF": 11.0,
+      "T_MAC": 8.0,
+      "T_P": 4.0,
+      "T_PA": 3002.0,
+      "T_S": 2.0,
+      "T_SM": 8.0,
+      "T_SM_val": 4.0
+     },
+     "rp9_constant_ms_per_device": 99.713,
+     "phases": {
+      "ake": {
+       "T_H": 12,
+       "T_HG": 12,
+       "T_HKDF": 33,
+       "T_MAC": 24,
+       "T_P": 12,
+       "T_PA": 9006,
+       "T_SM": 24,
+       "T_SM_val": 12
+      },
+      "membership": {
+       "T_S": 6
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 21.0,
+      "bytes_sent": 2227.0,
+      "paper_bits_sent": 0.0,
+      "frames_received": 20.0,
+      "bytes_received": 2316.0
+     },
+     "keystore_bytes": 544,
+     "peak_keystore_bytes": 544
+    },
+    "CM": {
+     "devices": 9,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 1512.889,
+      "T_S": 1.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.855,
+     "phases": {
+      "ake": {
+       "T_H": 18,
+       "T_HG": 18,
+       "T_HKDF": 45,
+       "T_MAC": 36,
+       "T_P": 18,
+       "T_PA": 13616,
+       "T_SM": 36,
+       "T_SM_val": 18
+      },
+      "membership": {
+       "T_S": 9
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 4.0,
+      "bytes_received": 432.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 412.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 288,
+     "peak_keystore_bytes": 288
+    }
+   },
+   "pairings_per_cm": 2.0,
+   "per_reading_cm_ops": {
+    "T_MAC": 1,
+    "T_S": 1
+   },
+   "reading_s": 0.00012372833346792808,
+   "data_cm_bytes": 168,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+secure",
+   "topology": "paper",
+   "params": "secure",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 11.113223498001389,
+    "q1": 10.984517329001392,
+    "q3": 11.127910350000093,
+    "iqr": 0.1433930209987011
+   },
+   "steps": 10,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 2.0,
+      "T_PA": 2028.0,
+      "T_S": 3.0,
+      "T_SM": 5.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 60.888,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 158,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 1542,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 2,
+       "T_HG": 1,
+       "T_PA": 328,
+       "T_S": 2,
+       "T_SM": 2,
+       "T_SM_val": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 782.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 426.0,
+      "paper_bits_sent": 640.0
+     },
+     "keystore_bytes": 512,
+     "peak_keystore_bytes": 512
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 6.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 2435.0,
+      "T_S": 6.0,
+      "T_SM": 4.0,
+      "T_SM_val": 7.0
+     },
+     "rp9_constant_ms_per_device": 65.844,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 1656,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 779,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 3,
+       "T_S": 3,
+       "T_SM_val": 4
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 5.0,
+      "bytes_sent": 1661.0,
+      "paper_bits_sent": 3200.0,
+      "frames_received": 3.0,
+      "bytes_received": 1004.0
+     },
+     "keystore_bytes": 544,
+     "peak_keystore_bytes": 575
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 3.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 2485.0,
+      "T_S": 3.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 52.054,
+     "phases": {
+      "authentication": {
+       "T_E/D": 2,
+       "T_PA": 1706,
+       "T_S": 2,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 779,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 3
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 578.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 747.0
+     },
+     "keystore_bytes": 544,
+     "peak_keystore_bytes": 544
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 0.00014027599900146015,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "original+clear",
+   "topology": "paper",
+   "params": "secure",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 8.55287678699824,
+    "q1": 8.488801194000189,
+    "q3": 8.557443390000117,
+    "iqr": 0.06864219599992794
+   },
+   "steps": 10,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_PA": 2012.0,
+      "T_S": 2.0,
+      "T_SM": 5.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 44.614,
+     "phases": {
+      "authentication": {
+       "T_E/D": 1,
+       "T_PA": 158,
+       "T_S": 1,
+       "T_SM": 1,
+       "T_SM_val": 3
+      },
+      "init": {
+       "T_HG": 1,
+       "T_PA": 1542,
+       "T_SM": 2
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_PA": 312,
+       "T_S": 1,
+       "T_SM": 2,
+       "T_SM_val": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 2.0,
+      "bytes_received": 782.0,
+      "frames_sent": 1.0,
+      "bytes_sent": 264.0,
+      "paper_bits_sent": 640.0
+     },
+     "keystore_bytes": 512,
+     "peak_keystore_bytes": 512
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 4.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 2435.0,
+      "T_S": 4.0,
+      "T_SM": 4.0,
+      "T_SM_val": 6.0
+     },
+     "rp9_constant_ms_per_device": 55.908,
+     "phases": {
+      "authentication": {
+       "T_E/D": 3,
+       "T_PA": 1656,
+       "T_S": 3,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 779,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_E/D": 1,
+       "T_S": 1,
+       "T_SM_val": 3
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 5.0,
+      "bytes_sent": 1499.0,
+      "paper_bits_sent": 3200.0,
+      "frames_received": 3.0,
+      "bytes_received": 842.0
+     },
+     "keystore_bytes": 544,
+     "peak_keystore_bytes": 575
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_E/D": 2.0,
+      "T_HG": 1.0,
+      "T_P": 1.0,
+      "T_PA": 2485.0,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 5.0
+     },
+     "rp9_constant_ms_per_device": 45.973,
+     "phases": {
+      "authentication": {
+       "T_E/D": 2,
+       "T_PA": 1706,
+       "T_S": 2,
+       "T_SM": 3,
+       "T_SM_val": 3
+      },
+      "keygen": {
+       "T_HG": 1,
+       "T_PA": 779,
+       "T_SM": 1
+      },
+      "registration": {
+       "T_SM_val": 2
+      },
+      "session_key": {
+       "T_P": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 2.0,
+      "bytes_sent": 578.0,
+      "paper_bits_sent": 1120.0,
+      "frames_received": 2.0,
+      "bytes_received": 585.0
+     },
+     "keystore_bytes": 544,
+     "peak_keystore_bytes": 544
+    }
+   },
+   "pairings_per_cm": 1.0,
+   "per_reading_cm_ops": {
+    "T_S": 1
+   },
+   "reading_s": 0.00014566200115950778,
+   "data_cm_bytes": 94,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  },
+  {
+   "variant": "enhanced",
+   "topology": "paper",
+   "params": "secure",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "complete": true,
+   "onboard_s": {
+    "median": 5.155112222999378,
+    "q1": 5.118875117999778,
+    "q3": 5.274174620000849,
+    "iqr": 0.15529950200107123
+   },
+   "steps": 24,
+   "per_role": {
+    "BS": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 5.0,
+      "T_HKDF": 4.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 5381.0,
+      "T_S": 3.0,
+      "T_SM": 7.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 93.797,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 4,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 3044,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 3
+      },
+      "provisioning": {
+       "T_HG": 3,
+       "T_PA": 2337,
+       "T_SM": 3
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 5.0,
+      "bytes_received": 607.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 648.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 383,
+     "peak_keystore_bytes": 415
+    },
+    "CH": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 3062.0,
+      "T_S": 2.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.86,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 5,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 3062,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 2
+      }
+     },
+     "traffic_per_device": {
+      "frames_sent": 9.0,
+      "bytes_sent": 1167.0,
+      "paper_bits_sent": 0.0,
+      "frames_received": 8.0,
+      "bytes_received": 1188.0
+     },
+     "keystore_bytes": 352,
+     "peak_keystore_bytes": 352
+    },
+    "CM": {
+     "devices": 1,
+     "ops_per_device": {
+      "T_H": 2.0,
+      "T_HG": 2.0,
+      "T_HKDF": 5.0,
+      "T_MAC": 4.0,
+      "T_P": 2.0,
+      "T_PA": 3028.0,
+      "T_S": 1.0,
+      "T_SM": 4.0,
+      "T_SM_val": 2.0
+     },
+     "rp9_constant_ms_per_device": 49.855,
+     "phases": {
+      "ake": {
+       "T_H": 2,
+       "T_HG": 2,
+       "T_HKDF": 5,
+       "T_MAC": 4,
+       "T_P": 2,
+       "T_PA": 3028,
+       "T_SM": 4,
+       "T_SM_val": 2
+      },
+      "membership": {
+       "T_S": 1
+      }
+     },
+     "traffic_per_device": {
+      "frames_received": 4.0,
+      "bytes_received": 560.0,
+      "frames_sent": 4.0,
+      "bytes_sent": 540.0,
+      "paper_bits_sent": 0.0
+     },
+     "keystore_bytes": 352,
+     "peak_keystore_bytes": 352
+    }
+   },
+   "pairings_per_cm": 2.0,
+   "per_reading_cm_ops": {
+    "T_MAC": 1,
+    "T_S": 1
+   },
+   "reading_s": 0.0002716349990805611,
+   "data_cm_bytes": 168,
+   "reading_payload_bytes": 52,
+   "deterministic_ops": true
+  }
+ ],
+ "thresholds": [
+  {
+   "metric": "NFR-PERF-01 enhanced onboarding net/demo (s)",
+   "value": 9.25,
+   "threshold": "<= 26.2",
+   "pass": true
+  },
+  {
+   "metric": "pairings per CM during onboarding",
+   "value": 2.0,
+   "threshold": "<= 2",
+   "pass": true
+  },
+  {
+   "metric": "per-reading CM public-key operations",
+   "value": 0,
+   "threshold": "0",
+   "pass": true
+  },
+  {
+   "metric": "per-reading CM AEAD + MAC operations",
+   "value": 2,
+   "threshold": "<= 2",
+   "pass": true
+  },
+  {
+   "metric": "bytes per reading on the CM->CH hop, minus payload",
+   "value": 116,
+   "threshold": "<= 120",
+   "pass": true
+  }
+ ],
+ "lab": [
+  {
+   "id": "L1",
+   "title": "Replay a captured authentication message",
+   "original": "ATTACK BLOCKED",
+   "enhanced": "ATTACK BLOCKED"
+  },
+  {
+   "id": "L2",
+   "title": "Tamper with one byte of an authentication message in transit",
+   "original": "ATTACK BLOCKED",
+   "enhanced": "ATTACK BLOCKED"
+  },
+  {
+   "id": "L3",
+   "title": "Insider CM impersonates its CH to another CM",
+   "original": "ATTACK SUCCEEDED",
+   "enhanced": "ATTACK BLOCKED"
+  },
+  {
+   "id": "L4",
+   "title": "Fake base station answers a CH",
+   "original": "ATTACK SUCCEEDED",
+   "enhanced": "ATTACK BLOCKED"
+  },
+  {
+   "id": "L5",
+   "title": "Device capture: the adversary obtains one CM's keystore",
+   "original": "ATTACK SUCCEEDED",
+   "enhanced": "ATTACK BLOCKED"
+  },
+  {
+   "id": "L6",
+   "title": "Malicious CH registers a fake member",
+   "original": "ATTACK SUCCEEDED",
+   "enhanced": "ATTACK BLOCKED"
+  },
+  {
+   "id": "L7",
+   "title": "Flood a CH with handshake/auth messages from unknown IDs",
+   "original": "ATTACK SUCCEEDED",
+   "enhanced": "ATTACK BLOCKED"
+  },
+  {
+   "id": "L8",
+   "title": "Revoked device attempts to rejoin",
+   "original": "ATTACK SUCCEEDED",
+   "enhanced": "ATTACK BLOCKED"
+  }
+ ]
+}

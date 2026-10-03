@@ -3,7 +3,8 @@
 Five-way classification of every place this implementation had to make a decision RP9 does not
 make for it, per `PLAN.md` §0 rule 3 and §5. Each entry: exact passage at issue, class, resolution,
 and a runnable demonstration under `tests/register/`. Finalised at P13.6 with 32 entries; extended
-by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries (5 ER, 9 AM, 17 IA, 8 OB, 1 SD).
+by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries, and by M7 to 42 (5 ER, 9 AM, 17 IA, 10 OB, 1 SD).
+Corrections to IMPLEMENTATION_PLAN.md itself are in `docs/PLAN_ERRATA.md`, not here.
 
 ## ER — genuine errata (5)
 
@@ -25,7 +26,7 @@ by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries (5 ER, 9 AM, 17 IA, 8 OB, 1 SD
 - [x] AM-08 — ICMDS coefficients delegated to [26] (resolved by SD-01)
 - [x] AM-09 — `x_i` unresolved G_2 -> scalar type (`src/icmds/session_key.py::encryption_setup`; IA-11)
 
-## IA — implementation assumptions (11)
+## IA — implementation assumptions (17)
 
 - [x] IA-01 — language/dependency policy (`pyproject.toml`)
 - [x] IA-02 — pairing instantiation, scalar domain Z_r (`src/maka/curve.py`, `src/maka/pairing.py`, `src/maka/params.py`)
@@ -45,7 +46,7 @@ by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries (5 ER, 9 AM, 17 IA, 8 OB, 1 SD
 - [x] IA-17 — **MAKA-E v1** (enhanced mode, the default on product networks) replaces RP9 §5.1–§5.5 apart from the key material `Pr_i = k·H(ID_i)`: provisioning without `k` on devices (C1), pairwise PSKs `HKDF(ê(Pr_A, H(ID_B)))` (C2), a PSK-authenticated ephemeral-DH key exchange modelled on TLS 1.3 `psk_dhe_ke` (C3), and BS-authorised membership, designation, revocation and authenticated batching (C4). Specified in IMPLEMENTATION_PLAN.md §4.6 with the clarifications in `docs/PLAN_ERRATA.md` E-05. RP9 as published remains available as original mode on lab networks (`src/maka/enhanced/`; `tests/enhanced/`)
 - [x] IA-16 — DATA_CM: AES-256-GCM with associated data `LP(ID_CM, ID_BS, seq)` and nonce `0^32 ‖ seq`, `seq` a per-sender counter (`src/maka/protocol/data_transmission.py`, `src/maka/aead.py`)
 
-## OB — observations (6)
+## OB — observations (10)
 
 - [x] OB-01 — master key k held until destruction (`src/maka/entities/node.py`, `base_station.py`)
 - [x] OB-02 — no forward secrecy in SK_{i-BS} (`src/maka/protocol/p5_session_key_agreement.py`)
@@ -55,6 +56,9 @@ by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries (5 ER, 9 AM, 17 IA, 8 OB, 1 SD
 - [x] OB-06 — `R` point/scalar collision (`src/icmds/session_key.py::encrypt_literal`; `attacks/icmds/a7_sk_impossible.py`)
 - [x] OB-07 — RP9 Table 2 does not price secure pseudo-identity delivery: it adds `n+1` T_E/D at the CH, 1 T_E/D at each CM, and 1 T_E/D + 1 T_HG at the BS (measured: `tests/test_legacy_fixes.py::test_secure_pseudo_ids_cost_matches_ob07`). Paper-table reproduction therefore runs with `--no-secure-pseudo-ids` (`src/maka/protocol/p3_node_registration.py`)
 - [x] OB-08 — in seeded mode, AES-GCM nonces (counter or RNG-drawn) and keys repeat across runs with the same seed, as NFR-REL-02 requires; a rerun only re-encrypts identical plaintexts, so nothing new is revealed. Product mode draws from the OS (`docs/PLAN_ERRATA.md` E-01; `src/maka/protocol/data_transmission.py`)
+
+- [x] OB-09 — RP9's published HLPSL (§6.3, Figs. 4–6) cannot be run as printed. An exact transcription shows seven defects: `request` and `SND` used as guards (D1, D2), reversed `request` arguments (D3), public keys never assigned (D4), unbound `Ncm'` and `Pac` (D5, D6, new findings), and a vacuous `secrecy_of sec3` goal (D7). RP9's "SAFE" verdict therefore cannot be reproduced from the published model (`formal/avispa/rp9_transcribed.hlpsl`, `formal/avispa/README.md`; `tests/test_formal.py::test_transcription_shows_rp9_printed_defects`)
+- [x] OB-10 — Re-modelled faithfully in AnB, RP9's authentication phase is attacked by OFMC: an insider CM impersonates another member (P-01; `rp9_auth_honest_ch`, 1 session), and even with outsiders only a cross-session replay breaks strong authentication at 2 sessions. MAKA-E's key exchange shows no attack at 1–3 sessions, and its no-PSK negative control is attacked (`formal/avispa/results/SUMMARY.json`; `tests/test_formal.py::test_v_formal_01_03_results_or_not_run_recorded`)
 
 ## SD — secondary-source dependency (1)
 

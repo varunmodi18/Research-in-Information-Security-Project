@@ -21,7 +21,10 @@ COPY pyproject.toml README.md ./
 COPY src ./src
 COPY eval ./eval
 COPY formal ./formal
-RUN pip install --no-cache-dir ".[server]"
+# the Evaluation page reads these beside the source tree (REPO_ROOT), so install in place (-e)
+COPY artifacts/eval ./artifacts/eval
+COPY docs/baseline ./docs/baseline
+RUN pip install --no-cache-dir -e ".[server]"
 COPY --from=web /build/web/dist ./web/dist
 RUN useradd --system --uid 10001 maka && mkdir -p /app/var && chown maka /app/var
 USER maka

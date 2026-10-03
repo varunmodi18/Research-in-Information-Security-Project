@@ -1,0 +1,27 @@
+import { expect, test } from "@playwright/test";
+import { createNetwork, login, uniqueName } from "./helpers";
+
+// V-E2E-05 / J5: Evaluation -> run a comparison -> charts, table view, thresholds, RP9 tables,
+// formal results and the limitations box. J5 names net/demo/5 seeds; the browser test uses
+// paper/toy/1 seed to stay within the E2E time budget (PLAN_ERRATA E-06). The full matrix is
+// eval/bench/compare.py, committed under artifacts/eval/.
+test("V-E2E-05 J5 evaluate", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page, "operator");
+  await createNetwork(page, { name: uniqueName("eval"), kind: "lab", template: "paper" });
+  await page.getByRole("link", { name: "Evaluation" }).click();
+  await expect(page.getByTestId("limitations")).toContainText("not a proof of cryptographic security");
+  await page.getByLabel("Topology").selectOption("paper");
+  await page.getByLabel("Parameters").selectOption("toy");
+  await page.getByLabel("Seeds").fill("1");
+  await page.getByTestId("run-evaluation").click();
+  await expect(page.getByTestId("thresholds")).toContainText("pairings per CM during onboarding", { timeout: 90_000 });
+  await expect(page.getByTestId("chart-onboarding-toy")).toContainText("MAKA-E");
+  await expect(page.getByTestId("chart-cost")).toContainText("Estimate, not a measurement");
+  await page.getByTestId("view-table").click();
+  await expect(page.getByTestId("comparison-table")).toContainText("RP9 (as priced in Table 2)");
+  await expect(page.getByTestId("table5")).toContainText("ER-02");
+  await expect(page.getByTestId("table5")).toContainText("AM-04");
+  await expect(page.getByTestId("ev-formal")).toContainText(/attack found|not obtained/);
+  await expect(page.getByTestId("ev-levels")).toContainText("demonstration only");
+});

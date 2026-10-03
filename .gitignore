@@ -23,5 +23,5 @@ web/node_modules/
 web/dist/
 web/test-results/
 web/playwright-report/
-artifacts/eval/*.png
+artifacts/eval/*_quick*
 web/e2e/shots/

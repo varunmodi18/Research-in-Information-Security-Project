@@ -55,6 +55,11 @@ python_version = "3.11"
 strict = true
 mypy_path = "src"
 
+[[tool.mypy.overrides]]
+# eval/ is research tooling outside the strict-typed scope (Makefile TYPED); the server imports it lazily
+module = ["eval.*"]
+ignore_errors = true
+
 [tool.ruff.lint.flake8-bugbear]
 # FastAPI's dependency-injection idiom (IMPLEMENTATION_PLAN.md §4.1)
 extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.params.Depends"]

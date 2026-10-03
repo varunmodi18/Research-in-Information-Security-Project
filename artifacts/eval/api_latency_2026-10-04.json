@@ -1,0 +1,70 @@
+{
+  "meta": {
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+    "os": "Linux 7.0.0-34-generic",
+    "python": "3.12.3",
+    "commit": "28e8fe6",
+    "params": "demo",
+    "requests": 200,
+    "network": "net (enhanced, product)",
+    "transport": "HTTP over loopback, uvicorn, one client",
+    "onboard_s": 10.06
+  },
+  "p50_ms": 3.85,
+  "p95_ms": 7.99,
+  "max_ms": 39.62,
+  "threshold_ms": 200.0,
+  "pass": true,
+  "per_endpoint": {
+    "/api/health": {
+      "n": 20,
+      "median_ms": 1.17,
+      "max_ms": 1.64
+    },
+    "/api/auth/me": {
+      "n": 20,
+      "median_ms": 3.26,
+      "max_ms": 8.89
+    },
+    "/api/networks": {
+      "n": 20,
+      "median_ms": 3.64,
+      "max_ms": 10.05
+    },
+    "/api/networks/1": {
+      "n": 20,
+      "median_ms": 4.24,
+      "max_ms": 8.44
+    },
+    "/api/networks/1/devices/CM-0101": {
+      "n": 20,
+      "median_ms": 3.99,
+      "max_ms": 9.21
+    },
+    "/api/networks/1/frames?limit=200": {
+      "n": 20,
+      "median_ms": 6.4,
+      "max_ms": 10.54
+    },
+    "/api/events?network_id=1&limit=200": {
+      "n": 20,
+      "median_ms": 4.66,
+      "max_ms": 39.62
+    },
+    "/api/networks/1/readings": {
+      "n": 20,
+      "median_ms": 4.03,
+      "max_ms": 7.2
+    },
+    "/api/lab/scenarios": {
+      "n": 20,
+      "median_ms": 2.97,
+      "max_ms": 5.35
+    },
+    "/api/evaluation/runs": {
+      "n": 20,
+      "median_ms": 3.23,
+      "max_ms": 7.22
+    }
+  }
+}

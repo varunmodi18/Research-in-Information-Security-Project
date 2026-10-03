@@ -1,0 +1,502 @@
+{
+  "meta": {
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+    "os": "Linux 7.0.0-34-generic",
+    "python": "3.12.3",
+    "commit": "28e8fe6",
+    "started": "2026-10-03T19:47:36Z"
+  },
+  "results": [
+    {
+      "name": "hash_to_point (T_HG)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.1555640001242864,
+      "q1_ms": 0.15007225056251627,
+      "q3_ms": 0.16286549862343236,
+      "iqr_ms": 0.012793248060916085
+    },
+    {
+      "name": "scalar_mul (T_SM)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.42348799979663454,
+      "q1_ms": 0.4139177494835167,
+      "q3_ms": 0.43598474985628854,
+      "iqr_ms": 0.022067000372771872
+    },
+    {
+      "name": "point_add (T_PA)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.014380500033439603,
+      "q1_ms": 0.014279750303103356,
+      "q3_ms": 0.014495999494101852,
+      "iqr_ms": 0.0002162491909984965
+    },
+    {
+      "name": "weil_pairing (T_P)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 4.8788450003485195,
+      "q1_ms": 4.80528650132328,
+      "q3_ms": 4.925601498598553,
+      "iqr_ms": 0.12031499727527262
+    },
+    {
+      "name": "tate_pairing (T_P alt)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 1.5783239996380871,
+      "q1_ms": 1.5688035005041456,
+      "q3_ms": 1.5879295006016036,
+      "iqr_ms": 0.019126000097458018
+    },
+    {
+      "name": "ibe_encrypt (T_E/D)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 5.460127000333159,
+      "q1_ms": 5.364033249861677,
+      "q3_ms": 5.571193250943907,
+      "iqr_ms": 0.20716000108222943
+    },
+    {
+      "name": "ibe_decrypt (T_E/D)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 4.677361499489052,
+      "q1_ms": 4.657514749396796,
+      "q3_ms": 4.703422750480968,
+      "iqr_ms": 0.0459080010841717
+    },
+    {
+      "name": "aes_gcm_encrypt_64B (T_S)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.0022089998310548253,
+      "q1_ms": 0.002176749603677308,
+      "q3_ms": 0.0022482513486465905,
+      "iqr_ms": 7.15017449692823e-05
+    },
+    {
+      "name": "kdf_sha256 (hashing.kdf)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.0007109993021003902,
+      "q1_ms": 0.0007020007615210488,
+      "q3_ms": 0.0007232506504806224,
+      "iqr_ms": 2.1249888959573582e-05
+    },
+    {
+      "name": "hash_to_point (T_HG)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.6461735001721536,
+      "q1_ms": 0.6120482498772617,
+      "q3_ms": 0.6913412503308791,
+      "iqr_ms": 0.07929300045361742
+    },
+    {
+      "name": "scalar_mul (T_SM)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 22.455109000475204,
+      "q1_ms": 22.28838074961459,
+      "q3_ms": 22.52397050096988,
+      "iqr_ms": 0.2355897513552918
+    },
+    {
+      "name": "point_add (T_PA)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.07307800024136668,
+      "q1_ms": 0.072808999902918,
+      "q3_ms": 0.07338149998759036,
+      "iqr_ms": 0.000572500084672356
+    },
+    {
+      "name": "weil_pairing (T_P)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 157.68934300012916,
+      "q1_ms": 156.04963999930987,
+      "q3_ms": 159.46061450085836,
+      "iqr_ms": 3.4109745015484805
+    },
+    {
+      "name": "tate_pairing (T_P alt)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 67.74840250000125,
+      "q1_ms": 67.25586724996901,
+      "q3_ms": 68.08112299950153,
+      "iqr_ms": 0.8252557495325163
+    },
+    {
+      "name": "ibe_encrypt (T_E/D)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 177.88309400020808,
+      "q1_ms": 177.23089975015682,
+      "q3_ms": 179.0665732501111,
+      "iqr_ms": 1.8356734999542823
+    },
+    {
+      "name": "ibe_decrypt (T_E/D)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 154.58340950044658,
+      "q1_ms": 154.2129350000323,
+      "q3_ms": 154.86402800024734,
+      "iqr_ms": 0.6510930002150417
+    },
+    {
+      "name": "aes_gcm_encrypt_64B (T_S)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.0022304993763100356,
+      "q1_ms": 0.0021902501430304255,
+      "q3_ms": 0.0022924991753825452,
+      "iqr_ms": 0.00010224903235211968
+    },
+    {
+      "name": "kdf_sha256 (hashing.kdf)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.0008115002856357023,
+      "q1_ms": 0.0007989997357071843,
+      "q3_ms": 0.0008242495823651552,
+      "iqr_ms": 2.524984665797092e-05
+    },
+    {
+      "name": "hash_to_point (T_HG)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 3.4532499994384125,
+      "q1_ms": 3.062716999920667,
+      "q3_ms": 3.737928998816642,
+      "iqr_ms": 0.6752119988959748
+    },
+    {
+      "name": "scalar_mul (T_SM)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 95.65294000094582,
+      "q1_ms": 95.48678000101063,
+      "q3_ms": 95.66145299868367,
+      "iqr_ms": 0.17467299767304212
+    },
+    {
+      "name": "point_add (T_PA)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 0.15149200044106692,
+      "q1_ms": 0.150727999425726,
+      "q3_ms": 0.15292299940483645,
+      "iqr_ms": 0.0021949999791104347
+    },
+    {
+      "name": "weil_pairing (T_P)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 588.4529310005746,
+      "q1_ms": 587.6805979987694,
+      "q3_ms": 592.3769719993288,
+      "iqr_ms": 4.6963740005594445
+    },
+    {
+      "name": "tate_pairing (T_P alt)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 281.61873499993817,
+      "q1_ms": 281.08104600141814,
+      "q3_ms": 285.9447219998401,
+      "iqr_ms": 4.863675998421968
+    },
+    {
+      "name": "ibe_encrypt (T_E/D)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 673.0836510014342,
+      "q1_ms": 672.8183180002816,
+      "q3_ms": 678.1699420007499,
+      "iqr_ms": 5.351624000468291
+    },
+    {
+      "name": "ibe_decrypt (T_E/D)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 580.0981070005946,
+      "q1_ms": 579.2128070006584,
+      "q3_ms": 582.2736670015729,
+      "iqr_ms": 3.060860000914545
+    },
+    {
+      "name": "aes_gcm_encrypt_64B (T_S)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 0.002595999831100926,
+      "q1_ms": 0.0022749991330783814,
+      "q3_ms": 0.0035169996408512816,
+      "iqr_ms": 0.0012420005077729002
+    },
+    {
+      "name": "kdf_sha256 (hashing.kdf)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 0.0008989991329144686,
+      "q1_ms": 0.0008450006134808064,
+      "q3_ms": 0.0008990009519038722,
+      "iqr_ms": 5.400033842306584e-05
+    }
+  ],
+  "baseline": {
+    "file": "docs/baseline/primitives.json",
+    "comparison": [
+      {
+        "name": "hash_to_point (T_HG)",
+        "params": "toy",
+        "baseline_ms": 0.1504,
+        "current_ms": 0.1556,
+        "ratio": 1.035,
+        "regression": false
+      },
+      {
+        "name": "scalar_mul (T_SM)",
+        "params": "toy",
+        "baseline_ms": 0.4105,
+        "current_ms": 0.4235,
+        "ratio": 1.032,
+        "regression": false
+      },
+      {
+        "name": "point_add (T_PA)",
+        "params": "toy",
+        "baseline_ms": 0.0143,
+        "current_ms": 0.0144,
+        "ratio": 1.005,
+        "regression": false
+      },
+      {
+        "name": "weil_pairing (T_P)",
+        "params": "toy",
+        "baseline_ms": 4.704,
+        "current_ms": 4.8788,
+        "ratio": 1.037,
+        "regression": false
+      },
+      {
+        "name": "tate_pairing (T_P alt)",
+        "params": "toy",
+        "baseline_ms": 1.5581,
+        "current_ms": 1.5783,
+        "ratio": 1.013,
+        "regression": false
+      },
+      {
+        "name": "ibe_encrypt (T_E/D)",
+        "params": "toy",
+        "baseline_ms": 5.2615,
+        "current_ms": 5.4601,
+        "ratio": 1.038,
+        "regression": false
+      },
+      {
+        "name": "ibe_decrypt (T_E/D)",
+        "params": "toy",
+        "baseline_ms": 4.736,
+        "current_ms": 4.6774,
+        "ratio": 0.988,
+        "regression": false
+      },
+      {
+        "name": "aes_gcm_encrypt_64B (T_S)",
+        "params": "toy",
+        "baseline_ms": 0.0024,
+        "current_ms": 0.0022,
+        "ratio": 0.908,
+        "regression": false
+      },
+      {
+        "name": "kdf_sha256 (hashing.kdf)",
+        "params": "toy",
+        "baseline_ms": 0.0007,
+        "current_ms": 0.0007,
+        "ratio": 0.993,
+        "regression": false
+      },
+      {
+        "name": "hash_to_point (T_HG)",
+        "params": "demo",
+        "baseline_ms": 0.6234,
+        "current_ms": 0.6462,
+        "ratio": 1.037,
+        "regression": false
+      },
+      {
+        "name": "scalar_mul (T_SM)",
+        "params": "demo",
+        "baseline_ms": 22.7406,
+        "current_ms": 22.4551,
+        "ratio": 0.987,
+        "regression": false
+      },
+      {
+        "name": "point_add (T_PA)",
+        "params": "demo",
+        "baseline_ms": 0.0727,
+        "current_ms": 0.0731,
+        "ratio": 1.005,
+        "regression": false
+      },
+      {
+        "name": "weil_pairing (T_P)",
+        "params": "demo",
+        "baseline_ms": 148.5128,
+        "current_ms": 157.6893,
+        "ratio": 1.062,
+        "regression": false
+      },
+      {
+        "name": "tate_pairing (T_P alt)",
+        "params": "demo",
+        "baseline_ms": 65.2102,
+        "current_ms": 67.7484,
+        "ratio": 1.039,
+        "regression": false
+      },
+      {
+        "name": "ibe_encrypt (T_E/D)",
+        "params": "demo",
+        "baseline_ms": 169.1466,
+        "current_ms": 177.8831,
+        "ratio": 1.052,
+        "regression": false
+      },
+      {
+        "name": "ibe_decrypt (T_E/D)",
+        "params": "demo",
+        "baseline_ms": 148.2448,
+        "current_ms": 154.5834,
+        "ratio": 1.043,
+        "regression": false
+      },
+      {
+        "name": "aes_gcm_encrypt_64B (T_S)",
+        "params": "demo",
+        "baseline_ms": 0.0025,
+        "current_ms": 0.0022,
+        "ratio": 0.886,
+        "regression": false
+      },
+      {
+        "name": "kdf_sha256 (hashing.kdf)",
+        "params": "demo",
+        "baseline_ms": 0.0008,
+        "current_ms": 0.0008,
+        "ratio": 0.991,
+        "regression": false
+      },
+      {
+        "name": "hash_to_point (T_HG)",
+        "params": "secure",
+        "baseline_ms": 3.4633,
+        "current_ms": 3.4532,
+        "ratio": 0.997,
+        "regression": false
+      },
+      {
+        "name": "scalar_mul (T_SM)",
+        "params": "secure",
+        "baseline_ms": 98.2245,
+        "current_ms": 95.6529,
+        "ratio": 0.974,
+        "regression": false
+      },
+      {
+        "name": "point_add (T_PA)",
+        "params": "secure",
+        "baseline_ms": 0.1522,
+        "current_ms": 0.1515,
+        "ratio": 0.995,
+        "regression": false
+      },
+      {
+        "name": "weil_pairing (T_P)",
+        "params": "secure",
+        "baseline_ms": 572.6419,
+        "current_ms": 588.4529,
+        "ratio": 1.028,
+        "regression": false
+      },
+      {
+        "name": "tate_pairing (T_P alt)",
+        "params": "secure",
+        "baseline_ms": 269.0968,
+        "current_ms": 281.6187,
+        "ratio": 1.047,
+        "regression": false
+      },
+      {
+        "name": "ibe_encrypt (T_E/D)",
+        "params": "secure",
+        "baseline_ms": 650.7788,
+        "current_ms": 673.0837,
+        "ratio": 1.034,
+        "regression": false
+      },
+      {
+        "name": "ibe_decrypt (T_E/D)",
+        "params": "secure",
+        "baseline_ms": 552.7578,
+        "current_ms": 580.0981,
+        "ratio": 1.049,
+        "regression": false
+      },
+      {
+        "name": "aes_gcm_encrypt_64B (T_S)",
+        "params": "secure",
+        "baseline_ms": 0.0025,
+        "current_ms": 0.0026,
+        "ratio": 1.047,
+        "regression": false
+      },
+      {
+        "name": "kdf_sha256 (hashing.kdf)",
+        "params": "secure",
+        "baseline_ms": 0.0009,
+        "current_ms": 0.0009,
+        "ratio": 0.998,
+        "regression": false
+      }
+    ]
+  }
+}

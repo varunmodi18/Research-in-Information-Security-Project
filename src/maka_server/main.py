@@ -47,6 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     upgrade(settings.db_url)
     network_service.register_builders(ctx)
     from maka_server.services import enhanced_jobs, lab_jobs  # noqa: F401 -- registers job handlers
+    from maka_server.services import evaluation as evaluation_jobs  # noqa: F401
 
     app = FastAPI(title="MAKA Secure IoT Console", version="1.0.0", lifespan=lifespan,
                   docs_url="/api/docs", openapi_url="/api/openapi.json", redoc_url=None)

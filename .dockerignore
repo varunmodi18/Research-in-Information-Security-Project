@@ -7,5 +7,7 @@ web/test-results
 var
 .env
 artifacts
+!artifacts/eval
+artifacts/eval/*_quick*
 *.pdf
 *.tex

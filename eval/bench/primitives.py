@@ -80,11 +80,38 @@ def to_markdown(results: list[Timing], meta: dict[str, str]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def regressions(current: list[dict[str, object]], baseline: list[dict[str, object]],
+                tolerance: float = 0.20) -> list[dict[str, object]]:
+    """V-PERF-01: compare each primitive's median with the M0-T4 baseline; > tolerance slower is a
+    regression to report (not to hide or tune away)."""
+    base = {(b["name"], b["params"]): float(b["median_ms"]) for b in baseline}  # type: ignore[arg-type]
+    rows = []
+    for c in current:
+        key = (c["name"], c["params"])
+        if key not in base:
+            continue
+        ratio = float(c["median_ms"]) / base[key]  # type: ignore[arg-type]
+        rows.append({"name": c["name"], "params": c["params"], "baseline_ms": round(base[key], 4),
+                     "current_ms": round(float(c["median_ms"]), 4),  # type: ignore[arg-type]
+                     "ratio": round(ratio, 3), "regression": ratio > 1 + tolerance})
+    return rows
+
+
+def regressions_markdown(rows: list[dict[str, object]]) -> str:
+    lines = ["", "## Comparison with the M0-T4 baseline (V-PERF-01; > 20 % slower is reported)", "",
+             "| primitive | params | baseline ms | current ms | ratio | regression |", "|---|---|---:|---:|---:|---|"]
+    for r in rows:
+        flag = "**yes**" if r["regression"] else "no"
+        lines.append(f"| {r['name']} | {r['params']} | {r['baseline_ms']} | {r['current_ms']} | {r['ratio']} | {flag} |")
+    return "\n".join(lines) + "\n"
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--params", nargs="+", default=["toy", "demo", "secure"],
                     choices=list(ITERATIONS))
     ap.add_argument("--out", default="docs/baseline/primitives")
+    ap.add_argument("--baseline", help="JSON from an earlier run to compare against (V-PERF-01)")
     args = ap.parse_args(argv)
 
     started = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -92,10 +119,13 @@ def main(argv: list[str] | None = None) -> int:
     meta = {**machine(), "started": started}
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.with_suffix(".json").write_text(
-        json.dumps({"meta": meta, "results": [t.as_dict() for t in results]}, indent=2) + "\n",
-        encoding="utf-8")
+    doc: dict[str, object] = {"meta": meta, "results": [t.as_dict() for t in results]}
     summary = to_markdown(results, meta)
+    if args.baseline:
+        reg = regressions(doc["results"], json.loads(Path(args.baseline).read_text())["results"])  # type: ignore[arg-type]
+        doc["baseline"] = {"file": args.baseline, "comparison": reg}
+        summary += regressions_markdown(reg)
+    out.with_suffix(".json").write_text(json.dumps(doc, indent=2) + "\n", encoding="utf-8")
     out.with_suffix(".md").write_text(summary, encoding="utf-8")
     print(summary)
     return 0
