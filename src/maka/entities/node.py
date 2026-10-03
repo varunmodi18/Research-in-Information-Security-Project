@@ -6,7 +6,7 @@ from typing import ClassVar
 
 from maka import hashing, trace
 from maka.curve import CurveParams, Point
-from maka.entities.base import Entity
+from maka.entities.base import Entity, ProtocolError
 from maka.wire import PAPER_SIZES
 
 
@@ -31,25 +31,42 @@ class Node(Entity):
         self.k: int | None = None
         self.pu_i: Point | None = None
         self.pr_i: Point | None = None
+        self.k_pub: Point | None = None  # [IA-03 scaffolding] public IBE parameter K_pub = k*g
         self.nonce_cache: set[bytes] = set()
+        self.data_seq = 0  # per-sender DATA_CM counter (IA-16)
 
-    def preload(self, k_scalar: int) -> None:
-        """RP9 §5.1: preloaded with (ID, p, g, k, H, ID_BS, Pu_BS)."""
+    def preload(self, k_scalar: int, k_pub: Point) -> None:
+        """RP9 §5.1: preloaded with (ID, p, g, k, H, ID_BS, Pu_BS), plus the IBE public
+        parameter K_pub that IA-03's Enc needs (scaffolding, not an RP9 parameter)."""
         t = trace.active()
         self.k = k_scalar
+        self.k_pub = k_pub
         t.register("OB-01", f"{self.identity} preloaded with master key k -- held until destruction")
 
     def compute_keys_and_destroy_k(self) -> None:
-        """RP9 §5.2: Pu_i = H(ID_i), Pr_i = k*Pu_i, then k is destroyed."""
+        """RP9 §5.2: Pu_i = H(ID_i), Pr_i = k*Pu_i, then k is destroyed.
+
+        "Destroyed" means the attribute is deleted, so no reference to the integer remains on
+        this object. Python ints are immutable and cannot be overwritten in place; the value
+        stays in process memory until garbage-collected. This is a demonstration limitation,
+        not a zeroisation guarantee."""
         t = trace.active()
-        assert self.k is not None, "k already destroyed -- keygen must run exactly once"
+        k_scalar = getattr(self, "k", None)
+        if k_scalar is None:
+            raise ProtocolError(f"{self.identity}: k already destroyed -- keygen must run exactly once")
         self.pu_i = hashing.hash_to_point(self.curve, self.identity.encode())
-        self.pr_i = self.k * self.pu_i
+        self.pr_i = k_scalar * self.pu_i
         t.formula(f"Pu_{self.identity}", "H(ID)", self.pu_i)
-        t.formula(f"Pr_{self.identity}", "k * Pu", self.pr_i)
-        self.k = None
-        t.register("OB-01", f"{self.identity} destroys k after computing Pr_{self.identity}")
-        t.check(f"{self.identity}.k destroyed", self.k is None, None, self.k)
+        t.secret(f"Pr_{self.identity}", self.pr_i, note="= k * Pu")
+        del self.k
+        del k_scalar
+        t.register("OB-01", f"{self.identity} deletes k after computing Pr_{self.identity}")
+        gone = not hasattr(self, "k")
+        t.check(f"{self.identity}.k deleted (attribute no longer exists)", gone, True, gone)
+
+    def next_seq(self) -> int:
+        self.data_seq += 1
+        return self.data_seq
 
     def check_and_cache_nonce(self, nonce: bytes) -> bool:
         t = trace.active()

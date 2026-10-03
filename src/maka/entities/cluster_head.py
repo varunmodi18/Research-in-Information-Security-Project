@@ -17,15 +17,16 @@ class ClusterHead(Node):
 
     def __init__(self, identity: str, curve: CurveParams, g: Point, id_bs: str, pu_bs: Point) -> None:
         super().__init__(identity, curve, g, id_bs, pu_bs)
-        self.members: dict[str, Point] = {}  # ID_CM -> Pu_CM, gathered before registration
+        self.members: dict[str, Point] = {}  # ID_CM -> Pu_CM, from consumed PUB_CM frames (I-04)
         self.p_ch: Point | None = None
-        self.p_cm_table: dict[str, Point] = {}  # ID_CM -> P_CM, from BS
+        self.p_cm_table: dict[str, Point] = {}  # ID_CM -> P_CM, decoded from PSEUDO_BS_CH
         self.p_cm_table_summary = None
         self.r_ch: int | None = None
         self.a1: Point | None = None
         self.a2: Point | None = None
         self.sk_ch_bs: object | None = None
         self.member_session_keys: dict[str, object] = {}  # SK_CM-BS is NOT held here (AM-05)
+        self.authenticated_members: set[str] = set()
 
     def add_member(self, member_id: str, pu_cm: Point) -> None:
         self.members[member_id] = pu_cm

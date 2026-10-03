@@ -31,8 +31,10 @@ maka eval --all --fixture paper                          # Tables 2-6, Figures 1
 maka all                                                  # everything, in sequence
 ```
 
-Common flags: `--params {toy,demo,secure}`, `--fixture {paper,net}`, `--sizing {paper,actual}`,
-`--seed N`, `-v`/`-vv`/`-vvv`, `--no-color`, `--out <dir>`.
+Common flags: `--params {toy,demo,secure}`, `--fixture {paper,small,net}`, `--sizing {paper,actual}`,
+`--seed N`, `-v`/`-vv`/`-vvv`, `--no-color`, `--out <dir>`, `--secure-pseudo-ids` (default) /
+`--no-secure-pseudo-ids` (sends pseudo-identities in clear, as RP9's Table 2 pricing assumes),
+`--disclose-secrets`.
 
 `toy` uses a 32-bit curve — insecure by construction, but every trace is hand-followable at
 `-vvv`. `demo` (256-bit, default) and `secure` (512-bit) are used for realistic timing.
@@ -41,7 +43,7 @@ Common flags: `--params {toy,demo,secure}`, `--fixture {paper,net}`, `--sizing {
 
 ```
 --- §5.4 Node authentication -----------------------------------------
-  r_CH           = 6288705   [IA-02] scalar drawn from Z_r (RP9 writes Z_p; see IA-02)
+  r_CH           = «secret:r_CH»   [IA-02] scalar drawn from Z_r* (RP9 writes Z_p; see IA-02)
   A1 = r_CH * g  = (911408649, 2044267400) [on-curve]
   A2 = r_CH * P_CH = (802063548, 1933501766) [on-curve]
   [ER-01] RP9 §5.4.1 prints A4 = r_CH * P_CM, which the CM cannot compute (it has
@@ -49,6 +51,10 @@ Common flags: `--params {toy,demo,secure}`, `--fixture {paper,net}`, `--sizing {
           as A4 = r_CM * P_CM.
   [CHECK] CM verifies CH: A2' == A2: PASS
 ```
+
+SECRET-class values (`k`, `Pr_i`, `r_*`, session keys, IBE ephemerals) are recorded only as
+`«secret:name»`. `--disclose-secrets` prints them for teaching; it is refused when `MAKA_ENV`
+is `demo` or `prod`.
 
 ## Fidelity
 

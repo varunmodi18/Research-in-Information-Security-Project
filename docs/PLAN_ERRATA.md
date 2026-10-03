@@ -17,7 +17,7 @@ does not do.
 
 **Amended status of I-10.** Confirmed. The mitigation is what M1-T8 and §4.3 already specify:
 mandatory associated data, per-key counter nonces on the data path, and `rng.SystemSource`
-for product networks. Seeded repetition is documented as register entry OB-09. The M0-T3
+for product networks. Seeded repetition is documented as register entry OB-08. The M0-T3
 test for (f) is therefore a normal test that documents the seeded behaviour, not a strict
 `xfail`.
 

@@ -1,4 +1,7 @@
-"""RP9 §6.1.4: mutual authentication -- both directions verified (references the P8.6 matrix)."""
+"""RP9 §6.1.4: mutual authentication -- both directions verified (references the P8.6 matrix).
+
+The verdict uses the receivers' own outcomes from §5.4, which are computed from the decoded
+EM1/EM3 bytes (IMPLEMENTATION_PLAN.md M1-T3), so tampering in transit makes it fail."""
 
 from __future__ import annotations
 
@@ -9,7 +12,6 @@ from maka.protocol import (
     p3_node_registration,
     p4_node_authentication,
 )
-from maka.protocol.p3_node_registration import xor_to_scalar
 
 
 def run(params_name: str = "demo") -> bool:
@@ -23,9 +25,8 @@ def run(params_name: str = "demo") -> bool:
 
     ch = next(iter(net.cluster_heads.values()))
     cm = next(iter(net.cluster_members[ch.identity].values()))
-    r = p.curve.r_group
-    cm_verifies_ch = xor_to_scalar(net.bs.identity, ch.identity, r) * ch.a1 == ch.a2
-    ch_verifies_cm = xor_to_scalar(ch.identity, cm.identity, r) * cm.a3 == cm.a4
+    cm_verifies_ch = cm.ch_verified
+    ch_verifies_cm = cm.identity in ch.authenticated_members
 
     both = cm_verifies_ch and ch_verifies_cm
     t.check("s4_mutual_authentication HOLDS: both directions verified", both, True, both)

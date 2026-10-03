@@ -188,8 +188,8 @@ def test_ia05_three_nonce_instances() -> None:
 def test_ia06_aead_layer() -> None:
     from maka.aead import decrypt, encrypt
 
-    blob = encrypt(bytes(32), b"x")
-    assert decrypt(bytes(32), blob) == b"x"
+    blob = encrypt(bytes(32), b"x", ad=b"IA-06")
+    assert decrypt(bytes(32), blob, ad=b"IA-06") == b"x"
 
 
 def test_ia07_three_parameter_sets() -> None:
@@ -238,7 +238,7 @@ def test_ob01_k_destroyed() -> None:
     p = params.get("toy")
     net = p1_initialization.run(p.curve, p.g, fixtures.PAPER)
     p2_key_generation.run(net)
-    assert net.bs.k is None
+    assert not hasattr(net.bs, "k")  # M1-T7: k is deleted, no longer rebound to None
 
 
 def test_ob02_no_forward_secrecy() -> None:
@@ -294,3 +294,95 @@ def test_sd01_coefficients_checked_against_closed_forms() -> None:
     roots = [11, 13, 17]
     coeffs = compute_and_verify(roots, p.curve.r_group)
     assert coeffs[-1] == 1
+
+
+# ------------------------------------------------- IMPLEMENTATION_PLAN.md M1 --
+
+def test_ia12_decoded_points_are_validated() -> None:
+    import pytest
+
+    from maka import codec, ledger
+
+    p = params.get("toy")
+    point = 5 * p.g
+    encoded = codec.enc_point(point)
+    ledger.current().reset()
+    with ledger.LedgerScope("X", "ia12"):
+        decoded = codec.dec_point(p.curve, encoded)
+    assert decoded == point
+    assert ledger.current().total("X", "ia12") == {"T_SM_val": 1}
+    with pytest.raises(codec.DecodeError):
+        codec.dec_point(p.curve, encoded[:-1] + bytes([encoded[-1] ^ 1]))
+
+
+def test_ia13_fixed_width_ids_and_zero_rejection() -> None:
+    import pytest
+
+    from maka.protocol.p3_node_registration import DegenerateScalarError, xor_to_scalar
+
+    r = params.get("toy").curve.r_group
+    assert xor_to_scalar("BS-01", "CH-01", r) == xor_to_scalar("CH-01", "BS-01", r)
+    with pytest.raises(DegenerateScalarError):
+        xor_to_scalar("CH-01", "CH-01", r)
+
+
+def test_ia14_pseudo_ch_cm_carries_id_ch() -> None:
+    from maka.protocol import p1_initialization, p2_key_generation, p3_node_registration
+
+    _fresh("reg-ia14")
+    p = params.get("toy")
+    net = p1_initialization.run(p.curve, p.g, fixtures.PAPER)
+    p2_key_generation.run(net)
+    p3_node_registration.run(net, fixtures.PAPER)
+    assert net.channel.total_bits(["PSEUDO_CH_CM"]) == 320 + 160
+    assert net.cluster_members["CH-01"]["CM-0101"].id_ch == "CH-01"
+
+
+def test_ia15_one_em2_per_round() -> None:
+    from maka.protocol import (
+        p1_initialization,
+        p2_key_generation,
+        p3_node_registration,
+        p4_node_authentication,
+    )
+
+    _fresh("reg-ia15")
+    p = params.get("toy")
+    net = p1_initialization.run(p.curve, p.g, fixtures.SMALL)
+    p2_key_generation.run(net)
+    p3_node_registration.run(net, fixtures.SMALL)
+    p4_node_authentication.run(net, fixtures.SMALL)
+    assert len(net.channel.eavesdrop("EM2")) == 1 and len(net.channel.eavesdrop("EM1")) == 3
+
+
+def test_ia16_data_ad_binds_sender_recipient_seq() -> None:
+    from maka.protocol.data_transmission import data_ad
+
+    assert data_ad("CM-0101", "BS-01", 1) != data_ad("CM-0101", "BS-01", 2)
+    assert data_ad("CM-0101", "BS-01", 1) != data_ad("CM-0102", "BS-01", 1)
+
+
+def test_ob07_secure_pseudo_ids_are_priced_separately() -> None:
+    from maka import ledger
+    from maka.protocol import p1_initialization, p2_key_generation, p3_node_registration
+
+    def ch_ed(secure: bool) -> int:
+        _fresh(f"reg-ob07-{secure}")
+        ledger.current().reset()
+        p = params.get("toy")
+        net = p1_initialization.run(p.curve, p.g, fixtures.PAPER)
+        p2_key_generation.run(net)
+        p3_node_registration.run(net, fixtures.PAPER, secure_pseudo_ids=secure)
+        return ledger.current().total("CH-01", "registration")["T_E/D"]
+
+    assert ch_ed(True) - ch_ed(False) == 1 + 1  # n + 1 with n = 1
+
+
+def test_ob08_seeded_nonces_repeat_across_runs() -> None:
+    from maka import aead
+
+    nonces = []
+    for _ in range(2):
+        rng.seed(5)
+        nonces.append(aead.encrypt(bytes(32), b"x", ad=b"")[:12])
+    assert nonces[0] == nonces[1]

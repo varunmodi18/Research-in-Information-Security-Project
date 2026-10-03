@@ -21,7 +21,8 @@ def test_registration_table3_row2_on_paper() -> None:
     p3_node_registration.run(net, fixtures.PAPER)
     assert net.channel.total_bits(["BEACON"]) == 800
     assert net.channel.total_bits(["PSEUDO_BS_CH"]) == 640
-    assert net.channel.total_bits(["PSEUDO_CH_CM"]) == 320
+    # M1-T4 / IA-14: PSEUDO_CH_CM also carries ID_CH, +160 paper bits over RP9's 320.
+    assert net.channel.total_bits(["PSEUDO_CH_CM"]) == 320 + 160
 
 
 def test_registration_runs_on_net_fixture_without_hard_assertion() -> None:

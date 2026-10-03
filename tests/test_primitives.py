@@ -67,8 +67,8 @@ def test_ibe_wrong_key_fails() -> None:
 
 def test_aead_round_trip_and_tamper_detection() -> None:
     key = bytes(range(32))
-    blob = aead.encrypt(key, b"payload")
-    assert aead.decrypt(key, blob) == b"payload"
+    blob = aead.encrypt(key, b"payload", ad=b"ad")
+    assert aead.decrypt(key, blob, ad=b"ad") == b"payload"
     tampered = blob[:-1] + bytes([blob[-1] ^ 0xFF])
     with pytest.raises(InvalidTag):
-        aead.decrypt(key, tampered)
+        aead.decrypt(key, tampered, ad=b"ad")

@@ -6,7 +6,9 @@ through this module. A hygiene test forbids `print(` anywhere else under `src/`.
 
 from __future__ import annotations
 
+import hashlib
 import json
+import os
 import sys
 import time
 from dataclasses import dataclass, field
@@ -32,6 +34,7 @@ class Tracer:
     out_dir: Path
     color: bool = True
     verbosity: int = 2
+    disclose_secrets: bool = False  # CLI --disclose-secrets only (IMPLEMENTATION_PLAN.md §4.4 rule 1)
 
     _log_fh: Any = field(default=None, init=False)
     _jsonl_fh: Any = field(default=None, init=False)
@@ -82,6 +85,30 @@ class Tracer:
         suffix = f"   {self._color(_BOLD, note)}" if note else ""
         self._emit(f"  {name:<14} = {rendered}{suffix}",
                     {"type": "value", "name": name, "value": repr(obj), "note": note})
+
+    def redacted(self, name: str, value: Any) -> str:
+        """The rendering of a SECRET-class value (§4.4): `«secret:name»`, plus an 8-hex SHA-256
+        fingerprint when MAKA_ENV=test (seeded test mode only). The value itself appears only
+        when the tracer was built with disclose_secrets."""
+        if self.disclose_secrets:
+            return f"{render(value, verbosity=self.verbosity)} [DISCLOSED: --disclose-secrets]"
+        tag = f"«secret:{name}»"
+        if os.environ.get("MAKA_ENV") == "test":
+            tag += f" fp={hashlib.sha256(repr(value).encode()).hexdigest()[:8]}"
+        return tag
+
+    def secret(self, name: str, value: Any, note: str | None = None) -> None:
+        """Records that a SECRET-class value exists without recording the value (I-09)."""
+        rendered = self.redacted(name, value)
+        suffix = f"   {self._color(_BOLD, note)}" if note else ""
+        self._emit(f"  {name:<14} = {rendered}{suffix}",
+                    {"type": "secret", "name": name, "value": rendered, "note": note})
+
+    def event(self, kind: str, actor: str, **details: Any) -> None:
+        """A security event (IMPLEMENTATION_PLAN.md §4.10), e.g. ORIG_AUTH_FAIL."""
+        extra = " ".join(f"{k}={v}" for k, v in details.items())
+        self._emit(f"  [EVENT] {kind} at {actor} {extra}".rstrip(),
+                    {"type": "event", "event": kind, "actor": actor, **details})
 
     def formula(self, lhs: str, rhs_symbolic: str, rhs_value: Any) -> None:
         rendered = render(rhs_value, verbosity=self.verbosity)
@@ -196,10 +223,12 @@ _active: Tracer | None = None
 
 
 def init(run_id: str, out_dir: str | Path = "artifacts/transcripts", color: bool = True,
-         verbosity: int = 2) -> Tracer:
+         verbosity: int = 2, disclose_secrets: bool = False) -> Tracer:
     global _active
+    if disclose_secrets and os.environ.get("MAKA_ENV") in ("demo", "prod"):
+        raise PermissionError("--disclose-secrets is refused when MAKA_ENV is demo or prod")
     _active = Tracer(run_id=run_id, out_dir=Path(out_dir), color=color and sys.stdout.isatty(),
-                      verbosity=verbosity)
+                      verbosity=verbosity, disclose_secrets=disclose_secrets)
     return _active
 
 

@@ -29,7 +29,8 @@ def test_table3_communication_hard_assertion() -> None:
     _fresh("test-table3")
     totals = communication.run("toy")
     assert totals["key generation"] == 640
-    assert totals["registration"] == 1760
+    # RP9 publishes 1760; IA-14 adds ID_CH (+160 bits) to the single PSEUDO_CH_CM (M1-T4).
+    assert totals["registration"] == 1760 + 160
     assert totals["authentication"] == 2400
     assert totals["session key agreement"] == 0
 

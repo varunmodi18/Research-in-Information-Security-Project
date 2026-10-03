@@ -105,7 +105,7 @@ def miller_loop(params: CurveParams, pt: Point, q: Point, verbosity: int = 2) ->
         den = _vertical_eval(t2, q)
         f = f * f * num / den
         t = t2
-        if tr.verbosity >= 3:
+        if tr.verbosity >= 3 and tr.disclose_secrets:
             tr.step("miller_loop", f"bit {i}: DBL, f={f!r}")
         if bit == "1":
             num = _line_eval(t, pt, q)
@@ -113,7 +113,7 @@ def miller_loop(params: CurveParams, pt: Point, q: Point, verbosity: int = 2) ->
             den = _vertical_eval(t3, q)
             f = f * num / den
             t = t3
-            if tr.verbosity >= 3:
+            if tr.verbosity >= 3 and tr.disclose_secrets:
                 tr.step("miller_loop", f"bit {i}: ADD, f={f!r}")
     return f
 
@@ -155,10 +155,6 @@ def modified_pairing(params: CurveParams, pt: Point, q: Point, backend: str = "w
     phi_q = distortion_map(params, q)
     fn = weil_pairing if backend == "weil" else tate_pairing
     return fn(params, pt, phi_q)
-
-
-def _render_fp2_g2(obj: Fp2, verbosity: int) -> str:
-    return f"({obj.a.val} + {obj.b.val}*i)  [G_2 element, order should be r_group]"
 
 
 def selftest(params: CurveParams, g: Point, backend: str = "weil") -> list[tuple[int, str, bool]]:
@@ -222,10 +218,12 @@ def selftest(params: CurveParams, g: Point, backend: str = "weil") -> list[tuple
         except ZeroDivisionError:
             continue
     ok5 = plain == one
-    t.register("ER-03", "RP9 §2.2 prints e(P,P)=1 under the heading 'non-degeneracy'; as printed "
-                         "this is the ALTERNATING property of the plain Weil pairing, not "
-                         "non-degeneracy. Demonstrated here, not silently normalised.")
-    t.check("alternating: e_r(P,P) = 1  [RP9 §2.2 as printed -- ER-03]", ok5, one, plain)
+    t.register("ER-03", "RP9 §2.2 prints e(P,P) != 1 as its non-degeneracy axiom; this axiom is "
+                         "unsatisfiable for the plain Weil pairing on a single cyclic group, which "
+                         "is alternating (e(P,P) = 1), which is why the distortion map is required. "
+                         "Demonstrated here, not silently normalised.")
+    t.check("alternating: plain Weil e_r(P,P) = 1, so RP9's printed e(P,P) != 1 fails without a "
+            "distortion map  [ER-03]", ok5, one, plain)
     results.append((5, "alternating-plain", ok5))
 
     # 6. Non-degeneracy proper, via the distortion map

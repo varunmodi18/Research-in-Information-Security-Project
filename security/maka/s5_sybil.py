@@ -1,10 +1,15 @@
-"""RP9 §6.1.5: Sybil resistance -- unique preloaded identifiers; identity not derivable from
-transmitted messages; authentication required before any data exchange."""
+"""RP9 §6.1.5: Sybil resistance -- an ILLUSTRATION, not a falsifiable test.
+
+Shows unique preloaded identifiers. IMPLEMENTATION_PLAN.md M1-T9 (I-12): the uniqueness check
+is true of the fixture by construction, so it cannot fail; a malicious CH listing fake members
+(P-10) is exercised by Lab scenario L6 instead."""
 
 from __future__ import annotations
 
 from maka import fixtures, params, trace
 from maka.protocol import p1_initialization, p2_key_generation
+
+KIND = "ILLUSTRATION"  # IMPLEMENTATION_PLAN.md M1-T9: not a falsifiable test
 
 
 def run(params_name: str = "demo") -> bool:
@@ -25,6 +30,6 @@ def run(params_name: str = "demo") -> bool:
                           "one-way), and no message exchange occurs before mutual "
                           "authentication (§6.1.4) succeeds -- so an adversary cannot mint an "
                           "accepted identity without a preloaded (ID_i, k) pair.")
-    t.check("s5_sybil HOLDS: unique preloaded identifiers, no pre-auth data exchange",
+    t.check("s5_sybil ILLUSTRATION: unique preloaded identifiers (cannot fail; see docstring)",
             unique, True, unique)
     return unique

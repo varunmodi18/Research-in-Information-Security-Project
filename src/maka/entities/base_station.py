@@ -31,7 +31,22 @@ class BaseStation(Entity):
         self.k_pub: Point | None = None
         self.nonce_cache: set[bytes] = set()
         self.session_keys: dict[str, object] = {}
-        self.pending_registrations: dict[str, object] = {}
+        # Registration state, built only from decoded BEACON contents (I-03):
+        # ID_CH -> {ID_CM: Pu_CM}, and the pseudo-identities computed from them.
+        self.clusters: dict[str, dict[str, Point]] = {}
+        self.pseudo_ids: dict[str, Point] = {}
+        self.ch_public_keys: dict[str, Point] = {}  # from decoded PUB_CH frames
+        self.sym_keys: dict[str, bytes] = {}  # BS-side k_sym per node, from P5
+        self.last_seq: dict[str, int] = {}  # highest accepted DATA_CM seq per sender
+
+    def public_key_of(self, ident: str) -> Point | None:
+        """Pu_i as the BS learned it from decoded frames: PUB_CH for CHs, BEACON for CMs."""
+        if ident in self.ch_public_keys:
+            return self.ch_public_keys[ident]
+        for members in self.clusters.values():
+            if ident in members:
+                return members[ident]
+        return None
 
     def generate_parameters(self, k_scalar: int) -> None:
         """RP9 §5.1: computes Pu_BS = H(ID_BS), Pr_BS = k*Pu_BS. Publishes K_pub = k*g,
@@ -42,14 +57,18 @@ class BaseStation(Entity):
         self.pr_bs = k_scalar * self.pu_bs
         self.k_pub = k_scalar * self.g
         t.formula("Pu_BS", "H(ID_BS)", self.pu_bs)
-        t.formula("Pr_BS", "k * Pu_BS", self.pr_bs)
+        t.secret("Pr_BS", self.pr_bs, note="= k * Pu_BS")
         t.value("K_pub", self.k_pub, note="[IA-03 scaffolding -- not part of RP9's parameter set]")
 
     def destroy_master_key(self) -> None:
+        """Deletes the `k` attribute. Python ints cannot be overwritten in place, so the value
+        remains in process memory until garbage-collected (see Node.compute_keys_and_destroy_k)."""
         t = trace.active()
-        t.register("OB-01", f"{self.identity} destroys the master key k after key generation")
-        self.k = None
-        t.check("k destroyed (access now yields None, not the secret)", self.k is None, None, self.k)
+        t.register("OB-01", f"{self.identity} deletes the master key k after key generation")
+        if hasattr(self, "k"):
+            del self.k
+        gone = not hasattr(self, "k")
+        t.check("k deleted (attribute no longer exists)", gone, True, gone)
 
     def check_and_cache_nonce(self, nonce: bytes) -> bool:
         """Returns True if fresh (accepted), False if a replay (rejected)."""

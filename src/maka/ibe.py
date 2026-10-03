@@ -24,6 +24,7 @@ from maka.curve import CurveParams, Point
 from maka.field import fp2_to_bytes
 
 DEM_KEY_BYTES = 32
+DEM_AD = b"MAKA-IBE-DEM/v1"  # binds DEM ciphertexts to this construction (M1-T8)
 
 
 @dataclass(frozen=True)
@@ -46,11 +47,12 @@ def encrypt(curve: CurveParams, g: Point, message: bytes, recipient_pu: Point, k
         u_point = u_scalar * g
         shared = pairing.modified_pairing(curve, recipient_pu, k_pub) ** u_scalar
     key = hashing.kdf(fp2_to_bytes(shared), b"MAKA-IBE-DEM", DEM_KEY_BYTES)
-    body = aead_encrypt(key, message)
+    body = aead_encrypt(key, message, ad=DEM_AD)
     if t.verbosity >= 2:
         t.register("IA-03", "Boneh-Franklin IBE hybrid: U=u*g, K=KDF(e(Pu,K_pub)^u), V=AEAD_K(m)")
         t.value("ibe.U", u_point)
-        t.value("ibe.DEM_key_fingerprint", key[:8])
+        t.secret("ibe.u", u_scalar)
+        t.secret("ibe.DEM_key", key)
     return Ciphertext(u_point=u_point, body=body)
 
 
@@ -62,5 +64,5 @@ def decrypt(curve: CurveParams, ciphertext: Ciphertext, recipient_pr: Point) -> 
         shared = pairing.modified_pairing(curve, recipient_pr, ciphertext.u_point)
     key = hashing.kdf(fp2_to_bytes(shared), b"MAKA-IBE-DEM", DEM_KEY_BYTES)
     if t.verbosity >= 2:
-        t.value("ibe.DEM_key_fingerprint", key[:8])
-    return aead_decrypt(key, ciphertext.body)
+        t.secret("ibe.DEM_key", key)
+    return aead_decrypt(key, ciphertext.body, ad=DEM_AD)

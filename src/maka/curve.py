@@ -101,7 +101,7 @@ class Point:
         x3 = slope * slope - self.x - other.x
         y3 = slope * (self.x - x3) - self.y
         t = trace.active()
-        if t.verbosity >= 3:
+        if t.verbosity >= 3 and t.disclose_secrets:
             t.value("slope (add)", trace.render(slope, t.verbosity))
         return Point(x3, y3, self.params)
 
@@ -114,7 +114,7 @@ class Point:
         x3 = slope * slope - self.x - self.x
         y3 = slope * (self.x - x3) - self.y
         t = trace.active()
-        if t.verbosity >= 3:
+        if t.verbosity >= 3 and t.disclose_secrets:
             t.value("slope (dbl)", trace.render(slope, t.verbosity))
         return Point(x3, y3, self.params)
 
@@ -131,6 +131,8 @@ class Point:
         return self._scalar_mul_impl(scalar)
 
     def _scalar_mul_impl(self, scalar: int) -> Point:
+        # Per-bit and per-slope traces reveal the scalar, which is usually secret (k, Pr_i,
+        # ephemerals); they print only under --disclose-secrets (I-09, IMPLEMENTATION_PLAN §4.4).
         if scalar < 0:
             return (-self)._scalar_mul_impl(-scalar)
         result = Point.infinity(self.params)
@@ -138,7 +140,7 @@ class Point:
         t = trace.active()
         bits = bin(scalar)[2:] if scalar > 0 else "0"
         for i, bit in enumerate(bits):
-            if t.verbosity >= 3:
+            if t.verbosity >= 3 and t.disclose_secrets:
                 t.step("scalar_mul", f"bit {i}/{len(bits)}: {'DBL+ADD' if bit == '1' else 'DBL'}")
             result = result._add_impl(result)
             ledger.bump("T_PA")

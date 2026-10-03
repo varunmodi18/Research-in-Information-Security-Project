@@ -41,7 +41,11 @@ def run(params_name: str = "demo", fixture: str = "paper", verbosity: int = 2) -
     rows = []
     for mod in modules:
         holds = mod.run(params_name)
-        rows.append([mod.__name__.rsplit(".", 1)[-1], "HOLDS" if holds else "FAILS"])
+        if getattr(mod, "KIND", "TEST") == "ILLUSTRATION":
+            verdict = "ILLUSTRATION (not falsifiable)"
+        else:
+            verdict = "HOLDS" if holds else "FAILS"
+        rows.append([mod.__name__.rsplit(".", 1)[-1], verdict])
 
     t.section("verdict", "§6.1 verdict summary")
     t.table(["module", "verdict"], rows, "MAKA security analyses (§6.1)")

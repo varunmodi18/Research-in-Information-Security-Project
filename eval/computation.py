@@ -23,7 +23,8 @@ def _run_paper_fixture(params_name: str) -> Network:
     p = params.get(params_name)
     net = p1_initialization.run(p.curve, p.g, fixtures.PAPER)
     p2_key_generation.run(net)
-    p3_node_registration.run(net, fixtures.PAPER)
+    # RP9 Table 2 prices no encryption of pseudo-identities (OB-07): reproduce it in that mode.
+    p3_node_registration.run(net, fixtures.PAPER, secure_pseudo_ids=False)
     p4_node_authentication.run(net, fixtures.PAPER)
     p5_session_key_agreement.run(net, fixtures.PAPER)
     data_transmission.run(net)

@@ -25,21 +25,22 @@ def run(curve: CurveParams, g: Point, fixture: str) -> Network:
 
     bs = BaseStation(str(topo["bs"]), curve, g)
     with ledger.LedgerScope(bs.identity, "init"):
-        k_scalar = rng.current().below(curve.r_group)
-        t.value("k (master key)", k_scalar, note="[DEMO-ONLY DISCLOSURE]")
+        k_scalar = rng.current().randint(1, curve.r_group)
+        t.secret("k (master key)", k_scalar, note="[I-09: never printed; --disclose-secrets shows it]")
         bs.generate_parameters(k_scalar)
+    assert bs.pu_bs is not None and bs.k_pub is not None  # type narrowing only
 
     net = Network(bs=bs, channel=Channel())
 
     for ch_id, member_ids in topo["chs"].items():  # type: ignore[union-attr]
         t.step(ch_id, "preloaded with (ID, p_field, g, k, H, ID_BS, Pu_BS)")
         ch = ClusterHead(ch_id, curve, g, bs.identity, bs.pu_bs)
-        ch.preload(k_scalar)
+        ch.preload(k_scalar, bs.k_pub)
         net.add_cluster_head(ch)
         for cm_id in member_ids:  # type: ignore[union-attr]
             t.step(cm_id, "preloaded with (ID, p_field, g, k, H, ID_BS, Pu_BS)")
             cm = ClusterMember(cm_id, curve, g, bs.identity, bs.pu_bs, id_ch=ch_id)
-            cm.preload(k_scalar)
+            cm.preload(k_scalar, bs.k_pub)
             net.add_cluster_member(ch_id, cm)
 
     return net

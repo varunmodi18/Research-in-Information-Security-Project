@@ -2,14 +2,14 @@
 
 Five-way classification of every place this implementation had to make a decision RP9 does not
 make for it, per `PLAN.md` §0 rule 3 and §5. Each entry: exact passage at issue, class, resolution,
-and a runnable demonstration under `tests/register/`. Finalised at P13.6: all 32 entries (5 ER,
-9 AM, 11 IA, 6 OB, 1 SD) implemented and demonstrated.
+and a runnable demonstration under `tests/register/`. Finalised at P13.6 with 32 entries; extended
+by IMPLEMENTATION_PLAN.md M1 to 39 entries (5 ER, 9 AM, 16 IA, 8 OB, 1 SD).
 
 ## ER — genuine errata (5)
 
 - [x] ER-01 — RP9 §5.4.1, `A4` subscript typo (`src/maka/protocol/p4_node_authentication.py`; `tests/test_phase_authentication.py`)
 - [x] ER-02 — RP9 §8 Table 5, `T_SM`/`T_PA` rows (`eval/comparison.py::TABLE5`)
-- [x] ER-03 — RP9 §2.2, non-degeneracy vs alternating (`src/maka/pairing.py::selftest` tests 5-6; `tests/test_pairing.py`)
+- [x] ER-03 — RP9 §2.2 prints `e(P,P) ≠ 1` as its non-degeneracy axiom; this axiom is unsatisfiable for the plain Weil pairing on a single cyclic group (which is alternating, `e(P,P) = 1`), which is why the distortion map is required (`src/maka/pairing.py::selftest` tests 5-6; `tests/test_pairing.py`)
 - [x] ER-04 — RP9 §3 step 5(d), missing exponent (`src/icmds/session_key.py::decrypt_identity_er04`; `tests/test_icmds_math.py`)
 - [x] ER-05 — RP9 §3 step 5(a) vs ICMDS-P §3(1), `s`-selection actor (`src/icmds/session_key.py::setup`; `attacks/icmds/a7_sk_impossible.py`)
 
@@ -30,7 +30,7 @@ and a runnable demonstration under `tests/register/`. Finalised at P13.6: all 32
 - [x] IA-01 — language/dependency policy (`pyproject.toml`)
 - [x] IA-02 — pairing instantiation, scalar domain Z_r (`src/maka/curve.py`, `src/maka/pairing.py`, `src/maka/params.py`)
 - [x] IA-03 — Enc/Dec instantiation (BF-IBE hybrid) (`src/maka/ibe.py`)
-- [x] IA-04 — "sent securely" instantiation (`src/maka/protocol/p3_node_registration.py`, via `ibe.encrypt`)
+- [x] IA-04 — "sent securely" instantiation: IBE encryption to the recipient (`H(ID_CH)` for PSEUDO_BS_CH, `Pu_CM` for PSEUDO_CH_CM) when the `secure_pseudo_ids` flag is on, which is the default since IMPLEMENTATION_PLAN.md M1-T4. With `--no-secure-pseudo-ids` (paper-table reproduction) they are sent in clear. Before M1 they were always sent in clear despite this entry (I-02) (`src/maka/protocol/p3_node_registration.py`)
 - [x] IA-05 — nonce instances (N_reg/N_auth_CH/N_auth_CM in `src/maka/protocol/p3_node_registration.py`, `p4_node_authentication.py`)
 - [x] IA-06 — symmetric layer for sensed data (`src/maka/aead.py`)
 - [x] IA-07 — parameter sets (`tools/gen_params.py`, `src/maka/params.py`, `docs/PARAMETERS.md`)
@@ -38,6 +38,11 @@ and a runnable demonstration under `tests/register/`. Finalised at P13.6: all 32
 - [x] IA-09 — hash constructions (H1, H2) (`src/maka/hashing.py`)
 - [x] IA-10 — ICMDS coefficient computation (`src/icmds/coefficients.py`)
 - [x] IA-11 — two-track x_i handling (`attacks/icmds/a7_sk_impossible.py::_literal_branch`/`_diagnostic_branch`; `src/icmds/session_key.py::to_scalar`)
+- [x] IA-12 — wire codec: length-prefixed, versioned messages; every decoded point is validated (on-curve, not infinity, `r·P = O`). The subgroup check costs one scalar multiplication, counted as `T_SM_val`, separate from `T_SM`, so RP9 Table 2 comparisons are unaffected (`src/maka/codec.py`)
+- [x] IA-13 — identifiers are 1–20 bytes of `[A-Za-z0-9-]`, placed left-aligned in a zero-padded 160-bit field before `ID_a ⊕ ID_b` (RP9 §7.2's 160-bit IDs); a zero scalar raises `DegenerateScalarError` (`src/maka/protocol/p3_node_registration.py::xor_to_scalar`)
+- [x] IA-14 — PSEUDO_CH_CM carries `ID_CH` in addition to `P_CM`, so the CM learns from a received message which CH to verify against; +160 paper bits per member, so Table 3 row 2 is `1760 + 160·n` (`src/maka/protocol/p3_node_registration.py`)
+- [x] IA-15 — `r_CH`, `A1`, `A2`, `N_auth_CH` drawn once per CH round, one EM1 per member and a single EM2, as RP9 §5.4 describes; the previous per-member regeneration (I-08) is retired (`src/maka/protocol/p4_node_authentication.py`)
+- [x] IA-16 — DATA_CM: AES-256-GCM with associated data `LP(ID_CM, ID_BS, seq)` and nonce `0^32 ‖ seq`, `seq` a per-sender counter (`src/maka/protocol/data_transmission.py`, `src/maka/aead.py`)
 
 ## OB — observations (6)
 
@@ -47,6 +52,8 @@ and a runnable demonstration under `tests/register/`. Finalised at P13.6: all 32
 - [x] OB-04 — g is public; A1 alone is not the obstacle (`src/maka/protocol/p4_node_authentication.py::_negative_paths`)
 - [x] OB-05 — no revocation mechanism (recorded, nothing built; `tests/register/test_all_entries.py::test_ob05_no_revocation_mechanism_exists`)
 - [x] OB-06 — `R` point/scalar collision (`src/icmds/session_key.py::encrypt_literal`; `attacks/icmds/a7_sk_impossible.py`)
+- [x] OB-07 — RP9 Table 2 does not price secure pseudo-identity delivery: it adds `n+1` T_E/D at the CH, 1 T_E/D at each CM, and 1 T_E/D + 1 T_HG at the BS (measured: `tests/test_legacy_fixes.py::test_secure_pseudo_ids_cost_matches_ob07`). Paper-table reproduction therefore runs with `--no-secure-pseudo-ids` (`src/maka/protocol/p3_node_registration.py`)
+- [x] OB-08 — in seeded mode, AES-GCM nonces (counter or RNG-drawn) and keys repeat across runs with the same seed, as NFR-REL-02 requires; a rerun only re-encrypts identical plaintexts, so nothing new is revealed. Product mode draws from the OS (`docs/PLAN_ERRATA.md` E-01; `src/maka/protocol/data_transmission.py`)
 
 ## SD — secondary-source dependency (1)
 

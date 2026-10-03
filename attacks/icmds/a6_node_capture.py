@@ -16,6 +16,8 @@ from maka.aead import decrypt as aead_decrypt
 from maka.aead import encrypt as aead_encrypt
 from maka.curve import CurveParams, Point
 
+_AD = b"ICMDS-inter-cluster"  # associated data is mandatory (IMPLEMENTATION_PLAN.md M1-T8)
+
 
 def run(curve: CurveParams, g: Point) -> str:
     verdict("a6_node_capture", "RP9 §4.6", "Node capture under the presupposed session-key state")
@@ -32,12 +34,12 @@ def run(curve: CurveParams, g: Point) -> str:
     seeded_s_k = rng.current().bytes(16)
     t.value("S_k (seeded premise, [CONDITIONAL SCENARIO])", seeded_s_k)
 
-    inter_cluster_traffic = aead_encrypt(seeded_s_k, b"inter-cluster-reading=19.2C")
+    inter_cluster_traffic = aead_encrypt(seeded_s_k, b"inter-cluster-reading=19.2C", ad=_AD)
 
     t.step("adversary", "captures the CH, extracts S_k from its memory")
     recovered = seeded_s_k  # node capture yields whatever the CH holds in memory
 
-    plaintext = aead_decrypt(recovered, inter_cluster_traffic)
+    plaintext = aead_decrypt(recovered, inter_cluster_traffic, ad=_AD)
     t.check("adversary decrypts recorded inter-cluster traffic using the captured S_k",
             plaintext == b"inter-cluster-reading=19.2C", b"inter-cluster-reading=19.2C", plaintext)
 

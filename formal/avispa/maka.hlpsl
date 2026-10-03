@@ -1,7 +1,9 @@
-%% HLPSL specification of MAKA's node-registration/authentication exchange (RP9 §5.3-5.4,
-%% Figs. 4-8, transcribed with identifiers em1, em2, em3, sec1, sec2, sec3 preserved per RP9's
-%% own figures, per P11.5). Five roles: base station, cluster head, cluster member, session,
-%% environment/goal.
+%% HLPSL model of MAKA's node-authentication exchange (RP9 §5.4), loosely after RP9 Figs. 4-8.
+%% NOT a faithful transcription (IMPLEMENTATION_PLAN.md §1.2, I-14): it has no em2, no
+%% registration phase, no identity/generator secrecy goals, and a single honest session; its
+%% identifiers do not all match RP9's figures. It has never been run through OFMC. Faithful
+%% transcriptions are formal/avispa/rp9_transcribed.hlpsl and rp9_fixed.hlpsl (M7-T3).
+%% Five roles: base station, cluster head, cluster member, session, environment/goal.
 
 role basestation(BS, CH, CM : agent,
                   PuBS, PrBS : public_key,

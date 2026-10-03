@@ -9,16 +9,33 @@ its totals are reported only, never compared against RP9's published tables (AM-
 from __future__ import annotations
 
 PAPER = "paper"
+SMALL = "small"
 NET = "net"
 
 
+def custom(chs: int, cms_per_ch: int) -> dict[str, object]:
+    """1 BS, `chs` cluster heads with `cms_per_ch` members each (IMPLEMENTATION_PLAN.md FR-01:
+    1-5 CHs, 1-8 CMs each). IDs follow the CH-0i / CM-0i0j pattern of the named fixtures."""
+    if not (1 <= chs <= 5 and 1 <= cms_per_ch <= 8):
+        raise ValueError("custom topology needs 1-5 CHs and 1-8 CMs per CH")
+    return {"bs": "BS-01",
+            "chs": {f"CH-0{i}": [f"CM-0{i}0{j}" for j in range(1, cms_per_ch + 1)]
+                    for i in range(1, chs + 1)}}
+
+
 def topology(name: str) -> dict[str, object]:
+    """Named fixtures `paper` (1x1), `small` (1x3), `net` (3x3), or `custom-<chs>x<cms>`."""
     if name == PAPER:
-        return {"bs": "BS-01", "chs": {"CH-01": ["CM-0101"]}}
+        return custom(1, 1)
+    if name == SMALL:
+        return custom(1, 3)
     if name == NET:
-        return {"bs": "BS-01",
-                 "chs": {f"CH-0{i}": [f"CM-0{i}0{j}" for j in range(1, 4)] for i in range(1, 4)}}
-    raise ValueError(f"unknown fixture {name!r}; use fixtures.PAPER or fixtures.NET")
+        return custom(3, 3)
+    if name.startswith("custom-"):
+        chs, _, cms = name.removeprefix("custom-").partition("x")
+        if chs.isdigit() and cms.isdigit():
+            return custom(int(chs), int(cms))
+    raise ValueError(f"unknown fixture {name!r}; use paper, small, net or custom-<chs>x<cms>")
 
 
 def assert_paper_table_allowed(fixture: str) -> None:

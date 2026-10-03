@@ -15,12 +15,18 @@ from maka import rng, trace
 
 def _common_flags(sub_parser: argparse.ArgumentParser) -> None:
     sub_parser.add_argument("--params", choices=["toy", "demo", "secure"], default="demo")
-    sub_parser.add_argument("--fixture", choices=["paper", "net"], default="paper")
+    sub_parser.add_argument("--fixture", choices=["paper", "small", "net"], default="paper")
     sub_parser.add_argument("--sizing", choices=["paper", "actual"], default="paper")
     sub_parser.add_argument("--seed", type=int, default=0)
     sub_parser.add_argument("-v", dest="verbosity", action="count", default=1)
     sub_parser.add_argument("--no-color", action="store_true")
     sub_parser.add_argument("--out", default="artifacts/transcripts")
+    sub_parser.add_argument("--secure-pseudo-ids", action=argparse.BooleanOptionalAction, default=True,
+                            help="deliver pseudo-identities under IBE (default; I-02). "
+                                 "--no-secure-pseudo-ids reproduces RP9 Table 2's pricing")
+    sub_parser.add_argument("--disclose-secrets", action="store_true",
+                            help="print SECRET-class values (k, Pr_i, r_*, session keys). "
+                                 "Refused when MAKA_ENV is demo or prod")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -48,7 +54,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     r = rng.seed(args.seed)
     rid = rng.run_id(args.seed, args.params, args.fixture)
-    tracer = trace.init(run_id=rid, out_dir=args.out, color=not args.no_color, verbosity=args.verbosity)
+    try:
+        tracer = trace.init(run_id=rid, out_dir=args.out, color=not args.no_color,
+                            verbosity=args.verbosity, disclose_secrets=args.disclose_secrets)
+    except PermissionError as exc:
+        parser.error(str(exc))
     tracer.banner(f"run-id: {rid}",
                   f"command: {args.command}  params={args.params}  fixture={args.fixture}  seed={args.seed}")
 
@@ -74,7 +84,8 @@ def _run_primitives(args: argparse.Namespace, r: rng.Rng) -> int:
 def _run_protocol(args: argparse.Namespace, r: rng.Rng) -> int:
     from demos import d2_maka_full
 
-    d2_maka_full.run(params_name=args.params, fixture=args.fixture, verbosity=args.verbosity)
+    d2_maka_full.run(params_name=args.params, fixture=args.fixture, verbosity=args.verbosity,
+                     secure_pseudo_ids=args.secure_pseudo_ids)
     return 0
 
 

@@ -1,5 +1,8 @@
 """Network container and ASCII rendering of RP9 §2.3's clustered-WSN architecture (Fig. 1),
-per P5.6: one base station, cluster heads, and cluster members."""
+per P5.6: one base station, cluster heads, and cluster members.
+
+The container is the legacy driver's view (it routes frames to receivers); protocol logic
+never reads one entity's state on behalf of another (I-01..I-04)."""
 
 from __future__ import annotations
 
@@ -18,6 +21,9 @@ class Network:
     cluster_members: dict[str, dict[str, ClusterMember]] = field(default_factory=dict)  # ch_id -> {cm_id: CM}
     channel: Channel = field(default_factory=Channel)
     sym_keys: dict[str, bytes] = field(default_factory=dict)  # ident -> k_sym, from P5
+    # IMPLEMENTATION_PLAN.md M1-T4 (I-02): deliver pseudo-identities under IBE. RP9's Table 2
+    # does not price this (OB-07), so paper-table reproduction runs with it off.
+    secure_pseudo_ids: bool = True
 
     def add_cluster_head(self, ch: ClusterHead) -> None:
         self.cluster_heads[ch.identity] = ch
@@ -25,6 +31,9 @@ class Network:
 
     def add_cluster_member(self, ch_id: str, cm: ClusterMember) -> None:
         self.cluster_members[ch_id][cm.identity] = cm
+
+    def all_members(self) -> list[ClusterMember]:
+        return [cm for members in self.cluster_members.values() for cm in members.values()]
 
     def render_ascii(self) -> str:
         lines = [f"BS({self.bs.identity})"]

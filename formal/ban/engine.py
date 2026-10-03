@@ -8,6 +8,7 @@ belief, printed via trace.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 
 from maka import trace
@@ -32,8 +33,11 @@ class Sees:
 
 
 def message_meaning(sees_signed: Sees, believes_key: Belief) -> Belief:
-    """Message-meaning rule: P sees {X}_K and P believes Q <-K-> P => P believes Q said X."""
-    return Belief(sees_signed.principal, f"{believes_key.statement.split()[0]} said {sees_signed.statement}")
+    """Message-meaning rule: P sees {X}_K and P believes Q <-K-> P => P believes Q said X.
+    The conclusion is about the content X, so the {...}_K wrapper is removed."""
+    match = re.fullmatch(r"\{(.*)\}_\S+", sees_signed.statement)
+    content = f"({match.group(1)})" if match else sees_signed.statement
+    return Belief(sees_signed.principal, f"{believes_key.statement.split()[0]} said {content}")
 
 
 def nonce_verification(believes_said: Belief, believes_fresh: Belief) -> Belief:
@@ -50,13 +54,27 @@ def jurisdiction(believes_authority: Belief, believes_other_believes: Belief) ->
     return Belief(believes_authority.principal, x)
 
 
+def session_key_rule(believes_fresh: Belief, believes_believes: Belief, key: str,
+                     key_inputs: frozenset[str]) -> Belief | None:
+    """Session-key rule: P |= #(X) and P |= Q |= X  =>  P |= P <-K-> Q, valid only when K is a
+    function of X. Returns None when the believed component is not one of the key's inputs:
+    BAN then derives nothing about K (IMPLEMENTATION_PLAN.md M1-T9)."""
+    x = believes_believes.statement.split("|=", 1)[1].strip().strip("()")
+    components = {c.strip() for c in x.split(",")}
+    if not components & key_inputs:
+        return None
+    peer = believes_believes.statement.split()[0]
+    return Belief(believes_fresh.principal, f"{believes_fresh.principal} <-{key}-> {peer}")
+
+
 def seeing(k: str) -> Sees:
     return Sees("*", f"seen({k})")
 
 
-def apply(rule_name: str, rule_fn, *args: Belief, goal: int | None = None) -> Belief:
+def apply(rule_name: str, rule_fn, *args: object) -> Belief | None:  # type: ignore[no-untyped-def]
     t = trace.active()
     result = rule_fn(*args)
-    goal_str = f"   [Goal {goal} OK]" if goal is not None else ""
-    t.step("BAN", f"{rule_name} <- {', '.join(repr(a) for a in args)}  |-  {result!r}{goal_str}")
+    shown = ", ".join(repr(a) for a in args if isinstance(a, (Belief, Sees)))
+    derived = repr(result) if result is not None else "nothing (rule preconditions not met)"
+    t.step("BAN", f"{rule_name} <- {shown}  |-  {derived}")
     return result

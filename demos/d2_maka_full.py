@@ -17,7 +17,8 @@ from maka.protocol import (
 )
 
 
-def run(params_name: str = "demo", fixture: str = "paper", verbosity: int = 2) -> None:
+def run(params_name: str = "demo", fixture: str = "paper", verbosity: int = 2,
+        secure_pseudo_ids: bool = True) -> None:
     t = trace.active()
     t.banner("D2 -- MAKA, full protocol", f"params={params_name} fixture={fixture}")
     p = params.get(params_name)
@@ -27,7 +28,7 @@ def run(params_name: str = "demo", fixture: str = "paper", verbosity: int = 2) -
     t.step("network", "\n" + net.render_ascii())
 
     p2_key_generation.run(net)
-    p3_node_registration.run(net, fixture)
+    p3_node_registration.run(net, fixture, secure_pseudo_ids=secure_pseudo_ids)
     p4_node_authentication.run(net, fixture)
     p5_session_key_agreement.run(net, fixture)
     data_transmission.run(net)

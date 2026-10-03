@@ -44,7 +44,7 @@ def _cases(params_name: str) -> dict[str, Callable[[int], object]]:
         "tate_pairing (T_P alt)": lambda i: pairing.modified_pairing(c, a_pt, b_pt, backend="tate"),
         "ibe_encrypt (T_E/D)": lambda i: ibe.encrypt(c, g, b"x" * 64, pu, k_pub),
         "ibe_decrypt (T_E/D)": lambda i: ibe.decrypt(c, ct, pr),
-        "aes_gcm_encrypt_64B (T_S)": lambda i: aead.encrypt(key, b"x" * 64),
+        "aes_gcm_encrypt_64B (T_S)": lambda i: aead.encrypt(key, b"x" * 64, ad=b"bench"),
         "kdf_sha256 (hashing.kdf)": lambda i: hashing.kdf(fp2_to_bytes(gt), b"BENCH", 32),
     }
 

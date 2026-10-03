@@ -43,11 +43,12 @@ def test_master_key_destroyed_after_keygen() -> None:
     p = params.get("toy")
     net = p1_initialization.run(p.curve, p.g, fixtures.PAPER)
     p2_key_generation.run(net)
-    assert net.bs.k is None
+    # M1-T7: k is deleted (the attribute no longer exists), not rebound to None.
+    assert not hasattr(net.bs, "k")
     for ch in net.cluster_heads.values():
-        assert ch.k is None
+        assert not hasattr(ch, "k")
         for cm in net.cluster_members[ch.identity].values():
-            assert cm.k is None
+            assert not hasattr(cm, "k")
 
 
 def test_state_dump_reflects_destroyed_key() -> None:

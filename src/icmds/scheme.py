@@ -10,7 +10,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from maka import trace
-from maka.curve import CurveParams
 
 
 @dataclass
@@ -18,13 +17,6 @@ class IcmdsNode:
     identity: str
     distance_from_bs: int
     public_key: tuple[str, int, bytes]  # (ID, distance, BS stamp)
-
-
-def predistribute(curve: CurveParams, node_id: str, pre_key: bytes) -> bytes:
-    """Step 1-2: pre-distributed key carried in the beacon alongside CM identifiers."""
-    t = trace.active()
-    t.step(node_id, "carries pre-distributed key in beacon")
-    return pre_key
 
 
 def bs_generate_public_key(node_id: str, distance: int, bs_stamp: bytes) -> IcmdsNode:

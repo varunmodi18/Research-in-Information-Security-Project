@@ -1,4 +1,8 @@
-"""RP9 §6.1.2: denial-of-service resistance.
+"""RP9 §6.1.2: denial-of-service resistance -- an ILLUSTRATION, not a falsifiable test.
+
+IMPLEMENTATION_PLAN.md M1-T9 (I-12): the check below only confirms that authentication ran;
+it cannot fail for a scheme that is vulnerable to DoS (RP9's receivers perform an IBE
+decryption before any rejection, P-07). The enhanced-mode Lab scenario L7 measures this.
 
 Revised in Revision 3: demonstrates the rejection behaviour RP9 claims -- the CH aggregates
 only from authenticated nodes, the BS accepts only from an authenticated CH, and replayed
@@ -16,6 +20,8 @@ from maka.protocol import (
     p4_node_authentication,
 )
 
+KIND = "ILLUSTRATION"  # IMPLEMENTATION_PLAN.md M1-T9: not a falsifiable test
+
 
 def run(params_name: str = "demo") -> bool:
     t = trace.active()
@@ -32,6 +38,6 @@ def run(params_name: str = "demo") -> bool:
     ch = next(iter(net.cluster_heads.values()))
     cm = next(iter(net.cluster_members[ch.identity].values()))
     authenticated = bool(ch.a2 is not None and cm.a4 is not None)
-    t.check("s2_dos HOLDS: data acceptance is gated on completed authentication",
-            authenticated, True, authenticated)
+    t.check("s2_dos ILLUSTRATION: data acceptance is gated on completed authentication "
+            "(cannot fail; see module docstring)", authenticated, True, authenticated)
     return authenticated

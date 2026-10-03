@@ -1,7 +1,8 @@
 """Operation ledger: counts primitive operations so cost tables are derived from a run.
 
 Realises: PLAN.md §6.2, P1.3. Counters T_HG, T_SM, T_PA, T_E/D, T_P, T_S, T_H, T_MAC, scoped
-by (entity, phase).
+by (entity, phase). IMPLEMENTATION_PLAN.md adds T_SM_val (subgroup check when decoding a
+point, IA-12; kept apart from T_SM so RP9's Table 2 stays comparable) and T_HKDF (M4-T1).
 """
 
 from __future__ import annotations
@@ -12,7 +13,7 @@ from collections.abc import Callable
 from contextvars import ContextVar
 from typing import Self, TypeVar
 
-OPS = ("T_HG", "T_SM", "T_PA", "T_E/D", "T_P", "T_S", "T_H", "T_MAC")
+OPS = ("T_HG", "T_SM", "T_SM_val", "T_PA", "T_E/D", "T_P", "T_S", "T_H", "T_MAC", "T_HKDF")
 
 F = TypeVar("F", bound=Callable[..., object])
 
