@@ -11,6 +11,9 @@ import json
 import os
 import sys
 import time
+from collections.abc import Iterator
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -217,23 +220,54 @@ def register_renderer(type_name: str, fn: Any) -> None:
     _RENDERERS[type_name] = fn
 
 
-# -- module-level singleton, used by callers that don't thread a Tracer explicitly --
+class NullTracer(Tracer):
+    """Discards everything. Used by the device runtime, whose observability is its event
+    stream (maka.runtime.events), so primitives can call trace.active() without a transcript."""
 
-_active: Tracer | None = None
+    def __init__(self) -> None:
+        super().__init__(run_id="null", out_dir=Path("."), color=False, verbosity=0)
+
+    def __post_init__(self) -> None:  # no files
+        pass
+
+    def _emit(self, text: str, event: dict[str, Any]) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
+# -- context-local active tracer, used by callers that don't thread a Tracer explicitly --
+
+_active_var: ContextVar[Tracer | None] = ContextVar("maka_tracer", default=None)
 
 
 def init(run_id: str, out_dir: str | Path = "artifacts/transcripts", color: bool = True,
          verbosity: int = 2, disclose_secrets: bool = False) -> Tracer:
-    global _active
     if disclose_secrets and os.environ.get("MAKA_ENV") in ("demo", "prod"):
         raise PermissionError("--disclose-secrets is refused when MAKA_ENV is demo or prod")
-    _active = Tracer(run_id=run_id, out_dir=Path(out_dir), color=color and sys.stdout.isatty(),
-                      verbosity=verbosity, disclose_secrets=disclose_secrets)
-    return _active
+    tracer = Tracer(run_id=run_id, out_dir=Path(out_dir), color=color and sys.stdout.isatty(),
+                    verbosity=verbosity, disclose_secrets=disclose_secrets)
+    _active_var.set(tracer)
+    return tracer
+
+
+@contextmanager
+def using(tracer: Tracer) -> Iterator[Tracer]:
+    token = _active_var.set(tracer)
+    try:
+        yield tracer
+    finally:
+        _active_var.reset(token)
+
+
+def use(tracer: Tracer) -> Tracer:
+    _active_var.set(tracer)
+    return tracer
 
 
 def active() -> Tracer:
-    global _active
-    if _active is None:
-        _active = init(run_id=f"adhoc-{int(time.time())}")
-    return _active
+    tracer = _active_var.get()
+    if tracer is None:
+        tracer = init(run_id=f"adhoc-{int(time.time())}")
+    return tracer

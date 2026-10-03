@@ -21,3 +21,7 @@ class UnknownDevice(RuntimeFault):
 
 class KeystoreError(RuntimeFault):
     """Missing entry, wrong class, or a destroyed secret was requested."""
+
+
+class ModeNotAllowed(RuntimeFault):
+    """Original (RP9) mode or Lab adversaries requested on a product network (NFR-SEC-03)."""

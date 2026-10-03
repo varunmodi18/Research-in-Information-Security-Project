@@ -142,6 +142,38 @@ def dec_point(curve: CurveParams, data: bytes) -> Point:
     return pt
 
 
+def load_point(curve: CurveParams, data: bytes) -> Point:
+    """Decodes a point from the device's own trusted keystore: length and on-curve checks
+    only, no subgroup multiplication and no ledger entry (it was validated when stored)."""
+    w = point_width(curve)
+    if len(data) != 2 * w:
+        raise DecodeError("stored point has the wrong length")
+    pt = Point(Fp(int.from_bytes(data[:w], "big"), curve.p_field),
+               Fp(int.from_bytes(data[w:], "big"), curve.p_field), curve)
+    if not pt.is_on_curve():
+        raise DecodeError("stored point is not on the curve")
+    return pt
+
+
+def scalar_width(curve: CurveParams) -> int:
+    return (curve.r_group.bit_length() + 7) // 8
+
+
+def enc_scalar(curve: CurveParams, k: int) -> bytes:
+    if not 0 <= k < curve.r_group:
+        raise ValueError("scalar out of range")
+    return k.to_bytes(scalar_width(curve), "big")
+
+
+def dec_scalar(curve: CurveParams, data: bytes) -> int:
+    if len(data) != scalar_width(curve):
+        raise DecodeError("scalar has the wrong length")
+    k = int.from_bytes(data, "big")
+    if k >= curve.r_group:
+        raise DecodeError("scalar out of range")
+    return k
+
+
 # -- message framing ------------------------------------------------------------
 
 def header(version: int, mtype: int) -> bytes:

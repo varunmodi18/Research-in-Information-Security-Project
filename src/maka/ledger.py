@@ -9,7 +9,8 @@ from __future__ import annotations
 
 import functools
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import Self, TypeVar
 
@@ -41,12 +42,28 @@ class Ledger:
         self._counts.clear()
 
 
-_ledger = Ledger()
+_global_ledger = Ledger()
+_ledger: ContextVar[Ledger] = ContextVar("ledger", default=_global_ledger)
 _scope: ContextVar[tuple[str, str] | None] = ContextVar("ledger_scope", default=None)
 
 
 def current() -> Ledger:
-    return _ledger
+    return _ledger.get()
+
+
+@contextmanager
+def using(ledger: Ledger) -> Iterator[Ledger]:
+    token = _ledger.set(ledger)
+    try:
+        yield ledger
+    finally:
+        _ledger.reset(token)
+
+
+def use(ledger: Ledger) -> Ledger:
+    """Makes `ledger` the one counted into in this context (one per network worker thread)."""
+    _ledger.set(ledger)
+    return ledger
 
 
 class LedgerScope:
@@ -87,7 +104,7 @@ def bump(op: str, n: int = 1) -> None:
     counted as a secondary cost without wrapping it in its own decorated function."""
     scope = _scope.get()
     if scope is not None:
-        _ledger.incr(op, scope[0], scope[1], n)
+        _ledger.get().incr(op, scope[0], scope[1], n)
 
 
 def counts(op: str, n: int = 1) -> Callable[[F], F]:
@@ -98,7 +115,7 @@ def counts(op: str, n: int = 1) -> Callable[[F], F]:
         def wrapper(*args: object, **kwargs: object) -> object:
             scope = _scope.get()
             if scope is not None:
-                _ledger.incr(op, scope[0], scope[1], n)
+                _ledger.get().incr(op, scope[0], scope[1], n)
             return fn(*args, **kwargs)
 
         return wrapper  # type: ignore[return-value]

@@ -24,8 +24,12 @@ report: eval
 	cp -r artifacts/tables artifacts/figures artifacts/transcripts artifacts/submission/ 2>/dev/null || true
 
 # M0-T5: what CI runs on every commit.
+# NFR-MNT-01: strict typing on the packages added by IMPLEMENTATION_PLAN.md.
+TYPED = src/maka/codec.py src/maka/runtime src/maka/original_rt
+
 ci:
 	$(PYTHON) -m ruff check .
+	$(PYTHON) -m mypy --strict $(TYPED)
 	$(PYTHON) -m pytest -q -m "not slow"
 
 # Checkpoint tasks (⛳) additionally run the slow tests.
