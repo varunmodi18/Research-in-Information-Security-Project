@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+    "os": "Linux 7.0.0-34-generic",
+    "python": "3.12.3",
+    "commit": "1d01073"
+  },
+  "results": [
+    {
+      "fixture": "paper",
+      "params": "demo",
+      "repeats": 3,
+      "median_s": 2.7034961569997904,
+      "min_s": 2.7022943749998376,
+      "max_s": 2.719129961999897
+    },
+    {
+      "fixture": "net",
+      "params": "demo",
+      "repeats": 3,
+      "median_s": 17.492864557000757,
+      "min_s": 17.45544205999977,
+      "max_s": 17.59524590000001
+    }
+  ]
+}

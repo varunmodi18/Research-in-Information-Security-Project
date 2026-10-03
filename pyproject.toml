@@ -28,6 +28,10 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "baseline: M0-T3 checks of MAKA_IMPLEMENTATION_REPORT.md claims (IMPLEMENTATION_PLAN.md M0-T3)",
+    "slow: demo/secure parameters, net fixtures, E2E; run at checkpoints (IMPLEMENTATION_PLAN.md §6.4)",
+]
 
 [tool.ruff]
 line-length = 100

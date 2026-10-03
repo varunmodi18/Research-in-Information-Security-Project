@@ -1,6 +1,7 @@
-.PHONY: setup test demo eval formal report clean all
+.PHONY: setup test demo eval formal report clean all ci ci-slow bench
 
-PYTHON ?= python3
+# Prefer the project virtualenv when it exists (IMPLEMENTATION_PLAN.md M0-T1).
+PYTHON ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 PARAMS ?= demo
 
 setup:
@@ -21,6 +22,19 @@ formal:
 report: eval
 	mkdir -p artifacts/submission
 	cp -r artifacts/tables artifacts/figures artifacts/transcripts artifacts/submission/ 2>/dev/null || true
+
+# M0-T5: what CI runs on every commit.
+ci:
+	$(PYTHON) -m ruff check .
+	$(PYTHON) -m pytest -q -m "not slow"
+
+# Checkpoint tasks (⛳) additionally run the slow tests.
+ci-slow: ci
+	$(PYTHON) -m pytest -q -m slow || [ $$? -eq 5 ]  # 5 = no slow tests collected
+
+bench:
+	$(PYTHON) -m eval.bench.primitives --out docs/baseline/primitives
+	$(PYTHON) -m eval.bench.legacy --out docs/baseline/legacy_run
 
 clean:
 	find . -type d -name '__pycache__' -exec rm -rf {} +

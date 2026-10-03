@@ -1,0 +1,281 @@
+{
+  "meta": {
+    "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+    "os": "Linux 7.0.0-34-generic",
+    "python": "3.12.3",
+    "commit": "1d01073",
+    "started": "2026-10-03T17:31:18Z"
+  },
+  "results": [
+    {
+      "name": "hash_to_point (T_HG)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.15036799959489144,
+      "q1_ms": 0.14556975020241225,
+      "q3_ms": 0.15837925002415432,
+      "iqr_ms": 0.012809499821742065
+    },
+    {
+      "name": "scalar_mul (T_SM)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.41045900024982984,
+      "q1_ms": 0.406392249487908,
+      "q3_ms": 0.4157905004831264,
+      "iqr_ms": 0.009398250995218405
+    },
+    {
+      "name": "point_add (T_PA)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.014308499885373749,
+      "q1_ms": 0.014188500472300802,
+      "q3_ms": 0.014418999626286677,
+      "iqr_ms": 0.00023049915398587473
+    },
+    {
+      "name": "weil_pairing (T_P)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 4.704007500095031,
+      "q1_ms": 4.6383722499285795,
+      "q3_ms": 4.746024999803922,
+      "iqr_ms": 0.10765274987534212
+    },
+    {
+      "name": "tate_pairing (T_P alt)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 1.5581140005451743,
+      "q1_ms": 1.5477589997772156,
+      "q3_ms": 1.5912725000362116,
+      "iqr_ms": 0.04351350025899592
+    },
+    {
+      "name": "ibe_encrypt (T_E/D)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 5.261523000172019,
+      "q1_ms": 5.18977199976689,
+      "q3_ms": 5.355383249479928,
+      "iqr_ms": 0.16561124971303798
+    },
+    {
+      "name": "ibe_decrypt (T_E/D)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 4.735988500215171,
+      "q1_ms": 4.662212000312138,
+      "q3_ms": 4.797563749662004,
+      "iqr_ms": 0.1353517493498657
+    },
+    {
+      "name": "aes_gcm_encrypt_64B (T_S)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.002433499957987806,
+      "q1_ms": 0.0023945003704284318,
+      "q3_ms": 0.00247724983637454,
+      "iqr_ms": 8.27494659461081e-05
+    },
+    {
+      "name": "kdf_sha256 (hashing.kdf)",
+      "params": "toy",
+      "iterations": 200,
+      "warmup": 3,
+      "median_ms": 0.0007160001587180886,
+      "q1_ms": 0.0007079997885739431,
+      "q3_ms": 0.0007300004654098302,
+      "iqr_ms": 2.2000676835887134e-05
+    },
+    {
+      "name": "hash_to_point (T_HG)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.6233584999790764,
+      "q1_ms": 0.6036125000719039,
+      "q3_ms": 0.7028160000572825,
+      "iqr_ms": 0.09920349998537858
+    },
+    {
+      "name": "scalar_mul (T_SM)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 22.74064700031886,
+      "q1_ms": 22.66092199988634,
+      "q3_ms": 22.83670675024041,
+      "iqr_ms": 0.17578475035406882
+    },
+    {
+      "name": "point_add (T_PA)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.07274200061146985,
+      "q1_ms": 0.07250249996104685,
+      "q3_ms": 0.07405449991892965,
+      "iqr_ms": 0.0015519999578827992
+    },
+    {
+      "name": "weil_pairing (T_P)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 148.51280399989264,
+      "q1_ms": 148.445556249726,
+      "q3_ms": 148.65511749962934,
+      "iqr_ms": 0.20956124990334501
+    },
+    {
+      "name": "tate_pairing (T_P alt)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 65.21017449949795,
+      "q1_ms": 65.1199987498785,
+      "q3_ms": 65.53280174989595,
+      "iqr_ms": 0.41280300001744763
+    },
+    {
+      "name": "ibe_encrypt (T_E/D)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 169.1466374995798,
+      "q1_ms": 168.55325674987398,
+      "q3_ms": 169.64829075004673,
+      "iqr_ms": 1.0950340001727454
+    },
+    {
+      "name": "ibe_decrypt (T_E/D)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 148.24479050002992,
+      "q1_ms": 148.04209650014855,
+      "q3_ms": 148.39509624925995,
+      "iqr_ms": 0.3529997491114045
+    },
+    {
+      "name": "aes_gcm_encrypt_64B (T_S)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.0025174999791488517,
+      "q1_ms": 0.0024690002646821085,
+      "q3_ms": 0.002612250000311178,
+      "iqr_ms": 0.00014324973562906962
+    },
+    {
+      "name": "kdf_sha256 (hashing.kdf)",
+      "params": "demo",
+      "iterations": 30,
+      "warmup": 3,
+      "median_ms": 0.0008184997568605468,
+      "q1_ms": 0.0008062504548433935,
+      "q3_ms": 0.0008297502063214779,
+      "iqr_ms": 2.3499751478084363e-05
+    },
+    {
+      "name": "hash_to_point (T_HG)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 3.463291000116442,
+      "q1_ms": 3.1066239998835954,
+      "q3_ms": 3.8199159998839605,
+      "iqr_ms": 0.7132920000003651
+    },
+    {
+      "name": "scalar_mul (T_SM)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 98.22449599960237,
+      "q1_ms": 97.8995549994579,
+      "q3_ms": 98.34260000025097,
+      "iqr_ms": 0.4430450007930631
+    },
+    {
+      "name": "point_add (T_PA)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 0.15221000012388686,
+      "q1_ms": 0.1519150000603986,
+      "q3_ms": 0.1534489992991439,
+      "iqr_ms": 0.0015339992387453094
+    },
+    {
+      "name": "weil_pairing (T_P)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 572.6419459997487,
+      "q1_ms": 572.4316910000198,
+      "q3_ms": 574.9901919998592,
+      "iqr_ms": 2.5585009998394526
+    },
+    {
+      "name": "tate_pairing (T_P alt)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 269.096768000054,
+      "q1_ms": 269.0210079999815,
+      "q3_ms": 269.11017400016135,
+      "iqr_ms": 0.08916600017983001
+    },
+    {
+      "name": "ibe_encrypt (T_E/D)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 650.7788260005327,
+      "q1_ms": 649.5459130001109,
+      "q3_ms": 655.7479189996229,
+      "iqr_ms": 6.202005999512039
+    },
+    {
+      "name": "ibe_decrypt (T_E/D)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 552.757811000447,
+      "q1_ms": 552.1677349997844,
+      "q3_ms": 552.7902240000913,
+      "iqr_ms": 0.622489000306814
+    },
+    {
+      "name": "aes_gcm_encrypt_64B (T_S)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 0.0024800001483527012,
+      "q1_ms": 0.0024169994503608905,
+      "q3_ms": 0.002550999852246605,
+      "iqr_ms": 0.00013400040188571438
+    },
+    {
+      "name": "kdf_sha256 (hashing.kdf)",
+      "params": "secure",
+      "iterations": 5,
+      "warmup": 3,
+      "median_ms": 0.0009010000212583691,
+      "q1_ms": 0.0008810002327663824,
+      "q3_ms": 0.0009059995136340149,
+      "iqr_ms": 2.499928086763248e-05
+    }
+  ]
+}

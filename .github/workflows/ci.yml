@@ -1,0 +1,19 @@
+# IMPLEMENTATION_PLAN.md M0-T5: lint, the test suite excluding `slow`, and the baseline tests.
+# Slow tests (demo/secure params, net fixtures, E2E) run at checkpoints via `make ci-slow`.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[dev]"
+      - run: make ci PYTHON=python
