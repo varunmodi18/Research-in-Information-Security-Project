@@ -43,3 +43,36 @@ code (so pseudo-identities would not change, contradicting the M1-T2 acceptance 
 "pseudo-identity values change"). The implementation right-pads: each ID occupies the
 leading bytes of a 160-bit field, matching RP9 §7.2's 160-bit identifier model. Recorded as
 register entry IA-13.
+
+## E-05 · §4.6 MAKA-E v1: details the specification leaves open
+
+Each point below is implemented as described and covered by tests in `tests/enhanced/`.
+
+1. **Onboarding trigger (§4.6.5 step 4).** The sequence says the CM-BS AKE follows the CLUSTER_GRANT,
+   but no message tells a member to start. After a grant, the CH sends each granted member without
+   a CM-CH session a `CLUSTER_OPEN = V‖0x33‖LP(epoch, ID_CH)`. It is an unauthenticated hint: the
+   CM reacts only by starting an authenticated CM-BS handshake through the sender, which the BS
+   authorises from its registry. A forged hint costs at most one rate-limited handshake. The CM's
+   designated CH is set only by the BS's sealed DESIGNATION.
+2. **DATA_CM carries the CM-CH sid.** `DATA_CM = V‖0x40‖LP(sid_CM-CH, inner, hop_tag)` rather than
+   `LP(inner, hop_tag)`, so the CH can select the hop key directly and report `UNKNOWN_SESSION`
+   (V-ADV-07) or `SESSION_SUPERSEDED` precisely. The hop-MAC key is derived once per CM-CH session,
+   which keeps the per-reading cost at one AEAD and one MAC (§6.6).
+3. **Lost-session notice.** V-ADV-07 requires the initiator's stale session to be invalidated when the
+   responder rejects data with `UNKNOWN_SESSION`, but §4.6.4 sends no replies on failure. The
+   rejecting party sends `SESSION_UNKNOWN = V‖0x26‖LP(sid, ID_R, ID_I)`. It is unauthenticated, and
+   the initiator acts on it only by starting a fresh handshake for that (peer, purpose). The fresh
+   handshake supersedes the stale session; nothing is trusted or destroyed on the notice alone.
+4. **Replayed HS1.** V-ADV-01 allows either `UNKNOWN_SESSION` on the HS3 path or a pending handshake
+   that times out. The responder rejects any HS1 whose sid it has seen before (`REPLAY_REJECTED`).
+   This check is cheap and runs before any public-key work. An HS1 replayed under a *new* sid takes
+   the second listed path (UNKNOWN_SESSION at the initiator, then TIMEOUT at the responder), and both
+   cases are tested.
+5. **Timeouts in steps.** The scheduler delivers one frame per step network-wide, so a handshake's
+   latency grows with the number of frames in flight. A fixed `T_HS = 20` would time out on `net`
+   during onboarding. The effective timeout is `T_HS + 6 × (number of devices)` (38 steps for `paper`,
+   98 for `net`). Original mode scales its timeouts the same way. The configured values are still
+   shown in the UI next to the effective ones.
+6. **Clusters are named by their first CH.** A cluster keeps its label (e.g. `CH-01`) when the operator
+   designates a replacement CH (`CH-01-r1`). Grants check a member's registry cluster label against
+   the claiming CH's.

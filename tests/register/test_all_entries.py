@@ -386,3 +386,12 @@ def test_ob08_seeded_nonces_repeat_across_runs() -> None:
         rng.seed(5)
         nonces.append(aead.encrypt(bytes(32), b"x", ad=b"")[:12])
     assert nonces[0] == nonces[1]
+
+
+def test_ia17_maka_e_onboards_without_k_on_devices() -> None:
+    from maka.enhanced import network as en
+
+    net = en.build("toy", "paper", seed=17)
+    net.onboard()
+    assert all(d.status == "active" for d in net.scheduler.devices.values())
+    assert [d.identity for d in net.scheduler.devices.values() if d.keystore.has("k")] == ["BS-01"]

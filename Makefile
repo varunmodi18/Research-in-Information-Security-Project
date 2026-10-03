@@ -25,7 +25,7 @@ report: eval
 
 # M0-T5: what CI runs on every commit.
 # NFR-MNT-01: strict typing on the packages added by IMPLEMENTATION_PLAN.md.
-TYPED = src/maka/codec.py src/maka/runtime src/maka/original_rt src/maka_server
+TYPED = src/maka/codec.py src/maka/kdf.py src/maka/runtime src/maka/original_rt src/maka/enhanced src/maka/lab src/maka_server
 
 ci:
 	$(PYTHON) -m ruff check .

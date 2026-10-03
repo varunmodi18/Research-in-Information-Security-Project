@@ -3,7 +3,7 @@
 Five-way classification of every place this implementation had to make a decision RP9 does not
 make for it, per `PLAN.md` §0 rule 3 and §5. Each entry: exact passage at issue, class, resolution,
 and a runnable demonstration under `tests/register/`. Finalised at P13.6 with 32 entries; extended
-by IMPLEMENTATION_PLAN.md M1 to 39 entries (5 ER, 9 AM, 16 IA, 8 OB, 1 SD).
+by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries (5 ER, 9 AM, 17 IA, 8 OB, 1 SD).
 
 ## ER — genuine errata (5)
 
@@ -42,6 +42,7 @@ by IMPLEMENTATION_PLAN.md M1 to 39 entries (5 ER, 9 AM, 16 IA, 8 OB, 1 SD).
 - [x] IA-13 — identifiers are 1–20 bytes of `[A-Za-z0-9-]`, placed left-aligned in a zero-padded 160-bit field before `ID_a ⊕ ID_b` (RP9 §7.2's 160-bit IDs); a zero scalar raises `DegenerateScalarError` (`src/maka/protocol/p3_node_registration.py::xor_to_scalar`)
 - [x] IA-14 — PSEUDO_CH_CM carries `ID_CH` in addition to `P_CM`, so the CM learns from a received message which CH to verify against; +160 paper bits per member, so Table 3 row 2 is `1760 + 160·n` (`src/maka/protocol/p3_node_registration.py`)
 - [x] IA-15 — `r_CH`, `A1`, `A2`, `N_auth_CH` drawn once per CH round, one EM1 per member and a single EM2, as RP9 §5.4 describes; the previous per-member regeneration (I-08) is retired (`src/maka/protocol/p4_node_authentication.py`)
+- [x] IA-17 — **MAKA-E v1** (enhanced mode, the default on product networks) replaces RP9 §5.1–§5.5 apart from the key material `Pr_i = k·H(ID_i)`: provisioning without `k` on devices (C1), pairwise PSKs `HKDF(ê(Pr_A, H(ID_B)))` (C2), a PSK-authenticated ephemeral-DH key exchange modelled on TLS 1.3 `psk_dhe_ke` (C3), and BS-authorised membership, designation, revocation and authenticated batching (C4). Specified in IMPLEMENTATION_PLAN.md §4.6 with the clarifications in `docs/PLAN_ERRATA.md` E-05. RP9 as published remains available as original mode on lab networks (`src/maka/enhanced/`; `tests/enhanced/`)
 - [x] IA-16 — DATA_CM: AES-256-GCM with associated data `LP(ID_CM, ID_BS, seq)` and nonce `0^32 ‖ seq`, `seq` a per-sender counter (`src/maka/protocol/data_transmission.py`, `src/maka/aead.py`)
 
 ## OB — observations (6)
