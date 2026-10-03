@@ -94,7 +94,9 @@ def delete_network(network_id: int, body: NetworkDelete, _: Principal = Depends(
             raise ApiError(409, "NETWORK_BUSY", "Network busy", "wait for the running job to finish")
         db.execute(delete(models.Job).where(models.Job.network_id == network_id))
         db.delete(net)
+    ctx.jobs.periodic.pop(network_id, None)
     ctx.registry.drop(network_id)
+    ctx.broker.forget(network_id)
 
 
 @router.post("/{network_id}/jobs", response_model=JobAccepted, status_code=202)

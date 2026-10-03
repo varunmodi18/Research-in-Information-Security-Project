@@ -11,7 +11,42 @@ register classes (errata, ambiguity, implementation assumption, observation, sec
 dependency) — see `docs/REGISTER.md` and `PLAN.md`, the execution order this repository was
 built from.
 
-## Quick start
+## The MAKA console (v1.0.0)
+
+On top of the reproduction, the repository contains a web console. It runs simulated sensor networks
+under **MAKA-E**, an enhanced protocol that keeps RP9's identity-based keys but replaces the rest with
+a PSK-authenticated ephemeral Diffie–Hellman exchange, BS-authorised membership and revocation
+(`docs/SECURITY_ARGUMENT.md`). It also has a **Lab** that runs eight attacks against RP9 as published
+and against MAKA-E, side by side, on real protocol bytes.
+
+```bash
+python3 -m venv .venv && make setup web web-build   # Python deps, npm ci, build the UI
+export MAKA_KEK=$(python3 -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())")
+PYTHONPATH=src .venv/bin/python -m maka_server seed-demo   # users admin/operator/viewer (passwords prompted) + demo networks
+make serve                                     # http://127.0.0.1:8000
+```
+
+Or with Docker: `docs/OPERATIONS.md`.
+
+| Document | Contents |
+|---|---|
+| [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md) | Pages, roles and workflows |
+| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) | The 12-minute demonstration, with fallbacks |
+| [`docs/OPERATIONS.md`](docs/OPERATIONS.md) | Configuration, KEK, backup and reset, logs |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | How the pieces fit |
+| [`docs/API.md`](docs/API.md) | HTTP API |
+| [`docs/SECURITY_ARGUMENT.md`](docs/SECURITY_ARGUMENT.md), [`docs/RESIDUAL_RISKS.md`](docs/RESIDUAL_RISKS.md) | What MAKA-E claims, why, and what it does not |
+| [`artifacts/eval/`](artifacts/eval/) | Original-vs-enhanced comparison, benchmarks |
+| [`docs/OPEN_ISSUES.md`](docs/OPEN_ISSUES.md), [`CHANGELOG.md`](CHANGELOG.md) | What is not done, and what was |
+
+**Limitations.**
+- Devices, radio and timing are simulated, and there is no energy measurement.
+- Arithmetic is pure Python and not constant-time, and the parameters are demonstration-grade: about
+  60-bit (`demo`) or 80-bit (`secure`).
+- The symbolic analysis is bounded, and there is no computational proof for MAKA-E.
+- Passing tests are not a proof of cryptographic security.
+
+## Quick start (reproduction CLI)
 
 ```bash
 pip install -e ".[dev]"      # or: make setup
@@ -93,3 +128,7 @@ parameter or a correction to RP9:
 - `docs/SOURCES.md` — the bounded policy governing ICMDS-P's two uses.
 - `docs/DEFERRED.md` — what was considered and deliberately not built at this stage.
 - `PLAN.md` — the execution order this repository was built from.
+- `src/maka/runtime`, `src/maka/original_rt`, `src/maka/enhanced`, `src/maka/lab` — the device runtime,
+  RP9 on it, MAKA-E, and the Lab adversary (console).
+- `src/maka_server/`, `web/`, `deploy/` — the console backend, UI and Docker packaging.
+- `eval/bench/` — benchmarks and the original-vs-enhanced comparison.

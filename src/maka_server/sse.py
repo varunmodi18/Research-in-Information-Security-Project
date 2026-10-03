@@ -47,6 +47,12 @@ class Broker:
         with self._lock:
             return [e for e in self._buffers.get(network_id, ()) if e.id > last_id]
 
+    def forget(self, network_id: int) -> None:
+        """Drops a deleted network's buffered events. Ids keep increasing, so a reused network id
+        never replays the old network's events to a reconnecting client."""
+        with self._lock:
+            self._buffers.pop(network_id, None)
+
     def last_id(self, network_id: int | None) -> int:
         with self._lock:
             return self._next_id.get(network_id, 0)

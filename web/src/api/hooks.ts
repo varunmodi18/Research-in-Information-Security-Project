@@ -70,6 +70,7 @@ export function useEvents(filter: EventFilter = {}) {
   return useQuery({
     queryKey: keys.events(filter),
     queryFn: () => api.get<Page<SecurityEvent>>(`/events${qs({ limit: 200, ...filter })}`),
+    refetchInterval: 2000, // the log keeps growing while jobs run (FR-14); the query is cheap (V-PERF-04)
   });
 }
 

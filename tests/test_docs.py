@@ -50,3 +50,29 @@ def test_er03_is_not_misquoted() -> None:
 def test_hlpsl_header_does_not_claim_faithful_transcription() -> None:
     header = (REPO_ROOT / "formal" / "avispa" / "maka.hlpsl").read_text(encoding="utf-8")[:800]
     assert "preserved" not in header and "NOT a faithful transcription" in header
+
+
+def test_api_doc_is_generated_from_current_code() -> None:
+    """docs/API.md's endpoint and job tables match the app (M8-T3); regenerate with `make openapi`."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("gen_api_doc", REPO_ROOT / "tools" / "gen_api_doc.py")
+    assert spec and spec.loader
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert (REPO_ROOT / "docs" / "API.md").read_text(encoding="utf-8") == mod.render()
+
+
+def test_no_doc_or_ui_text_claims_proven_or_deployment_grade_security() -> None:
+    """§7.3 item 5: no document or UI string claims proven or deployment-grade security."""
+    claim = re.compile(r"\b(provably secure|proven secure|formally proven|deployment[- ]grade security|"
+                       r"production[- ]ready security|guarantees? security)\b", re.IGNORECASE)
+    negation = re.compile(r"\b(no|not|never|nothing|without|nor|isn't|aren't|cannot)\b", re.IGNORECASE)
+    ui = sorted((REPO_ROOT / "web" / "src").rglob("*.tsx"))
+    offenders = []
+    for path in [*DOCS, *ui]:
+        for n, text in _windows(path):
+            m = claim.search(text)
+            if m and not negation.search(text):
+                offenders.append(f"{path.relative_to(REPO_ROOT)}:{n}: {m.group(0)}")
+    assert not offenders, offenders

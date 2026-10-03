@@ -3,6 +3,13 @@
 Findings, missed thresholds and acceptance steps that could not be completed, each with its
 evidence (IMPLEMENTATION_PLAN.md §5 rules, §6.6, §7.3). Newest at the bottom of each section.
 
+## Awaiting project-owner approval (§7.3 item 1)
+
+The definition of done accepts an unmet **M**-priority criterion only with a documented,
+evidence-backed reason **approved by the project owner**. OI-01 (Docker) and OI-02 (HLPSL/CL-AtSe)
+below are documented with evidence. They have **not yet been approved**: approval is the owner's
+decision, not the implementer's.
+
 ## Acceptance steps not run
 
 ### OI-01 · Docker acceptance (M3-T7, M5-T7, M8-T4) not executed on this host

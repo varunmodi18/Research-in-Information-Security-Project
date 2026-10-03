@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import uuid
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
 
@@ -59,8 +61,8 @@ def patch_user(user_id: int, body: UserPatch, principal: Principal = Depends(adm
 @router.post("/reset-demo", response_model=JobAccepted, status_code=202)
 def reset_demo(body: ResetDemo, principal: Principal = Depends(admin),
                ctx: AppContext = Depends(get_ctx)) -> JobAccepted:
-    job, created = ctx.jobs.submit(None, "reset_demo", {}, f"reset-demo-{models.utcnow().timestamp():.0f}",
-                                   principal.user_id)
+    # every confirmed reset is a new job (a time-based key merged two resets within one second)
+    job, created = ctx.jobs.submit(None, "reset_demo", {}, f"reset-demo-{uuid.uuid4().hex}", principal.user_id)
     return JobAccepted(job_id=job.id, created=created)
 
 

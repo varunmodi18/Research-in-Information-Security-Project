@@ -1,4 +1,4 @@
-.PHONY: setup test demo eval formal report clean all ci ci-slow bench web web-build openapi serve dev e2e
+.PHONY: setup test demo demo-seed demo-reset eval formal report clean all ci ci-slow bench web web-build openapi serve dev e2e
 
 # Prefer the project virtualenv when it exists (IMPLEMENTATION_PLAN.md M0-T1).
 PYTHON ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
@@ -12,6 +12,13 @@ test:
 
 demo:
 	$(PYTHON) -m maka.cli all --params $(PARAMS)
+
+# M8-T1: console demo state (users + "Vineyard" + "Lab-Paper"); demo-reset keeps users and audit log
+demo-seed:
+	PYTHONPATH=src $(PYTHON) -m maka_server seed-demo
+
+demo-reset:
+	PYTHONPATH=src $(PYTHON) -m maka_server reset-demo
 
 eval:
 	$(PYTHON) -m maka.cli eval --all --fixture paper --params $(PARAMS)
@@ -43,6 +50,7 @@ bench:
 # -- console (IMPLEMENTATION_PLAN.md M3) -------------------------------------------
 openapi:
 	$(PYTHON) tools/export_openapi.py
+	$(PYTHON) tools/gen_api_doc.py
 	cd web && npm run gen:api:file
 
 web:
