@@ -24,7 +24,7 @@ def test_v_pos_02_full_onboarding_on_net() -> None:
     for cm in net.cms():
         assert cm.designated == cm.cluster and cm.status == "active"
     assert all(d.status == "active" for d in net.scheduler.devices.values())
-    assert len(events(net, "HANDSHAKE_OK")) == 2 * 21
+    assert len(events(net, "HANDSHAKE_OK")) == 21 and len(events(net, "KEY_CONFIRMED")) == 21
 
 
 def test_v_adv_13_ch_claims_fake_and_foreign_members() -> None:
@@ -72,7 +72,7 @@ def test_v_adv_10_insider_impersonation_enhanced_blocked_100_of_100() -> None:
         t0 = mark(net)
         inject(net, "CH-01", "CM-0102", attacker.forge_hs2(insider.curve, insider.g, r, hs1, guesses[attempt % 3]))
         net.step(1)
-        accepted += len([e for e in events(net, "HANDSHAKE_OK", t0) if e.device == "CM-0102"])
+        accepted += len([e for e in events(net, "KEY_CONFIRMED", t0) if e.device == "CM-0102"])
         assert net.scheduler.log[-1].reason == "BAD_TAG"
     assert accepted == 0
 

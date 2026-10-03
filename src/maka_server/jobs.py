@@ -81,6 +81,8 @@ class JobManager:
         self._cancel: dict[int, threading.Event] = {}
         self._done: dict[int, threading.Event] = {}
         self._lock = threading.Lock()
+        self.periodic: dict[int | None, dict[str, Any]] = {}  # FR-06 periodic readings per network
+        self.tick_s = 0.1
 
     # -- submission ------------------------------------------------------------------
 
@@ -177,7 +179,11 @@ class JobManager:
     def _worker(self, network_id: int | None, q: queue.Queue[int | None]) -> None:
         self.app.thread_setup()
         while True:
-            job_id = q.get()
+            try:
+                job_id = q.get(timeout=self.tick_s if self.periodic.get(network_id) else None)
+            except queue.Empty:
+                self._tick(network_id)
+                continue
             if job_id is None:
                 return
             try:
@@ -186,6 +192,28 @@ class JobManager:
                 done = self._done.get(job_id)
                 if done is not None:
                     done.set()
+
+    def _tick(self, network_id: int | None) -> None:
+        """One scheduler step of a network with periodic readings on; every `every_steps`
+        steps each selected CM sends a simulated reading (FR-06)."""
+        state = self.periodic.get(network_id)
+        if state is None or network_id is None:
+            return
+        from maka_server.services.networks import simulated_reading
+
+        try:
+            rt = self.app.registry.get(network_id)
+            with rt.lock:
+                if state["tick"] % state["every_steps"] == 0:
+                    for cm in state["devices"]:
+                        if cm in rt.scheduler.devices:
+                            rt.net.send_reading(cm, simulated_reading())
+                state["tick"] += 1
+                rt.net.step(1)  # type: ignore[attr-defined]
+        except Exception as exc:  # noqa: BLE001 -- a broken ticker must not kill the worker
+            self.periodic.pop(network_id, None)
+            self.app.broker.publish(network_id, "job_progress", {"type": "periodic", "state": FAILED,
+                                                                 "error": f"{type(exc).__name__}: {exc}"})
 
     def _run(self, job_id: int) -> None:
         with self.app.db.session() as db:

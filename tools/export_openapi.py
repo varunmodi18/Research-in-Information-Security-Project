@@ -10,8 +10,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from maka_server.main import create_app  # noqa: E402
-from maka_server.settings import Settings  # noqa: E402
+from maka_server.main import create_app
+from maka_server.settings import Settings
 
 
 def main() -> int:

@@ -322,7 +322,10 @@ class EnhancedDevice(Device):
                 rotated = True
         self.current[key] = s.sid_hex
         self.retries[key] = 0
-        self.emit("HANDSHAKE_OK", peer=s.peer, sid=s.sid_hex, purpose=s.purpose, role=s.role)
+        # One HANDSHAKE_OK per handshake, at the responder once tag_I verifies (both sides have
+        # then confirmed the keys); the initiator records KEY_CONFIRMED when tag_R verifies.
+        self.emit("HANDSHAKE_OK" if s.role == st.RESPONDER else "KEY_CONFIRMED", peer=s.peer, sid=s.sid_hex,
+                  purpose=s.purpose)
         if rotated:
             self.emit("KEY_ROTATED", peer=s.peer, sid=s.sid_hex, purpose=s.purpose)
         return self.on_established(s)

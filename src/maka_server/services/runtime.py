@@ -86,6 +86,14 @@ class NetworkRuntime:
             return
         dev_rows = {d.ident: d for d in db.scalars(select(models.Device).where(
             models.Device.network_id == self.network_id))}
+        for ident, dev in sched.devices.items():  # devices added by reprovision / designate
+            if ident not in dev_rows:
+                row = models.Device(network_id=self.network_id, ident=ident, role=dev.role, cluster=dev.cluster,
+                                    status=dev.status, pu_fingerprint=pu_fingerprint(self.net.params_name, ident),
+                                    status_history=[{"step": sched.step_no, "status": dev.status}])
+                db.add(row)
+                dev_rows[ident] = row
+        db.flush()
 
         keep_payload = self.kind == "lab"
         for result in sched.log[self._log_cursor:]:
@@ -125,14 +133,13 @@ class NetworkRuntime:
         self._reading_cursor = len(readings)
 
         for ident, dev in sched.devices.items():
-            row = dev_rows.get(ident)
-            if row is None:
+            dev_row = dev_rows.get(ident)
+            if dev_row is None:
                 continue
-            epoch = self.net.device_epoch(ident)
-            if row.status != dev.status:
-                row.status_history = [*row.status_history, {"step": sched.step_no, "status": dev.status}]
-                row.status = dev.status
-            row.epoch = epoch
+            if dev_row.status != dev.status:
+                dev_row.status_history = [*dev_row.status_history, {"step": sched.step_no, "status": dev.status}]
+                dev_row.status = dev.status
+            dev_row.epoch = self.net.device_epoch(ident)
 
         db.execute(delete(models.ProtocolSession).where(models.ProtocolSession.network_id == self.network_id))
         for s in self.net.session_infos():

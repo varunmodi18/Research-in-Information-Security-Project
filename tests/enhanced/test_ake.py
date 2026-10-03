@@ -208,7 +208,7 @@ def test_v_adv_14_cross_mode_and_cross_purpose() -> None:
     inject(net, "CH-01", "CM-0101", spliced)
     net.step(1)
     assert net.scheduler.log[-1].reason == "BAD_TAG"
-    assert not events(net, "HANDSHAKE_OK", t1)
+    assert not events(net, "KEY_CONFIRMED", t1)
 
 
 def test_v_dos_01_unprovisioned_flood_costs_no_public_key_ops() -> None:

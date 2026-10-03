@@ -138,6 +138,6 @@ def test_v_cap_02_capture_of_one_cm() -> None:
     t0 = mark(net)
     inject(net, "CH-01", "CM-0101", attacker.forge_hs2(cm.curve, cm.g, r, rec.frames[-1].payload, stolen["psk:CH-01"]))
     net.step(1)
-    assert any(e.type == "HANDSHAKE_OK" and e.device == "CM-0101" for e in net.scheduler.events[t0:])
+    assert any(e.type == "KEY_CONFIRMED" and e.device == "CM-0101" for e in net.scheduler.events[t0:])
     # ... but not to CM-0102, whose PSK with the CH the attacker lacks (V-ADV-10)
     assert codec.enc_point(ch.g)  # keep the curve objects referenced for readers

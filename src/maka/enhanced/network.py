@@ -265,3 +265,66 @@ def build(params_name: str, topology: str | dict[str, object], *, kind: str = LA
     if check_invariant:
         net.scheduler.hooks.append(lambda _r: check_master_key_invariant(net.scheduler.devices.values(), net.bs_id))
     return net
+
+
+@dataclass(frozen=True)
+class DeviceSpec:
+    """A device as persisted by the console (role, cluster, registry status and epoch)."""
+
+    ident: str
+    role: str
+    cluster: str | None
+    status: str
+    epoch: int
+
+
+def restore(params_name: str, bs_id: str, specs: list[DeviceSpec],
+            keystores: dict[str, dict[str, tuple[SecretClass, bytes]]], *, kind: str = LAB,
+            source: rng.RandomSource | None = None, tunables: Tunables | None = None,
+            aborted_sessions: list[dict[str, Any]] | None = None) -> EnhancedNetwork:
+    """Rebuilds a network after a restart or a failed job (§4.8): long-term keys from the
+    encrypted keystore, registry from the device rows, no sessions (all ABORTED), devices that
+    were active revert to registered. Grants and designations are re-established by onboarding."""
+    pset = params.get(params_name)
+    tun = tunables or Tunables()
+    cfg = EnhancedConfig(curve=pset.curve, g=pset.g, id_bs=bs_id, max_pending=tun.max_pending,
+                         t_hs=effective_t_hs(tun.t_hs, len(specs)), t_retry=tun.t_retry,
+                         batch_steps=tun.batch_steps, batch_max=tun.batch_max)
+    src = source or rng.SystemSource()
+    net = EnhancedNetwork(scheduler=Scheduler(Bus(kind=kind)), cfg=cfg, params_name=params_name, source=src,
+                          aborted_sessions=list(aborted_sessions or []))
+
+    def keystore(ident: str) -> Keystore:
+        ks = Keystore(ident)
+        ks.load_raw(keystores.get(ident, {}))
+        return ks
+
+    bs = EnhancedBS(bs_id, None, keystore(bs_id), src.spawn(bs_id), cfg)
+    net.scheduler.add_device(bs)
+    for spec in specs:
+        if spec.role == dv.BS:
+            continue
+        bs.register(spec.ident, spec.role, spec.cluster)
+        reg = bs.registry[spec.ident]
+        reg.epoch = spec.epoch
+        if spec.status == dv.REVOKED:
+            reg.status = REVOKED
+        bs.epoch = max(bs.epoch, spec.epoch)
+    for c in {s.cluster for s in specs if s.role == dv.CH and s.cluster}:
+        live = [s.ident for s in specs if s.role == dv.CH and s.cluster == c and s.status != dv.REVOKED]
+        bs.cluster_ch[c] = live[-1] if live else None
+    for spec in specs:
+        if spec.role == dv.BS:
+            continue
+        members = [s.ident for s in specs if s.role == dv.CM and s.cluster == spec.cluster and s.status != dv.REVOKED]
+        dev = _make_device(spec.ident, spec.role, spec.cluster, keystore(spec.ident), src.spawn(spec.ident), cfg,
+                           members if spec.role == dv.CH else [])
+        if spec.role == dv.CM and spec.cluster is not None:
+            cast(EnhancedCM, dev).relay_ch = bs.cluster_ch.get(spec.cluster)
+        if spec.status == dv.REVOKED:
+            dev.set_status(dv.REVOKED)
+        elif spec.status != dv.PROVISIONED:
+            dev.set_status(dv.REGISTERED)
+        net.scheduler.add_device(dev)
+    net.scheduler.hooks.append(lambda _r: check_master_key_invariant(net.scheduler.devices.values(), net.bs_id))
+    return net

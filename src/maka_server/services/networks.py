@@ -13,8 +13,9 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from maka import fixtures
+from maka.enhanced import network as en
 from maka.original_rt import network as onet
-from maka.rng import SystemSource
+from maka.rng import Rng, SystemSource
 from maka.runtime.keystore import Keystore
 from maka.runtime.scheduler import StepResult
 from maka_server import models
@@ -109,8 +110,46 @@ def build_original(row: models.Network, devices: list[models.Device], adapter: E
     return cast(RuntimeNet, net)
 
 
+def make_enhanced_builder(ctx: AppContext):  # type: ignore[no-untyped-def]
+    s = ctx.settings
+    tunables = en.Tunables(max_pending=s.max_pending, t_hs=s.t_hs, t_retry=s.t_retry,
+                           batch_steps=s.batch_steps, batch_max=s.batch_max)
+
+    def build_enhanced(row: models.Network, devices: list[models.Device], adapter: EncryptedKeystoreAdapter,
+                       db: Session) -> RuntimeNet:
+        """Fresh MAKA-E provisioning, or the §4.8 restore from the encrypted keystore."""
+        dev_ids = [d.id for d in devices]
+        has_keys = db.scalar(select(models.KeystoreEntry.id).where(
+            models.KeystoreEntry.device_id.in_(dev_ids)).limit(1)) is not None
+        if not has_keys:
+            net = en.build(row.params, topology_from_rows(row, devices), kind=row.kind, seed=row.seed,
+                           tunables=tunables)
+            mirror_keystores([d.keystore for d in net.scheduler.devices.values()], adapter)
+            return cast(RuntimeNet, net)
+        restores = int(row.options_json.get("restores", 0)) + 1
+        row.options_json = {**row.options_json, "restores": restores}
+        source: SystemSource | Rng = (Rng(seed=row.seed).spawn(f"restore-{restores}") if row.seed is not None
+                                      else SystemSource())
+        aborted = [{"a": r.a, "b": r.b, "purpose": r.purpose, "state": "ABORTED", "sid_hex": r.sid_hex,
+                    "established_step": r.established_step, "epoch": r.epoch, "sent": r.sent, "recv": r.recv,
+                    "superseded_by": None}
+                   for r in db.scalars(select(models.ProtocolSession).where(
+                       models.ProtocolSession.network_id == row.id))
+                   if r.state in ("ESTABLISHED", "SENT_HS1", "WAIT_HS3") or r.state.startswith("ESTABLISHED/")]
+        net = en.restore(row.params, row.bs_device_id,
+                         [en.DeviceSpec(d.ident, d.role, d.cluster, d.status, d.epoch) for d in devices],
+                         {d.ident: adapter.load(db, d.id, d.ident) for d in devices}, kind=row.kind,
+                         source=source, tunables=tunables, aborted_sessions=aborted)
+        for d in net.scheduler.devices.values():
+            d.keystore.attach(adapter)
+        return cast(RuntimeNet, net)
+
+    return build_enhanced
+
+
 def register_builders(ctx: AppContext) -> None:
     ctx.registry.builders["original"] = build_original
+    ctx.registry.builders["enhanced"] = make_enhanced_builder(ctx)
 
 
 # -- job handlers ------------------------------------------------------------------------

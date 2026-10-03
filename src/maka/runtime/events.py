@@ -16,7 +16,7 @@ HIGH = "high"
 # Event types (§4.10), with default severities.
 SEVERITY: dict[str, str] = {
     # handshakes
-    "HANDSHAKE_OK": INFO, "HANDSHAKE_FAIL": WARN,
+    "HANDSHAKE_OK": INFO, "HANDSHAKE_FAIL": WARN, "KEY_CONFIRMED": INFO,
     # validation failures
     "DECODE_ERROR": WARN, "BAD_POINT": WARN, "BAD_TAG": HIGH, "WRONG_RECIPIENT": WARN,
     "BAD_PURPOSE": WARN, "UNAUTHORISED_PEER": HIGH, "RATE_LIMITED": WARN,
