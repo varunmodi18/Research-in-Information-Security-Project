@@ -14,7 +14,9 @@ export function EventsPage() {
   const [severity, setSeverity] = useState(params.get("severity") ?? "");
   const [type, setType] = useState(params.get("type") ?? "");
   const [device, setDevice] = useState(params.get("device") ?? "");
-  const filter = { network, severity: severity || undefined, type: type || undefined, device: device || undefined, limit: 500 };
+  const runTag = params.get("run_tag") ?? undefined;
+  const filter = { network, severity: severity || undefined, type: type || undefined, device: device || undefined,
+    run_tag: runTag, limit: 500 };
   const events = useEvents(filter);
   const exportUrl = (format: string) => `/api/events/export${qs({ format, network, severity, type, device })}`;
 
@@ -23,7 +25,7 @@ export function EventsPage() {
       <ModeBanner />
       <PageHeader
         title="Security events"
-        subtitle={network ? `Network ${network}` : "All networks"}
+        subtitle={runTag ? `Lab run ${runTag}` : network ? `Network ${network}` : "All networks"}
         actions={
           <>
             <a className="btn-secondary" href={exportUrl("csv")}>Export CSV</a>

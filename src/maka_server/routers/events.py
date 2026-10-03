@@ -21,8 +21,10 @@ router = APIRouter(prefix="/events", tags=["events"])
 
 
 def _query(network: int | None, severity: str | None, type: str | None, device: str | None,
-           since: datetime | None) -> Select[models.SecurityEventRow]:
+           since: datetime | None, run_tag: str | None = None) -> Select[models.SecurityEventRow]:
     q = select(models.SecurityEventRow)
+    if run_tag:
+        q = q.where(models.SecurityEventRow.run_tag == run_tag)
     if network is not None:
         q = q.where(models.SecurityEventRow.network_id == network)
     if severity:
@@ -39,15 +41,16 @@ def _query(network: int | None, severity: str | None, type: str | None, device: 
 def _out(r: models.SecurityEventRow) -> EventOut:
     return EventOut(id=r.id, network_id=r.network_id, step=r.step, ts=r.ts, severity=r.severity, type=r.type,
                     device=r.device, peer=r.peer, session_sid=r.session_sid, frame_id=r.frame_id,
-                    details=dict(r.details_json))
+                    details=dict(r.details_json), run_tag=r.run_tag)
 
 
 @router.get("", response_model=Page[EventOut])
 def list_events(network: int | None = None, severity: str | None = None, type: str | None = None,
-                device: str | None = None, since: datetime | None = None, cursor: int | None = None,
-                limit: int = Query(default=200, ge=1, le=1000), order: Literal["asc", "desc"] = "desc",
+                device: str | None = None, since: datetime | None = None, run_tag: str | None = None,
+                cursor: int | None = None, limit: int = Query(default=200, ge=1, le=1000),
+                order: Literal["asc", "desc"] = "desc",
                 _: Principal = Depends(viewer), db: Session = Depends(get_db)) -> Page[EventOut]:
-    q = _query(network, severity, type, device, since)
+    q = _query(network, severity, type, device, since, run_tag)
     if cursor is not None:
         q = q.where(models.SecurityEventRow.id < cursor if order == "desc" else models.SecurityEventRow.id > cursor)
     col = models.SecurityEventRow.id

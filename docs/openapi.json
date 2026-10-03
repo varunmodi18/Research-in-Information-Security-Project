@@ -207,6 +207,17 @@
       ],
       "title": "Peer"
      },
+     "run_tag": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Run Tag"
+     },
      "session_sid": {
       "anyOf": [
        {
@@ -321,6 +332,17 @@
        }
       ],
       "title": "Reason"
+     },
+     "run_tag": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Run Tag"
      },
      "sent_step": {
       "title": "Sent Step",
@@ -1689,6 +1711,22 @@
      },
      {
       "in": "query",
+      "name": "run_tag",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Run Tag"
+      }
+     },
+     {
+      "in": "query",
       "name": "cursor",
       "required": false,
       "schema": {
@@ -2324,6 +2362,22 @@
         }
        ],
        "title": "Job"
+      }
+     },
+     {
+      "in": "query",
+      "name": "run_tag",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Run Tag"
       }
      },
      {

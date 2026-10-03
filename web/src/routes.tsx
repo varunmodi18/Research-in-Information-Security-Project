@@ -4,6 +4,7 @@ import type { Role } from "./api/types";
 import { AdminPage } from "./pages/AdminPage";
 import { DevicePage } from "./pages/DevicePage";
 import { FramesPage } from "./pages/FramesPage";
+import { LabPage } from "./pages/LabPage";
 import { ReadingsPage } from "./pages/ReadingsPage";
 import { TimelinePage } from "./pages/TimelinePage";
 
@@ -13,4 +14,5 @@ export const EXTRA_ROUTES: { path: string; min: Role; element: ReactNode }[] = [
   { path: "/networks/:id/frames", min: "viewer", element: <FramesPage /> },
   { path: "/networks/:id/readings", min: "operator", element: <ReadingsPage /> },
   { path: "/admin", min: "admin", element: <AdminPage /> },
+  { path: "/lab", min: "operator", element: <LabPage /> },
 ];

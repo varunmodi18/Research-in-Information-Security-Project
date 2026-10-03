@@ -46,6 +46,7 @@ export interface FrameFilter {
   dst?: string;
   verdict?: string;
   job?: number;
+  run_tag?: string;
   limit?: number;
 }
 
@@ -61,6 +62,7 @@ export interface EventFilter {
   severity?: string;
   type?: string;
   device?: string;
+  run_tag?: string;
   limit?: number;
 }
 

@@ -118,6 +118,7 @@ class FrameRow(Base):
     reason: Mapped[str | None] = mapped_column(String(64), nullable=True)
     fate: Mapped[str] = mapped_column(String(16), default="sent")
     checks_json: Mapped[list] = mapped_column(JSON, default=list)  # type: ignore[type-arg]
+    run_tag: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)  # Lab runs (M6)
 
 
 class SecurityEventRow(Base):
@@ -133,6 +134,7 @@ class SecurityEventRow(Base):
     session_sid: Mapped[str | None] = mapped_column(String(64), nullable=True)
     frame_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
     details_json: Mapped[dict] = mapped_column(JSON, default=dict)  # type: ignore[type-arg]
+    run_tag: Mapped[str | None] = mapped_column(String(64), nullable=True, index=True)  # Lab runs (M6)
 
 
 class Reading(Base):

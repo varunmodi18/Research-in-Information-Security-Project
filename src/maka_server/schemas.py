@@ -170,6 +170,7 @@ class FrameOut(BaseModel):
     verdict: str
     reason: str | None
     fate: str
+    run_tag: str | None = None
     checks: list[CheckOut]
 
 
@@ -185,6 +186,7 @@ class EventOut(BaseModel):
     session_sid: str | None
     frame_id: int | None
     details: dict[str, Any]
+    run_tag: str | None = None
 
 
 class ReadingOut(BaseModel):

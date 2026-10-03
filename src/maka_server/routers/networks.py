@@ -126,7 +126,7 @@ def get_device(network_id: int, ident: str, _: Principal = Depends(viewer),
 @router.get("/{network_id}/frames", response_model=Page[FrameOut])
 def list_frames(network_id: int, label: str | None = None, src: str | None = None, dst: str | None = None,
                 verdict: str | None = None, after_step: int | None = None, job: int | None = None,
-                cursor: int | None = None, limit: int = Query(default=200, ge=1, le=1000),
+                run_tag: str | None = None, cursor: int | None = None, limit: int = Query(default=200, ge=1, le=1000),
                 _: Principal = Depends(viewer), db: Session = Depends(get_db)) -> Page[FrameOut]:
     _get_network(db, network_id)
     q = select(models.FrameRow).where(models.FrameRow.network_id == network_id)
@@ -142,13 +142,14 @@ def list_frames(network_id: int, label: str | None = None, src: str | None = Non
         q = q.where(models.FrameRow.step > after_step)
     if job is not None:
         q = q.where(models.FrameRow.job_id == job)
+    q = q.where(models.FrameRow.run_tag == run_tag) if run_tag else q.where(models.FrameRow.run_tag.is_(None))
     if cursor is not None:
         q = q.where(models.FrameRow.id > cursor)
     rows = list(db.scalars(q.order_by(models.FrameRow.id).limit(limit + 1)))
     items = [FrameOut(id=r.id, frame_id=r.frame_id, job_id=r.job_id, step=r.step, sent_step=r.sent_step,
                       src=r.src, dst=r.dst, to=r.to, label=r.label, bytes_len=r.bytes_len,
                       paper_bits=r.paper_bits, payload_hex=r.payload.hex() if r.payload is not None else None,
-                      verdict=r.verdict, reason=r.reason, fate=r.fate,
+                      verdict=r.verdict, reason=r.reason, fate=r.fate, run_tag=r.run_tag,
                       checks=[CheckOut(**c) for c in r.checks_json]) for r in rows[:limit]]
     return Page[FrameOut](items=items, next_cursor=rows[limit - 1].id if len(rows) > limit else None)
 

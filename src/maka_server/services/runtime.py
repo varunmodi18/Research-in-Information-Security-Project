@@ -95,35 +95,10 @@ class NetworkRuntime:
                 dev_rows[ident] = row
         db.flush()
 
-        keep_payload = self.kind == "lab"
-        for result in sched.log[self._log_cursor:]:
-            if result.kind == "deliver" and result.frame is not None:
-                f = result.frame
-                payload = f.payload if keep_payload or len(f.payload) <= PRODUCT_PAYLOAD_CAP else None
-                db.add(models.FrameRow(
-                    network_id=self.network_id, job_id=self.job_id, frame_id=f.frame_id, step=result.step,
-                    sent_step=f.step, src=f.src, dst=f.dst, to=result.to, label=f.label,
-                    bytes_len=len(f.payload), paper_bits=f.paper_bits, payload=payload,
-                    verdict=result.verdict, reason=result.reason,
-                    fate="injected" if f.injected else "modified" if f.tampered else "delivered",
-                    checks_json=[{"name": c.name, "ok": c.ok, "reason": c.reason} for c in result.checks]))
-        self._log_cursor = len(sched.log)
-
-        for entry in sched.bus.transcript[self._transcript_cursor:]:
-            if entry.fate == "dropped":
-                f = entry.frame
-                db.add(models.FrameRow(
-                    network_id=self.network_id, job_id=self.job_id, frame_id=f.frame_id, step=f.step,
-                    sent_step=f.step, src=f.src, dst=f.dst, to=None, label=f.label,
-                    bytes_len=len(f.payload), paper_bits=f.paper_bits,
-                    payload=f.payload if keep_payload else None, verdict="DROPPED",
-                    reason="ADVERSARY_DROP", fate="dropped", checks_json=[]))
-        self._transcript_cursor = len(sched.bus.transcript)
-
-        for e in sched.events[self._event_cursor:]:
-            db.add(models.SecurityEventRow(
-                network_id=self.network_id, step=e.step, severity=e.severity, type=e.type, device=e.device,
-                peer=e.peer, session_sid=e.sid, frame_id=e.frame_id, details_json=dict(e.details)))
+        persist_frames(db, self.network_id, self.job_id, sched, self._log_cursor, self._transcript_cursor,
+                       keep_payload=self.kind == "lab")
+        self._log_cursor, self._transcript_cursor = len(sched.log), len(sched.bus.transcript)
+        persist_events(db, self.network_id, sched.events[self._event_cursor:])
         self._event_cursor = len(sched.events)
 
         readings = self.net.readings()
@@ -158,6 +133,48 @@ class NetworkRuntime:
                                .order_by(models.FrameRow.id).offset(count - FRAME_CAP).limit(1))
             db.execute(delete(models.FrameRow).where(models.FrameRow.network_id == self.network_id,
                                                      models.FrameRow.id < cutoff))
+
+
+def persist_frames(db: Session, network_id: int, job_id: int | None, sched: Any, log_from: int,
+                   transcript_from: int, *, keep_payload: bool, run_tag: str | None = None) -> dict[int, int]:
+    """Writes delivered frames (with the receiver's verdict and checks) and dropped frames.
+    Returns runtime frame_id -> DB row id (first row per frame)."""
+    rows: list[tuple[int, models.FrameRow]] = []
+    for result in sched.log[log_from:]:
+        if result.kind == "deliver" and result.frame is not None:
+            f = result.frame
+            payload = f.payload if keep_payload or len(f.payload) <= PRODUCT_PAYLOAD_CAP else None
+            rows.append((f.frame_id, models.FrameRow(
+                network_id=network_id, job_id=job_id, frame_id=f.frame_id, step=result.step, sent_step=f.step,
+                src=f.src, dst=f.dst, to=result.to, label=f.label, bytes_len=len(f.payload),
+                paper_bits=f.paper_bits, payload=payload, verdict=result.verdict, reason=result.reason,
+                fate="injected" if f.injected else "modified" if f.tampered else "delivered", run_tag=run_tag,
+                checks_json=[{"name": c.name, "ok": c.ok, "reason": c.reason} for c in result.checks])))
+    for entry in sched.bus.transcript[transcript_from:]:
+        if entry.fate == "dropped":
+            f = entry.frame
+            rows.append((f.frame_id, models.FrameRow(
+                network_id=network_id, job_id=job_id, frame_id=f.frame_id, step=f.step, sent_step=f.step,
+                src=f.src, dst=f.dst, to=None, label=f.label, bytes_len=len(f.payload), paper_bits=f.paper_bits,
+                payload=f.payload if keep_payload else None, verdict="DROPPED", reason="ADVERSARY_DROP",
+                fate="dropped", checks_json=[], run_tag=run_tag)))
+    for _, row in rows:
+        db.add(row)
+    db.flush()
+    out: dict[int, int] = {}
+    for fid, row in rows:
+        out.setdefault(fid, row.id)
+    return out
+
+
+def persist_events(db: Session, network_id: int, events: list[Any], run_tag: str | None = None) -> list[int]:
+    rows = [models.SecurityEventRow(network_id=network_id, step=e.step, severity=e.severity, type=e.type,
+                                    device=e.device, peer=e.peer, session_sid=e.sid, frame_id=e.frame_id,
+                                    details_json=dict(e.details), run_tag=run_tag) for e in events]
+    for row in rows:
+        db.add(row)
+    db.flush()
+    return [row.id for row in rows]
 
 
 def publish_step(broker: Broker, network_id: int, result: StepResult) -> None:

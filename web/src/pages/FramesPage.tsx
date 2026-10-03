@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useFrames, useNetwork } from "../api/hooks";
 import { PageHeader } from "../components/Layout";
 import { ModeBanner } from "../components/ModeBanner";
@@ -10,12 +10,13 @@ import { useNetworkStream } from "../hooks/useNetworkStream";
 // FR-13: frame log -- label, endpoints, sizes (bytes and RP9 paper bits), verdict, payload hex.
 export function FramesPage() {
   const id = Number(useParams().id);
+  const runTag = useSearchParams()[0].get("run_tag") ?? undefined;
   const network = useNetwork(id);
   useNetworkStream(id);
   const [filter, setFilter] = useState({ label: "", src: "", dst: "", verdict: "" });
   const frames = useFrames(id, {
     label: filter.label || undefined, src: filter.src || undefined, dst: filter.dst || undefined,
-    verdict: filter.verdict || undefined,
+    verdict: filter.verdict || undefined, run_tag: runTag,
   });
   if (network.isLoading) return <Loading />;
   if (!network.data) return <ErrorPanel error={network.error} />;
@@ -24,7 +25,8 @@ export function FramesPage() {
   return (
     <div className={network.data.kind === "lab" ? "border-l-4 border-red-500" : ""}>
       <ModeBanner network={network.data} />
-      <PageHeader title={`Frames — ${network.data.name}`} subtitle="Every frame the simulated radio carried, as the receiver saw it"
+      <PageHeader title={`Frames — ${network.data.name}`}
+        subtitle={runTag ? `Evidence of Lab run ${runTag}` : "Every frame the simulated radio carried, as the receiver saw it"}
         actions={<Link className="btn-secondary" to={`/networks/${id}`}>← Topology</Link>} />
       <div className="mx-6 mb-3 flex flex-wrap gap-3">
         {(["label", "src", "dst"] as const).map((k) => (

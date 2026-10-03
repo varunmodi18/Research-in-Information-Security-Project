@@ -453,6 +453,8 @@ export interface components {
             network_id: number | null;
             /** Peer */
             peer: string | null;
+            /** Run Tag */
+            run_tag?: string | null;
             /** Session Sid */
             session_sid: string | null;
             /** Severity */
@@ -491,6 +493,8 @@ export interface components {
             payload_hex: string | null;
             /** Reason */
             reason: string | null;
+            /** Run Tag */
+            run_tag?: string | null;
             /** Sent Step */
             sent_step: number;
             /** Src */
@@ -1103,6 +1107,7 @@ export interface operations {
                 type?: string | null;
                 device?: string | null;
                 since?: string | null;
+                run_tag?: string | null;
                 cursor?: number | null;
                 limit?: number;
                 order?: "asc" | "desc";
@@ -1433,6 +1438,7 @@ export interface operations {
                 verdict?: string | null;
                 after_step?: number | null;
                 job?: number | null;
+                run_tag?: string | null;
                 cursor?: number | null;
                 limit?: number;
             };
