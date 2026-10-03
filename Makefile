@@ -1,4 +1,4 @@
-.PHONY: setup test demo eval formal report clean all ci ci-slow bench
+.PHONY: setup test demo eval formal report clean all ci ci-slow bench web web-build openapi serve dev e2e
 
 # Prefer the project virtualenv when it exists (IMPLEMENTATION_PLAN.md M0-T1).
 PYTHON ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
@@ -39,6 +39,28 @@ ci-slow: ci
 bench:
 	$(PYTHON) -m eval.bench.primitives --out docs/baseline/primitives
 	$(PYTHON) -m eval.bench.legacy --out docs/baseline/legacy_run
+
+# -- console (IMPLEMENTATION_PLAN.md M3) -------------------------------------------
+openapi:
+	$(PYTHON) tools/export_openapi.py
+	cd web && npm run gen:api:file
+
+web:
+	cd web && npm ci --no-audit --no-fund
+
+web-build: openapi
+	cd web && npm run build
+
+serve:
+	$(PYTHON) -m maka_server serve
+
+# Backend with auto-reload on :8000 and Vite on :5173 (proxying /api). Needs MAKA_KEK or MAKA_ENV=test.
+dev:
+	( $(PYTHON) -m uvicorn --factory maka_server.main:create_app --reload --host 127.0.0.1 --port 8000 & \
+	  cd web && npm run dev ; kill %1 )
+
+e2e: web-build
+	cd web && npx playwright test
 
 clean:
 	find . -type d -name '__pycache__' -exec rm -rf {} +

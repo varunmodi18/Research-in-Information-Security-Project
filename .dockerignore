@@ -1,0 +1,11 @@
+.git
+.venv
+**/__pycache__
+**/node_modules
+web/dist
+web/test-results
+var
+.env
+artifacts
+*.pdf
+*.tex

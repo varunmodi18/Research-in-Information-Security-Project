@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     login_lock_s: int = 15 * 60
     persist_every_steps: int = 10
     demo_passwords_file: Path | None = None
+    cookie_secure: bool | None = None  # default: Secure unless bound to a loopback address
 
     @field_validator("kek")
     @classmethod
@@ -67,7 +68,9 @@ class Settings(BaseSettings):
 
     @property
     def secure_cookies(self) -> bool:
-        host = self.bind.split(":")[0]
+        if self.cookie_secure is not None:
+            return self.cookie_secure
+        host = self.bind.rpartition(":")[0]
         return host not in ("127.0.0.1", "localhost", "::1")
 
     @property
