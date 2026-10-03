@@ -1,0 +1,35 @@
+# MAKA-E v1 AKE (IMPLEMENTATION_PLAN.md §4.6.4) in OFMC's AnB language.
+# The same model as ../maka_e.hlpsl, written for OFMC 2024, which reads AnB (the HLPSL
+# translator hlpsl2if could not be obtained; see ../NOT_RUN.md).
+#   psk(I,R): the pairwise PSK. psk is a function nobody publishes, so the intruder holds a
+#             PSK only for sessions it plays in (KCI and the BDH-based derivation are out of scope).
+#   exp(g,X): ephemeral Diffie-Hellman.   h: HKDF/HMAC/SHA-256 with distinct labels.
+#   cmch:     the purpose, bound into the transcript and the key derivation.
+
+Protocol: MAKAE_AKE
+
+Types: Agent I,R;
+       Number Sid,NI,NR,X,Y;
+       Number g,cmch,kcr,kci,kir,kri,hs2,hs3;
+       Function psk,h
+
+Knowledge: I: I,R,psk(I,R),h,g,cmch,kcr,kci,kir,kri,hs2,hs3;
+           R: I,R,psk(I,R),h,g,cmch,kcr,kci,kir,kri,hs2,hs3
+where I!=R
+
+Actions:
+
+I->R: Sid,I,R,cmch,NI,exp(g,X)
+R->I: Sid,R,I,NR,exp(g,Y),
+      h(h(kcr,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch),hs2,
+        h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)))
+I->R: Sid,
+      h(h(kci,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch),hs3,
+        h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)))
+
+Goals:
+
+R authenticates I on NI
+I authenticates R on NR
+h(kir,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch) secret between I,R
+h(kri,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch) secret between I,R

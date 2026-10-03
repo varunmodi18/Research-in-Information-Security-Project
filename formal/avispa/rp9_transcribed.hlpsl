@@ -1,0 +1,135 @@
+%% RP9 (Harbi et al., Ad Hoc Networks 94 (2019) 101948) Figs. 4-8, transcribed EXACTLY as
+%% printed, including the defects (IMPLEMENTATION_PLAN.md M7-T3). Transcribed from the PDF
+%% rendered at 220 dpi. Do not edit: rp9_fixed.hlpsl carries the minimal corrections.
+%%
+%% Defects visible in the printed text (see README.md in this directory):
+%%  D1 Fig. 4 t2 and Fig. 5 t4: request(...) appears on the left of =|>.
+%%  D2 Fig. 5 t3: SND(...) used as a guard on the left of =|>.
+%%  D3 Fig. 6 t2: request(CH,BS,em1,Nch') -- arguments reversed (the BS is the verifier).
+%%  D4 Puch, Pucm are local variables that are never assigned or received.
+%%  D5 Fig. 5 t4 receives Nch' but requests on Ncm', which is never bound in that role.
+%%  D6 Fig. 6 t1 receives {Pac}_S with Pac unprimed, i.e. never bound at the BS.
+%%  D7 sec3 is declared and has a secrecy_of goal, but no secret(...,sec3,...) fact exists.
+
+%% ---- Fig. 4 -------------------------------------------------------------------------------
+role clustermember(CM,CH,BS:agent,
+                   Pubs:public_key,
+                   S:symmetric_key,
+                   SND,RCV:channel(dy))
+played_by CM
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Pch,Pcm,Rch,Rcm,A1,A2,A3,A4:text,
+                Puch,Pucm:public_key,
+                F: hash_func
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 0
+        transition
+                1. State=0 /\ RCV({Pcm'}_S)  =|>
+                   State':=2 /\ secret({Idch,Idcm,G},sec2,{CH,CM})
+                2. State=2 /\ RCV({A1'.A2'.Nch'}_Pucm)
+                   /\ request(CM,CH,em2,Nch') =|> State':=4 /\ Rcm':=new()
+                   /\ Ncm':=new() /\ A3':=F(Rcm'.G) /\ A4':=F(Rcm'.Pcm)
+                   /\ SND({A3'.A4'.Ncm'}_Puch) /\ witness(CM,CH,em3,Ncm')
+end role
+
+%% ---- Fig. 5 -------------------------------------------------------------------------------
+role clusterhead(CM,CH,BS:agent,
+                 Pubs:public_key,
+                 S:symmetric_key,
+                 SND,RCV:channel(dy))
+played_by CH
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Pch,Pcm,Rch,Rcm,A1,A2,A3,A4:text,
+                Puch,Pucm:public_key,
+                F: hash_func
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 1
+        transition
+                1. State=1 /\ RCV(start) =|>
+                   State':=3 /\ SND({Pac}_S) /\ secret(Pac,sec1,CH)
+                2. State=3 /\ RCV({Pch'.Pcm'}_S)  =|>
+                   State':=5 /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
+                3. State=5 /\ SND({Pcm'}_S) =|>
+                   State':=7 /\ secret({Idch,Idcm,G},sec2,{CH,CM}) /\ Rch':=new()
+                   /\ Nch':=new() /\ A1':=F(Rch'.G) /\ A2':=F(Rch'.Pch)
+                   /\ SND({A1'.A2'.Nch'}_Pucm) /\ witness(CH,CM,em2,Nch')
+                4. State=7 /\ RCV({A3'.A4'.Nch'}_Puch) /\ request(CH,CM,em3,Ncm') =|>
+                   State':=9 /\ SND({A1.A2.Nch'}_Pubs) /\ witness(CH,BS,em1,Nch')
+end role
+
+%% ---- Fig. 6 -------------------------------------------------------------------------------
+role basestation(CM,CH,BS:agent,
+                 Pubs:public_key,
+                 S:symmetric_key,
+                 SND,RCV:channel(dy))
+played_by BS
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Pch,Pcm,Rch,Rcm,A1,A2,A3,A4:text,
+                Puch,Pucm:public_key,
+                F: hash_func
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 6
+        transition
+                1. State=6 /\ RCV({Pac}_S) =|>
+                   State':=8 /\ secret(Pac,sec1,CH) /\ Pch':= F(xor(Idbs,Idch).G)
+                   /\ Pcm':= F(xor(Idch,Idcm).G) /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
+                   /\ SND({Pch'.Pcm'}_S)
+                2. State=8 /\ RCV({A1'.A2'.Nch'}_Pubs) =|>
+                   State':=10 /\ request(CH,BS,em1,Nch')
+end role
+
+%% ---- Fig. 7 -------------------------------------------------------------------------------
+role session(CM,CH,BS:agent,
+             Pubs:public_key,
+             S:symmetric_key)
+def=
+        local
+                SndCM,RcvCM,SndCH,RcvCH,SndBS,RcvBS:channel(dy)
+        composition
+                clustermember(CM,CH,BS,Pubs,S,SndCM,RcvCM)
+             /\ clusterhead(CM,CH,BS,Pubs,S,SndCH,RcvCH)
+             /\ basestation(CM,CH,BS,Pubs,S,SndBS,RcvBS)
+end role
+
+%% ---- Fig. 8 -------------------------------------------------------------------------------
+role environment()
+def=
+        const
+                cm,ch,bs:agent,
+                pubs,puch,pucm:public_key,
+                s:symmetric_key,
+                em1,em2,em3,sec1,sec2,sec3:protocol_id
+
+        intruder_knowledge = {cm,ch,bs,pucm,puch,pubs}
+        composition
+                session(cm,ch,bs,pubs,s)
+             /\ session(i,ch,bs,pubs,s)
+             /\ session(cm,i,bs,pubs,s)
+end role
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+goal
+        secrecy_of sec1
+        secrecy_of sec2
+        secrecy_of sec3
+        authentication_on em1
+        authentication_on em2
+        authentication_on em3
+end goal
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+environment()

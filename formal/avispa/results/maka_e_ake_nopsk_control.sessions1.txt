@@ -1,0 +1,36 @@
+# command: ofmc --numSess 1 anb/maka_e_ake_nopsk_control.AnB
+# date: 2026-10-03T19:24:09Z
+Open-Source Fixedpoint Model-Checker version 2024
+INPUT:
+   /home/varun-modi/Desktop/Research-in-Information-Security-Project/formal/avispa/anb/maka_e_ake_nopsk_control.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  weak_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 212 ms
+  parseTime 0 ms
+  visitedNodes: 3 nodes
+  depth: 2 plies
+
+ATTACK TRACE:
+(x401,1) -> i: Sid(1),x401,x402,cmch,NI(1),exp(g,X(1))
+i -> (x401,1): Sid(1),x402,x401,x309,g,h(h(kcr,exp(g,X(1)),h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g),cmch),hs2,h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g))
+(x401,1) -> i: Sid(1),h(h(kci,exp(g,X(1)),h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g),cmch),hs3,h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g))
+
+
+% Reached State:
+% 
+% request(x401,x402,pIRNR,x309,1)
+% state_rI(x401,2,hs3,hs2,kri,kir,kci,kcr,cmch,g,h,psk(x401,x402),x402,inv(pseudonym(x401)),inv(confChCr(x401)),inv(authChCr(x401)),pseudonym(x401),Sid(1),NI(1),X(1),Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),exp(g,X(1)),h(h(kcr,exp(g,X(1)),h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g),cmch),hs2,h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g)),g,x309,Sid(1),x402,x401,x309,g,h(h(kcr,exp(g,X(1)),h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g),cmch),hs2,h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g)),Sid(1),h(h(kci,exp(g,X(1)),h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g),cmch),hs3,h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g)),1)
+% secrets(h(kir,exp(g,X(1)),h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g),cmch),secrecyset(x401,1,phkirExpExpgXYhSidIRcmchNIExpgXSidRINRExpgYcmch),i)
+% contains(secrecyset(x401,1,phkirExpExpgXYhSidIRcmchNIExpgXSidRINRExpgYcmch),x401)
+% contains(secrecyset(x401,1,phkirExpExpgXYhSidIRcmchNIExpgXSidRINRExpgYcmch),x402)
+% secrets(h(kri,exp(g,X(1)),h(Sid(1),x401,x402,cmch,NI(1),exp(g,X(1)),Sid(1),x402,x401,x309,g),cmch),secrecyset(x401,1,phkriExpExpgXYhSidIRcmchNIExpgXSidRINRExpgYcmch),i)
+% contains(secrecyset(x401,1,phkriExpExpgXYhSidIRcmchNIExpgXSidRINRExpgYcmch),x401)
+% contains(secrecyset(x401,1,phkriExpExpgXYhSidIRcmchNIExpgXSidRINRExpgYcmch),x402)
+% state_rR(x37,0,hs3,hs2,kri,kir,kci,kcr,cmch,g,h,psk(x38,x37),x38,inv(pseudonym(x37)),inv(confChCr(x37)),inv(authChCr(x37)),pseudonym(x37),1)
+% witness(x401,x402,pRINI,NI(1))
+

@@ -1,0 +1,40 @@
+# command: ofmc --numSess 2 anb/rp9_auth_outsider.AnB
+# date: 2026-10-03T19:24:09Z
+Open-Source Fixedpoint Model-Checker version 2024
+INPUT:
+   /home/varun-modi/Desktop/Research-in-Information-Security-Project/formal/avispa/anb/rp9_auth_outsider.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  strong_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 113 ms
+  parseTime 0 ms
+  visitedNodes: 8 nodes
+  depth: 3 plies
+
+ATTACK TRACE:
+(ch,1) -> i: {exp(g,Rch(1)),exp(exp(g,xr(bs,ch)),Rch(1)),Nch(1)}_(pk(cm))
+i -> (cm,1): {exp(g,Rch(1)),exp(exp(g,Rch(1)),xr(bs,ch)),Nch(1)}_(pk(cm))
+(cm,1) -> i: {exp(g,Rcm(2)),exp(exp(g,xr(ch,cm)),Rcm(2)),Ncm(2)}_(pk(ch))
+i -> (cm,2): {exp(g,Rch(1)),exp(exp(g,Rch(1)),xr(bs,ch)),Nch(1)}_(pk(cm))
+(cm,2) -> i: {exp(g,Rcm(3)),exp(exp(g,xr(ch,cm)),Rcm(3)),Ncm(3)}_(pk(ch))
+
+
+% Reached State:
+% 
+% request(cm,ch,pcmchNch,Nch(1),2)
+% request(cm,ch,pcmchNch,Nch(1),1)
+% state_rcm(cm,1,xr(ch,cm),xr(bs,ch),g,inv(pk(cm)),pk,bs,ch,inv(pseudonym(cm)),inv(confChCr(cm)),inv(authChCr(cm)),pseudonym(cm),Nch(1),exp(exp(g,Rch(1)),xr(bs,ch)),exp(g,Rch(1)),{exp(g,Rch(1)),exp(exp(g,Rch(1)),xr(bs,ch)),Nch(1)}_(pk(cm)),Rcm(3),Ncm(3),{exp(g,Rcm(3)),exp(exp(g,xr(ch,cm)),Rcm(3)),Ncm(3)}_(pk(ch)),2)
+% witness(cm,ch,pchcmNcm,Ncm(3))
+% state_rbs(bs,0,xr(bs,ch),g,inv(pk(bs)),pk,ch,cm,inv(pseudonym(bs)),inv(confChCr(bs)),inv(authChCr(bs)),pseudonym(bs),1)
+% state_rch(ch,1,xr(ch,cm),xr(bs,ch),g,inv(pk(ch)),pk,bs,cm,inv(pseudonym(ch)),inv(confChCr(ch)),inv(authChCr(ch)),pseudonym(ch),Rch(1),Nch(1),{exp(g,Rch(1)),exp(exp(g,xr(bs,ch)),Rch(1)),Nch(1)}_(pk(cm)),1)
+% state_rcm(cm,1,xr(ch,cm),xr(bs,ch),g,inv(pk(cm)),pk,bs,ch,inv(pseudonym(cm)),inv(confChCr(cm)),inv(authChCr(cm)),pseudonym(cm),Nch(1),exp(exp(g,Rch(1)),xr(bs,ch)),exp(g,Rch(1)),{exp(g,Rch(1)),exp(exp(g,Rch(1)),xr(bs,ch)),Nch(1)}_(pk(cm)),Rcm(2),Ncm(2),{exp(g,Rcm(2)),exp(exp(g,xr(ch,cm)),Rcm(2)),Ncm(2)}_(pk(ch)),1)
+% state_rbs(bs,0,xr(bs,ch),g,inv(pk(bs)),pk,ch,cm,inv(pseudonym(bs)),inv(confChCr(bs)),inv(authChCr(bs)),pseudonym(bs),2)
+% state_rch(ch,0,xr(ch,cm),xr(bs,ch),g,inv(pk(ch)),pk,bs,cm,inv(pseudonym(ch)),inv(confChCr(ch)),inv(authChCr(ch)),pseudonym(ch),2)
+% witness(ch,bs,pbschNch,Nch(1))
+% witness(ch,cm,pcmchNch,Nch(1))
+% witness(cm,ch,pchcmNcm,Ncm(2))
+

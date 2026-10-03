@@ -1,0 +1,19 @@
+# command: ofmc --numSess 1 anb/rp9_auth_outsider.AnB
+# date: 2026-10-03T19:24:09Z
+Open-Source Fixedpoint Model-Checker version 2024
+INPUT:
+   /home/varun-modi/Desktop/Research-in-Information-Security-Project/formal/avispa/anb/rp9_auth_outsider.AnB
+SUMMARY:
+  NO_ATTACK_FOUND
+GOAL:
+  as specified
+DETAILS:
+  BOUNDED_NUMBER_OF_SESSIONS
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 112 ms
+  parseTime 0 ms
+  visitedNodes: 5 nodes
+  depth: 5 plies
+

@@ -1,0 +1,96 @@
+%% MAKA-E v1 authenticated key exchange (IMPLEMENTATION_PLAN.md §4.6.4, M7-T2).
+%%
+%% One purpose at a time (the same message flow serves CH-BS, CM-BS and CM-CH; the purpose is
+%% bound into the transcript and the key derivation). Symbolic abstractions:
+%%   PSK_AB          -> psk(A,B), an uninterpreted function the intruder cannot evaluate; it
+%%                      knows only the PSKs of sessions it takes part in (psk(i,b), psk(a,i)).
+%%                      The SOK derivation ê(Pr_A, H(ID_B)) and the BDH assumption behind it are
+%%                      not modelled; they are argued in docs/SECURITY_ARGUMENT.md.
+%%   X = x*g, Z      -> exp(G,X), exp(exp(G,X),Y)   (the tools' Diffie-Hellman algebra)
+%%   HKDF, HMAC, H   -> the hash function H with distinct label constants
+%%
+%% HS1 I->R: Sid.I.R.P.Ni.exp(G,X)
+%% HS2 R->I: Sid.R.I.Nr.exp(G,Y).TagR     TagR = H(KcR.hs2.Th)
+%% HS3 I->R: Sid.TagI                     TagI = H(KcI.hs3.Th)
+%% Th = H(HS1.Sid.R.I.Nr.exp(G,Y)); Kc*/K* = H(label.psk(I,R).Z.Th.P)
+
+role initiator(I,R:agent, Psk:symmetric_key, G,P:text, H:hash_func, SND,RCV:channel(dy))
+played_by I
+def=
+        local
+                State:nat,
+                Sid,Ni,Nr,X:text,
+                GY:message,
+                Th,Kir,Kri:message
+        const   kcr,kci,kir,kri,hs2,hs3:text,
+                n_i,n_r,k_ir,k_ri:protocol_id
+        init
+                State := 0
+        transition
+                1. State=0 /\ RCV(start) =|>
+                   State':=1 /\ Sid':=new() /\ Ni':=new() /\ X':=new()
+                   /\ SND(Sid'.I.R.P.Ni'.exp(G,X'))
+                   /\ witness(I,R,n_i,Ni')
+                2. State=1 /\ RCV(Sid.R.I.Nr'.GY'.
+                        H(H(kcr.Psk.exp(GY',X).H(Sid.I.R.P.Ni.exp(G,X).Sid.R.I.Nr'.GY').P).hs2.
+                          H(Sid.I.R.P.Ni.exp(G,X).Sid.R.I.Nr'.GY'))) =|>
+                   State':=2 /\ Th':=H(Sid.I.R.P.Ni.exp(G,X).Sid.R.I.Nr'.GY')
+                   /\ Kir':=H(kir.Psk.exp(GY',X).Th'.P) /\ Kri':=H(kri.Psk.exp(GY',X).Th'.P)
+                   /\ SND(Sid.H(H(kci.Psk.exp(GY',X).Th'.P).hs3.Th'))
+                   /\ request(I,R,n_r,Nr')
+                   /\ secret(Kir',k_ir,{I,R}) /\ secret(Kri',k_ri,{I,R})
+end role
+
+role responder(I,R:agent, Psk:symmetric_key, G,P:text, H:hash_func, SND,RCV:channel(dy))
+played_by R
+def=
+        local
+                State:nat,
+                Sid,Ni,Nr,Y:text,
+                GX:message,
+                Th,Kir,Kri:message
+        const   kcr,kci,kir,kri,hs2,hs3:text,
+                n_i,n_r,k_ir,k_ri:protocol_id
+        init
+                State := 0
+        transition
+                1. State=0 /\ RCV(Sid'.I.R.P.Ni'.GX') =|>
+                   State':=1 /\ Nr':=new() /\ Y':=new()
+                   /\ Th':=H(Sid'.I.R.P.Ni'.GX'.Sid'.R.I.Nr'.exp(G,Y'))
+                   /\ SND(Sid'.R.I.Nr'.exp(G,Y').H(H(kcr.Psk.exp(GX',Y').Th'.P).hs2.Th'))
+                   /\ witness(R,I,n_r,Nr')
+                2. State=1 /\ RCV(Sid.H(H(kci.Psk.exp(GX,Y).Th.P).hs3.Th)) =|>
+                   State':=2 /\ Kir':=H(kir.Psk.exp(GX,Y).Th.P) /\ Kri':=H(kri.Psk.exp(GX,Y).Th.P)
+                   /\ request(R,I,n_i,Ni)
+                   /\ secret(Kir',k_ir,{I,R}) /\ secret(Kri',k_ri,{I,R})
+end role
+
+role session(I,R:agent, Psk:symmetric_key, G,P:text, H:hash_func)
+def=
+        local   SI,RI,SR,RR:channel(dy)
+        composition
+                initiator(I,R,Psk,G,P,H,SI,RI) /\ responder(I,R,Psk,G,P,H,SR,RR)
+end role
+
+role environment()
+def=
+        const   a,b:agent,
+                psk:function,
+                g,cm_ch:text,
+                h:hash_func,
+                n_i,n_r,k_ir,k_ri:protocol_id
+        intruder_knowledge = {a,b,g,cm_ch,h,psk(i,b),psk(a,i)}
+        composition
+                session(a,b,psk(a,b),g,cm_ch,h)          %% honest - honest
+             /\ session(a,b,psk(a,b),g,cm_ch,h)          %% a second, parallel honest session
+             /\ session(i,b,psk(i,b),g,cm_ch,h)          %% intruder as initiator, own PSK with b
+             /\ session(a,i,psk(a,i),g,cm_ch,h)          %% intruder as responder, own PSK with a
+end role
+
+goal
+        authentication_on n_i
+        authentication_on n_r
+        secrecy_of k_ir, k_ri
+end goal
+
+environment()

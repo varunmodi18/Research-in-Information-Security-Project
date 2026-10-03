@@ -1,0 +1,58 @@
+{
+  "tool": "OFMC 2024 (AnB)",
+  "date": "2026-10-04",
+  "hlpsl": "not obtained (hlpsl2if unavailable; see NOT_RUN.md)",
+  "cl_atse": "not obtained",
+  "results": {
+    "maka_e_ake": [
+      {
+        "sessions": 1,
+        "summary": "NO_ATTACK_FOUND",
+        "goal": "as specified"
+      },
+      {
+        "sessions": 2,
+        "summary": "NO_ATTACK_FOUND",
+        "goal": "as specified"
+      },
+      {
+        "sessions": 3,
+        "summary": "NO_ATTACK_FOUND",
+        "goal": "as specified"
+      }
+    ],
+    "maka_e_ake_nopsk_control": [
+      {
+        "sessions": 1,
+        "summary": "ATTACK_FOUND",
+        "goal": "weak_auth"
+      }
+    ],
+    "rp9_auth": [
+      {
+        "sessions": 1,
+        "summary": "ATTACK_FOUND",
+        "goal": "weak_auth"
+      }
+    ],
+    "rp9_auth_honest_ch": [
+      {
+        "sessions": 1,
+        "summary": "ATTACK_FOUND",
+        "goal": "weak_auth"
+      }
+    ],
+    "rp9_auth_outsider": [
+      {
+        "sessions": 1,
+        "summary": "NO_ATTACK_FOUND",
+        "goal": "as specified"
+      },
+      {
+        "sessions": 2,
+        "summary": "ATTACK_FOUND",
+        "goal": "strong_auth"
+      }
+    ]
+  }
+}

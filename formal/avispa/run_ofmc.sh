@@ -14,7 +14,7 @@ if command -v ofmc >/dev/null 2>&1; then
     echo "--- diff against RP9's published result (expected_output.txt) ---"
     diff "$EXPECTED_FILE" /tmp/maka_ofmc_actual.txt && echo "MATCH" || echo "DIFFERS (see above)"
 else
-    echo "NOT RUN -- TOOL ABSENT"
+    echo "NOT RUN -- TOOL ABSENT (this script runs the legacy maka.hlpsl; see run_all.sh and NOT_RUN.md)"
     echo
     echo "AVISPA/SPAN (providing the 'ofmc' command) was not found on PATH."
     echo "To install: see http://www.avispa-project.org/ or the SPAN toolset."

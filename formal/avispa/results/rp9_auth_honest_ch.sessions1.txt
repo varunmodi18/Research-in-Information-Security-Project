@@ -1,0 +1,30 @@
+# command: ofmc --numSess 1 anb/rp9_auth_honest_ch.AnB
+# date: 2026-10-03T19:24:09Z
+Open-Source Fixedpoint Model-Checker version 2024
+INPUT:
+   /home/varun-modi/Desktop/Research-in-Information-Security-Project/formal/avispa/anb/rp9_auth_honest_ch.AnB
+SUMMARY:
+  ATTACK_FOUND
+GOAL:
+  weak_auth
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 106 ms
+  parseTime 0 ms
+  visitedNodes: 1 nodes
+  depth: 1 plies
+
+ATTACK TRACE:
+i -> (x301,1): {x206,exp(x206,xr(bs,ch)),x207}_(pk(x301))
+(x301,1) -> i: {exp(g,Rcm(1)),exp(exp(g,xr(ch,x301)),Rcm(1)),Ncm(1)}_(pk(ch))
+
+
+% Reached State:
+% 
+% request(x301,ch,pCMchNch,x207,1)
+% state_rCM(x301,1,xr(ch,x301),xr(bs,ch),g,inv(pk(x301)),pk,bs,ch,inv(pseudonym(x301)),inv(confChCr(x301)),inv(authChCr(x301)),pseudonym(x301),x207,exp(x206,xr(bs,ch)),x206,{x206,exp(x206,xr(bs,ch)),x207}_(pk(x301)),Rcm(1),Ncm(1),{exp(g,Rcm(1)),exp(exp(g,xr(ch,x301)),Rcm(1)),Ncm(1)}_(pk(ch)),1)
+% witness(x301,ch,pchCMNcm,Ncm(1))
+% state_rbs(bs,0,xr(bs,ch),g,inv(pk(bs)),pk,ch,x32,inv(pseudonym(bs)),inv(confChCr(bs)),inv(authChCr(bs)),pseudonym(bs),1)
+% state_rch(ch,0,xr(ch,x31),xr(bs,ch),g,inv(pk(ch)),pk,bs,x31,inv(pseudonym(ch)),inv(confChCr(ch)),inv(authChCr(ch)),pseudonym(ch),1)
+

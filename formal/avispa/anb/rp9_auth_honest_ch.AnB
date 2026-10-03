@@ -1,0 +1,33 @@
+# Variant with the cluster head as an honest constant `ch`: the intruder may only play cluster
+# members (insider, AT3). RP9 §5.4 node authentication (with ER-01: A4 = r_CM * P_CM) in OFMC's AnB language,
+# under RP9's own assumption that the pseudo-identity scalars (ID_BS xor ID_CH) and
+# (ID_CH xor ID_CM) are known only to the cluster's parties: xr is a function nobody publishes,
+# and each role knows exactly the scalars RP9 gives it.
+#   P_CH = exp(g, xr(BS,ch)), A1 = exp(g,Rch), A2 = exp(P_CH, Rch)
+#   Enc(m, Pu_i) (Boneh-Franklin IBE, IA-03) -> {m}pk(i)
+# The CM checks A2 = (ID_BS xor ID_CH) * A1 by computing exp(A1, xr(bs,ch)).
+# The base station is the honest constant `bs` (it is trusted: IMPLEMENTATION_PLAN.md §2.1
+# assumption 1); CMs and CHs may be played by the intruder, i.e. insiders are in scope (AT3).
+
+Protocol: RP9_NodeAuthentication_HonestCH
+
+Types: Agent CM,ch,bs;
+       Number Nch,Ncm,Rch,Rcm,g;
+       Function pk,xr
+
+Knowledge: CM: CM,ch,bs,pk,inv(pk(CM)),g,xr(bs,ch),xr(ch,CM);
+           ch: CM,ch,bs,pk,inv(pk(ch)),g,xr(bs,ch),xr(ch,CM);
+           bs: CM,ch,bs,pk,inv(pk(bs)),g,xr(bs,ch)
+where CM!=ch
+
+Actions:
+
+ch->CM: {exp(g,Rch), exp(exp(g,xr(bs,ch)),Rch), Nch}pk(CM)
+CM->ch: {exp(g,Rcm), exp(exp(g,xr(ch,CM)),Rcm), Ncm}pk(ch)
+ch->bs: {exp(g,Rch), exp(exp(g,xr(bs,ch)),Rch), Nch}pk(bs)
+
+Goals:
+
+CM authenticates ch on Nch
+ch authenticates CM on Ncm
+bs authenticates ch on Nch
