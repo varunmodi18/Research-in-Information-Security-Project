@@ -15,7 +15,7 @@ from typing import Any
 
 from maka.runtime import events as ev
 from maka.runtime.bus import Bus, Frame
-from maka.runtime.device import Device
+from maka.runtime.device import BACKGROUND, Device
 from maka.runtime.errors import StepLimitExceeded, UnknownDevice
 
 
@@ -79,7 +79,8 @@ class Scheduler:
         return [t for t in self._timers if (t[2], t[3], t[1]) not in self._cancelled]
 
     def pending_timers(self) -> int:
-        return len(self._live_timers())
+        """Pending non-background timers."""
+        return sum(1 for t in self._live_timers() if not t[3].startswith(BACKGROUND))
 
     # -- invoking devices ------------------------------------------------------------
 

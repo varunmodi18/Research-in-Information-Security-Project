@@ -142,3 +142,55 @@ intruder capability was weakened; every change is marked in the files.
    excludes; the exclusion is tested (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`).
 
 **Register.** OB-09 corrected, OB-10 reworded, OB-11 and OB-12 added. OI-02 updated.
+## E-09 · §4.6.5–§4.6.7, §4.8 and §6.6: protocol fixes after review (follow-up Part D, 2026-10-06)
+
+1. **D1 · `DATA_CM` carries a hop sequence number.** It becomes
+   `DATA_CM = V‖0x40‖LP(sid_CM-CH, hop_seq, inner, hop_tag)` with
+   `hop_tag = HMAC(HKDF(k_CM→CH, "hop-mac"), LP(sid_CM-CH, hop_seq, inner))`. This amends E-05 item 2.
+   - `hop_seq` is a per-CM-CH-session counter starting at 1. The CH checks the tag, then rejects a
+     `hop_seq` that is not strictly greater than the last accepted one (`REPLAY_REJECTED`), before
+     batching.
+   - Before this fix a replayed `DATA_CM` passed the CH (its tag was valid), took a batch slot and
+     was rejected only at the BS.
+   - Cost: +10 bytes per reading (8-byte counter, 2-byte length prefix).
+2. **D6 · the sealed-message nonce is not transmitted.** Sealed messages (§4.6.6) use the nonce
+   `0^32‖seq`, which the receiver already has from `seq`. `encode_secure` now carries only the
+   ciphertext and tag, saving 12 bytes per sealed message.
+   - With D1, the per-reading CM→CH overhead is **114 bytes** (116 before). §6.6's 120-byte
+     threshold is unchanged.
+   - The test vector `tests/vectors/maka_e_v1.json` was regenerated. Its AKE part is byte-identical
+     (the AKE does not use sealed messages). It gains a `data` section (DATA_CM, the inner frame, the
+     derived nonce, the hop tag) with its secrets, checked by `tests/enhanced/test_vectors.py`.
+3. **D3 · the grant refresh is periodic.** §4.6.7's recovery trigger "on any `UNAUTHORISED_PEER`
+   event from the BS" is withdrawn: no message carries such an event to the CH, and it was never
+   implemented. Instead the CH re-sends `CLUSTER_CLAIM` over the sealed CH–BS session every
+   `MAKA_GRANT_REFRESH_STEPS` steps (default 50), as well as after every CH–BS handshake.
+   - The timer is a background timer: it fires when steps are taken but does not keep the network
+     busy, so "run to quiescence" still ends.
+   - A grant answering a periodic refresh opens (`CLUSTER_OPEN`) only members new to the grant, so
+     that a refresh during onboarding does not restart members' handshakes.
+4. **D4 · `Session.epoch`** is set at establishment, on both sides, to the registry epoch as that
+   side knows it.
+   - The BS uses its own epoch. A device uses the latest epoch the BS has sent it.
+   - The BS's first epoch-bearing message on a session (`CLUSTER_GRANT` for CH–BS, `DESIGNATION`
+     for CM–BS) confirms that session's epoch.
+   - Before this fix it was always 0.
+5. **D5 · sequence-number bound.** A sender never seals with `seq ≥ 2^32` (or sends `hop_seq ≥ 2^32`)
+   under one key. At the bound it refuses (`SEQ_EXHAUSTED`) and the session is rekeyed:
+   - an initiator starts a fresh handshake;
+   - a responder sends `SESSION_UNKNOWN` for the session, on which the initiator re-handshakes.
+     That message is unauthenticated and can only trigger a fresh authenticated handshake.
+6. **D2 · revoking a CH.** The BS voids the cluster's designation (§4.6.7), but the members are not
+   told directly.
+   - Each member keeps its sessions and PSK with the revoked CH until the replacement CH relays a
+     new `DESIGNATION` (sealed under the CM–BS session). The member then destroys every session
+     and the cached PSK with the old CH.
+   - Readings sent in between cannot reach the BS. The console shows these members as "CH revoked,
+     awaiting re-designation" and counts their lost readings (`devices.designated`,
+     `devices.undelivered`, migration 0003).
+7. **D7 · the revoked device is not told.** This is the intended semantics, not an omission.
+   - A revoked device is excluded by the BS registry and the CH grants (R-05).
+   - A notice to it would bind nothing: a compromised device can ignore it, and an honest one has
+     nothing left to protect.
+   - Its sessions are destroyed at its peers, and every later handshake from it is refused
+     (`UNAUTHORISED_PEER`).

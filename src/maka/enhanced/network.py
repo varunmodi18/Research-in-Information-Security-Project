@@ -32,6 +32,7 @@ class Tunables:
     t_retry: int = 5
     batch_steps: int = 5
     batch_max: int = 8
+    grant_refresh_steps: int = 50
 
 
 def effective_t_hs(t_hs: int, n_devices: int) -> int:
@@ -49,6 +50,9 @@ class EnhancedNetwork:
     ledger: ledger.Ledger = field(default_factory=ledger.Ledger)
     mode: str = "enhanced"
     aborted_sessions: list[dict[str, Any]] = field(default_factory=list)
+    # readings a CM sent while its designated CH was revoked: the CH cannot reach the BS any more,
+    # so they are lost (follow-up D2). Driver-side bookkeeping, like revoke()'s status update.
+    undelivered: dict[str, int] = field(default_factory=dict)
 
     # -- plumbing --------------------------------------------------------------------------
 
@@ -106,7 +110,10 @@ class EnhancedNetwork:
         return self.start_onboarding() + self.run(max_steps)
 
     def send_reading(self, cm_id: str, value: str) -> StepResult:
-        return self._command(cm_id, "send_reading", value)
+        result = self._command(cm_id, "send_reading", value)
+        if result.verdict != "REJECT" and self.designation_state(cm_id) == CH_REVOKED:
+            self.undelivered[cm_id] = self.undelivered.get(cm_id, 0) + 1
+        return result
 
     def rekey(self, ident: str, peer: str | None = None) -> list[StepResult]:
         """FR-08: a CH rekeys its CH-BS session and every member's sessions (cluster rekey);
@@ -198,6 +205,24 @@ class EnhancedNetwork:
         reg = self.bs().registry.get(ident)
         return reg.epoch if reg is not None else 0
 
+    def designation(self, ident: str) -> str | None:
+        """The CH a CM currently treats as designated (None for other roles or before designation)."""
+        dev = self.scheduler.devices.get(ident)
+        return dev.designated if isinstance(dev, EnhancedCM) else None
+
+    def designation_state(self, ident: str) -> str | None:
+        """D2: a CM whose designated CH has been revoked keeps its sessions and PSK with that CH --
+        it is not told -- until the replacement CH relays a new DESIGNATION. Until then its
+        readings cannot reach the BS."""
+        ch = self.designation(ident)
+        if ch is None:
+            return None
+        reg = self.bs().registry.get(ch)
+        return CH_REVOKED if reg is not None and reg.status == REVOKED else "ok"
+
+    def undelivered_readings(self, ident: str) -> int:
+        return self.undelivered.get(ident, 0)
+
     def readings(self) -> list[dict[str, Any]]:
         return list(self.bs().readings)
 
@@ -220,6 +245,9 @@ class EnhancedNetwork:
             if r is not None and r != row["state"]:
                 row["state"] = f"{row['state']}/{r}"
         return list(rows.values()) + list(self.aborted_sessions)
+
+
+CH_REVOKED = "ch_revoked_awaiting_redesignation"
 
 
 def _row(a: str, b: str, s: st.Session) -> dict[str, Any]:
@@ -248,7 +276,8 @@ def build(params_name: str, topology: str | dict[str, object], *, kind: str = LA
     n_devices = 1 + sum(1 + len(c) for c in chs.values())
     cfg = EnhancedConfig(curve=pset.curve, g=pset.g, id_bs=str(topo["bs"]), max_pending=tun.max_pending,
                          t_hs=effective_t_hs(tun.t_hs, n_devices), t_retry=tun.t_retry,
-                         batch_steps=tun.batch_steps, batch_max=tun.batch_max)
+                         batch_steps=tun.batch_steps, batch_max=tun.batch_max,
+                         grant_refresh_steps=tun.grant_refresh_steps)
     source: rng.RandomSource = rng.Rng(seed=seed) if seed is not None else rng.SystemSource()
     net = EnhancedNetwork(scheduler=Scheduler(Bus(kind=kind)), cfg=cfg, params_name=params_name, source=source)
     with net.context():
@@ -289,7 +318,8 @@ def restore(params_name: str, bs_id: str, specs: list[DeviceSpec],
     tun = tunables or Tunables()
     cfg = EnhancedConfig(curve=pset.curve, g=pset.g, id_bs=bs_id, max_pending=tun.max_pending,
                          t_hs=effective_t_hs(tun.t_hs, len(specs)), t_retry=tun.t_retry,
-                         batch_steps=tun.batch_steps, batch_max=tun.batch_max)
+                         batch_steps=tun.batch_steps, batch_max=tun.batch_max,
+                         grant_refresh_steps=tun.grant_refresh_steps)
     src = source or rng.SystemSource()
     net = EnhancedNetwork(scheduler=Scheduler(Bus(kind=kind)), cfg=cfg, params_name=params_name, source=src,
                           aborted_sessions=list(aborted_sessions or []))

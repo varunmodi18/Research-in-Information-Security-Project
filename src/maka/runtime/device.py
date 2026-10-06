@@ -23,6 +23,11 @@ ACTIVE = "active"
 FAILED = "failed"
 REVOKED = "revoked"
 
+# Timers whose name starts with this prefix are periodic background work (the CH's grant refresh,
+# follow-up D3): they fire whenever steps are taken but do not keep the scheduler busy, so
+# run_until_quiescent returns once all protocol traffic has settled.
+BACKGROUND = "bg:"
+
 BS = "BS"
 CH = "CH"
 CM = "CM"

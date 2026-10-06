@@ -6,6 +6,7 @@ import type { JobType } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PageHeader } from "../components/Layout";
+import { AWAITING, AWAITING_LABEL } from "../components/DesignationNotice";
 import { ModeBanner } from "../components/ModeBanner";
 import { Empty, ErrorPanel, Loading } from "../components/States";
 import { StatusBadge } from "../components/StatusBadge";
@@ -53,6 +54,13 @@ export function DevicePage() {
         subtitle={`${d.role} · cluster ${d.cluster ?? "—"} · network ${network.data.name}`}
         actions={<Link className="btn-secondary" to={`/networks/${id}`}>← Topology</Link>}
       />
+      {d.designation_state === AWAITING && (
+        <div className="mx-6 mb-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900" role="alert" data-testid="device-awaiting">
+          <strong>{AWAITING_LABEL}.</strong> {d.designated} was revoked. {d.ident} is not told: it keeps its sessions and
+          PSK with {d.designated} until a replacement CH relays a new designation, and then destroys them. Readings it
+          sends until then cannot reach the base station ({d.undelivered ?? 0} lost so far).
+        </div>
+      )}
       <div className="mx-6 mb-8 grid gap-4 lg:grid-cols-[22rem_1fr]">
         <section className="card p-4" aria-label="Identity">
           <dl className="grid grid-cols-[8rem_1fr] gap-y-1.5 text-sm">
@@ -61,6 +69,10 @@ export function DevicePage() {
             <dt className="text-slate-500">Cluster</dt><dd>{d.cluster ?? "—"}</dd>
             <dt className="text-slate-500">Epoch</dt><dd>{d.epoch}</dd>
             <dt className="text-slate-500">Pu fingerprint</dt><dd className="font-mono" title="First 8 hex of SHA-256 of the public key H(ID)">{d.pu_fingerprint}</dd>
+            {d.role === "CM" && enhanced && <>
+              <dt className="text-slate-500">Designated CH</dt><dd className="font-mono">{d.designated ?? "—"}</dd>
+              <dt className="text-slate-500">Readings lost</dt><dd>{d.undelivered ?? 0}</dd>
+            </>}
           </dl>
           {can("operator") && d.role !== "BS" && (
             <div className="mt-4 space-y-2 border-t border-slate-200 pt-3">

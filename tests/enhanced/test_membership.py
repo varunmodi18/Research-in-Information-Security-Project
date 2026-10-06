@@ -70,10 +70,12 @@ def test_v_adv_10_insider_impersonation_enhanced_blocked_100_of_100() -> None:
         net.step(1)
         hs1 = victim_hs1.frames[-1].payload
         t0 = mark(net)
-        inject(net, "CH-01", "CM-0102", attacker.forge_hs2(insider.curve, insider.g, r, hs1, guesses[attempt % 3]))
-        net.step(1)
+        forged = attacker.forge_hs2(insider.curve, insider.g, r, hs1, guesses[attempt % 3])
+        inject(net, "CH-01", "CM-0102", forged)
+        # the CH's periodic grant refresh (D3) may interleave a frame: find the forged one's step
+        delivered = [res for res in net.step(3) if res.frame is not None and res.frame.payload == forged]
         accepted += len([e for e in events(net, "KEY_CONFIRMED", t0) if e.device == "CM-0102"])
-        assert net.scheduler.log[-1].reason == "BAD_TAG"
+        assert len(delivered) == 1 and delivered[0].reason == "BAD_TAG"
     assert accepted == 0
 
 

@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     t_retry: int = 5
     batch_steps: int = 5
     batch_max: int = 8
+    grant_refresh_steps: int = 50
     bind: str = "127.0.0.1:8000"
     static_dir: Path = REPO_ROOT / "web" / "dist"
     session_idle_hours: float = 8.0

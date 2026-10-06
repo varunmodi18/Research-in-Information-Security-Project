@@ -113,7 +113,8 @@ def build_original(row: models.Network, devices: list[models.Device], adapter: E
 def make_enhanced_builder(ctx: AppContext):  # type: ignore[no-untyped-def]
     s = ctx.settings
     tunables = en.Tunables(max_pending=s.max_pending, t_hs=s.t_hs, t_retry=s.t_retry,
-                           batch_steps=s.batch_steps, batch_max=s.batch_max)
+                           batch_steps=s.batch_steps, batch_max=s.batch_max,
+                           grant_refresh_steps=s.grant_refresh_steps)
 
     def build_enhanced(row: models.Network, devices: list[models.Device], adapter: EncryptedKeystoreAdapter,
                        db: Session) -> RuntimeNet:

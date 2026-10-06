@@ -81,6 +81,12 @@ seed (lab only). Creating a network provisions every device.
 | **⊘ Revoke…** | Type the device id to confirm. The BS removes the device from its registry, the CH drops it, and its sessions and PSKs are destroyed |
 | **Reprovision** | Issues a revoked device a new identity |
 
+Revoking a **cluster head** leaves its members marked **⚠ CH revoked, awaiting re-designation**
+(topology, device page and a banner). The members are not told of the revocation. They keep their
+sessions with the revoked CH, and every reading they send is lost; the banner counts the lost
+readings. Reprovision the CH (or designate a replacement). The new CH relays a new designation to
+each member, which then drops the revoked CH's sessions and PSK.
+
 Designating a replacement CH for a cluster is available as the `designate` job (`docs/API.md`). It
 has no button in this release.
 

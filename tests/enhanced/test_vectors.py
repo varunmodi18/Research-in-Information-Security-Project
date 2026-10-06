@@ -43,3 +43,33 @@ def test_implementation_reproduces_vector() -> None:
     s = cm.current_session("CH-01", m.CM_CH)
     assert cm.keystore.get(s.key("send")).hex() == VECTOR["secret_test_only"]["k_ir"]
     assert cm.keystore.get("psk:CH-01").hex() == VECTOR["secret_test_only"]["psk"]
+
+
+# -- follow-up D1/D6: the data path (DATA_CM with hop_seq; sealed inner frame, nonce not sent) -------
+
+def test_vector_data_path_satisfies_spec_equations() -> None:
+    from maka import aead
+    from maka.kdf import hmac256
+
+    d, sec = VECTOR["data"], VECTOR["data_secret_test_only"]
+    data_cm, inner = bytes.fromhex(d["data_cm"]), bytes.fromhex(d["inner"])
+    assert m.decode_data_cm(data_cm) == (bytes.fromhex(d["sid_cm_ch"]), d["hop_seq"], inner, bytes.fromhex(d["hop_tag"]))
+    hop_input = codec.LP(bytes.fromhex(d["sid_cm_ch"]), d["hop_seq"].to_bytes(8, "big"), inner)
+    assert hmac256(bytes.fromhex(sec["hop_key"]), hop_input).hex() == d["hop_tag"]
+    s = m.decode_secure(inner)
+    assert (s.sid.hex(), s.seq, s.ct.hex()) == (d["inner_sid_cm_bs"], d["inner_seq"], d["ciphertext_with_tag"])
+    nonce = bytes(4) + d["inner_seq"].to_bytes(8, "big")
+    assert nonce.hex() == d["nonce_not_transmitted"] and nonce not in inner
+    assert len(s.ct) == len(d["reading"]) + 16  # ciphertext and GCM tag only
+    pt = aead.decrypt(bytes.fromhex(sec["k_cm_bs"]), nonce + s.ct, ad=bytes.fromhex(d["inner_ad"]))
+    assert pt == d["reading"].encode()
+
+
+def test_implementation_reproduces_data_path_vector() -> None:
+    net = en.build(VECTOR["params"], VECTOR["topology"], seed=VECTOR["seed"])
+    net.onboard()
+    t0 = len(net.scheduler.bus.transcript)
+    net.send_reading("CM-0101", VECTOR["data"]["reading"])
+    net.run()
+    sent = [e.frame.payload.hex() for e in net.scheduler.bus.transcript[t0:] if e.frame.label == "DATA_CM"]
+    assert sent == [VECTOR["data"]["data_cm"]]

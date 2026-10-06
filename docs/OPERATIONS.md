@@ -41,6 +41,7 @@ directory (`src/maka_server/settings.py`).
 | `MAKA_STATIC_DIR` | `web/dist` | Built UI |
 | `MAKA_PARAMS_DEFAULT` | `demo` | Default parameter set for new networks |
 | `MAKA_T_HS`, `MAKA_T_RETRY`, `MAKA_MAX_PENDING`, `MAKA_BATCH_STEPS`, `MAKA_BATCH_MAX` | 20, 5, 16, 5, 8 | MAKA-E tunables (in scheduler steps; see `docs/PLAN_ERRATA.md` E-05 item 5 for the effective handshake timeout) |
+| `MAKA_GRANT_REFRESH_STEPS` | 50 | How often (in steps) a CH re-requests its `CLUSTER_GRANT` over the sealed CH–BS session. Bounds how long a CH that missed a `REVOKE_NOTICE` keeps a revoked member (`docs/PLAN_ERRATA.md` E-09). The timer runs only while the network is stepped |
 | `MAKA_SESSION_IDLE_HOURS` | 8 | Console session idle expiry |
 | `MAKA_LOGIN_MAX_FAILURES`, `MAKA_LOGIN_WINDOW_S`, `MAKA_LOGIN_LOCK_S` | 5, 900, 900 | Login lockout |
 | `MAKA_PERSIST_EVERY_STEPS` | 10 | How often a running network is flushed to the database |

@@ -61,9 +61,13 @@ def test_migration_upgrades_a_populated_m3_database(tmp_path: Path) -> None:
     con.execute("INSERT INTO frames (id, created_at, network_id, frame_id, step, sent_step, src, dst, label, "
                 "bytes_len, paper_bits, verdict, fate, checks_json) VALUES (1, '2026-10-03', 1, 1, 1, 0, 'A', "
                 "'B', 'EM1', 10, 800, 'ACCEPT', 'delivered', '[]')")
+    con.execute("INSERT INTO devices (id, created_at, network_id, ident, role, cluster, status, epoch, pu_fingerprint, "
+                "status_history) VALUES (1, '2026-10-03', 1, 'CM-0101', 'CM', 'CH-01', 'active', 0, 'ab', '[]')")
     con.commit()
     con.close()
     upgrade(url)
     con = sqlite3.connect(tmp_path / "old.db")
     assert con.execute("SELECT label, run_tag FROM frames").fetchall() == [("EM1", None)]
-    assert con.execute("SELECT version_num FROM alembic_version").fetchone() == ("0002",)
+    assert con.execute("SELECT version_num FROM alembic_version").fetchone() == ("0003",)
+    # 0003 (follow-up D2): existing devices get no designation and no undelivered readings
+    assert con.execute("SELECT ident, designated, undelivered FROM devices").fetchall() == [("CM-0101", None, 0)]

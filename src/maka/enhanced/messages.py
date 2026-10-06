@@ -208,15 +208,22 @@ def decode_open(data: bytes) -> tuple[int, str]:
     return decode_epoch_id(body_of(data, V, CLUSTER_OPEN))
 
 
-def encode_data_cm(sid_cm_ch: bytes, inner: bytes, hop_tag: bytes) -> bytes:
-    """DATA_CM = V || 0x40 || LP(sid_CM-CH, inner, hop_tag). The CM-CH sid lets the CH pick the
-    hop key and report UNKNOWN_SESSION precisely (docs/PLAN_ERRATA.md E-05)."""
-    return bytes([V, DATA_CM]) + LP(sid_cm_ch, inner, hop_tag)
+def hop_mac_input(sid_cm_ch: bytes, hop_seq: int, inner: bytes) -> bytes:
+    """What the hop tag covers: LP(sid_CM-CH, hop_seq, inner) (follow-up D1)."""
+    return LP(sid_cm_ch, hop_seq.to_bytes(8, "big"), inner)
 
 
-def decode_data_cm(data: bytes) -> tuple[bytes, bytes, bytes]:
-    sid, inner, tag = unLP(body_of(data, V, DATA_CM), 3)
-    return _fixed(sid, SID_BYTES, "sid"), inner, _fixed(tag, TAG_BYTES, "hop tag")
+def encode_data_cm(sid_cm_ch: bytes, hop_seq: int, inner: bytes, hop_tag: bytes) -> bytes:
+    """DATA_CM = V || 0x40 || LP(sid_CM-CH, hop_seq, inner, hop_tag). The CM-CH sid lets the CH pick
+    the hop key and report UNKNOWN_SESSION precisely (docs/PLAN_ERRATA.md E-05); hop_seq, covered by
+    the hop tag, lets the CH reject a replayed frame before batching it (E-09, D1)."""
+    return bytes([V, DATA_CM]) + LP(sid_cm_ch, hop_seq.to_bytes(8, "big"), inner, hop_tag)
+
+
+def decode_data_cm(data: bytes) -> tuple[bytes, int, bytes, bytes]:
+    sid, seq, inner, tag = unLP(body_of(data, V, DATA_CM), 4)
+    return (_fixed(sid, SID_BYTES, "sid"), int.from_bytes(_fixed(seq, 8, "hop_seq"), "big"), inner,
+            _fixed(tag, TAG_BYTES, "hop tag"))
 
 
 def encode_session_unknown(sid: bytes, id_r: str, id_i: str) -> bytes:

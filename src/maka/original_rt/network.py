@@ -90,6 +90,15 @@ class OriginalNetwork:
     def device_epoch(self, ident: str) -> int:
         return 0  # RP9 has no revocation, so no epochs (OB-05)
 
+    def designation(self, ident: str) -> str | None:
+        return None  # RP9 has no designation messages
+
+    def designation_state(self, ident: str) -> str | None:
+        return None
+
+    def undelivered_readings(self, ident: str) -> int:
+        return 0
+
     def readings(self) -> list[dict[str, object]]:
         return list(self._bs().readings)
 

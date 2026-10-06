@@ -127,6 +127,28 @@
       ],
       "title": "Cluster"
      },
+     "designated": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Designated"
+     },
+     "designation_state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Designation State"
+     },
      "epoch": {
       "title": "Epoch",
       "type": "integer"
@@ -146,6 +168,11 @@
      "status": {
       "title": "Status",
       "type": "string"
+     },
+     "undelivered": {
+      "default": 0,
+      "title": "Undelivered",
+      "type": "integer"
      }
     },
     "required": [

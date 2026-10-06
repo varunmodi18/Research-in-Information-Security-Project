@@ -70,6 +70,26 @@ class DeviceOut(BaseModel):
     status: str
     epoch: int
     pu_fingerprint: str
+    designated: str | None = None
+    undelivered: int = 0
+    # D2: "ch_revoked_awaiting_redesignation" while a CM's designated CH is revoked and no new
+    # DESIGNATION has reached it; "ok" when designated to a live CH; None for BS/CH or undesignated
+    designation_state: str | None = None
+
+
+CH_REVOKED_AWAITING = "ch_revoked_awaiting_redesignation"
+
+
+def devices_out(devices: list[Any]) -> list[DeviceOut]:
+    """DeviceOut rows with designation_state derived from the designated CH's own row."""
+    status = {d.ident: d.status for d in devices}
+    out = []
+    for d in devices:
+        row = DeviceOut.model_validate(d)
+        if row.designated is not None:
+            row.designation_state = CH_REVOKED_AWAITING if status.get(row.designated) == "revoked" else "ok"
+        out.append(row)
+    return out
 
 
 class NetworkOut(BaseModel):

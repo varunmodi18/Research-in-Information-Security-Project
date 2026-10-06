@@ -19,7 +19,6 @@ from maka_server.schemas import (
     SECURITY_LEVELS,
     CheckOut,
     DeviceDetail,
-    DeviceOut,
     FrameOut,
     JobAccepted,
     JobCreate,
@@ -30,6 +29,7 @@ from maka_server.schemas import (
     Page,
     ReadingOut,
     SessionOut,
+    devices_out,
 )
 from maka_server.services import networks as svc
 from maka_server.services.jobrules import check_job_allowed
@@ -71,7 +71,7 @@ def _detail(ctx: AppContext, db: Session, net: models.Network) -> NetworkDetail:
                               .order_by(models.Device.id)))
     s = ctx.settings
     return NetworkDetail(**_network_out(db, net).model_dump(),
-                         devices=[DeviceOut.model_validate(d) for d in devices],
+                         devices=devices_out(devices),
                          tunables={"MAX_PENDING": s.max_pending, "T_HS": s.t_hs, "T_RETRY": s.t_retry,
                                    "BATCH_STEPS": s.batch_steps, "BATCH_MAX": s.batch_max})
 
@@ -120,7 +120,9 @@ def get_device(network_id: int, ident: str, _: Principal = Depends(viewer),
     sessions = db.scalars(select(models.ProtocolSession).where(
         models.ProtocolSession.network_id == network_id,
         (models.ProtocolSession.a == ident) | (models.ProtocolSession.b == ident)))
-    return DeviceDetail(device=DeviceOut.model_validate(dev),
+    designated = [dev] + list(db.scalars(select(models.Device).where(
+        models.Device.network_id == network_id, models.Device.ident == dev.designated))) if dev.designated else [dev]
+    return DeviceDetail(device=devices_out(designated)[0],
                         sessions=[SessionOut.model_validate(s) for s in sessions],
                         status_history=list(dev.status_history))
 

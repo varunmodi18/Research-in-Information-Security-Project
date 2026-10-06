@@ -1,7 +1,8 @@
 """Generates tests/vectors/maka_e_v1.json (IMPLEMENTATION_PLAN.md §4.6.8, M4-T4).
 
-One CM-CH AKE on `toy` parameters with a fixed seed: every public value in full and, in this
-TEST-ONLY file, the secret intermediates too. Before writing, each value is recomputed from the
+One CM-CH AKE on `toy` parameters with a fixed seed, then the first reading CM-0101 sends
+(follow-up D1/D6: DATA_CM with its hop_seq, the sealed inner frame whose nonce 0^32||seq is not
+transmitted): every public value in full and, in this TEST-ONLY file, the secret intermediates too. Before writing, each value is recomputed from the
 spec formulas with the pure functions in maka.enhanced.ake and checked against what the device
 implementation actually sent and stored. Run once, then freeze; tests/enhanced/test_vectors.py
 requires the implementation to reproduce it byte for byte.
@@ -18,12 +19,14 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from maka import codec
+from maka import aead, codec
 from maka.enhanced import ake
 from maka.enhanced import messages as m
 from maka.enhanced import network as en
+from maka.kdf import hmac256
 
 SEED = 20261004
+READING = "21.5C"
 OUT = REPO_ROOT / "tests" / "vectors" / "maka_e_v1.json"
 
 
@@ -73,6 +76,7 @@ def reference_run() -> dict[str, Any]:
     s_cm = cm.current_session("CH-01", m.CM_CH)
     assert s_cm is not None and cm.keystore.get(s_cm.key("send")) == keys.k_ir
     assert cm.keystore.get(s_cm.key("recv")) == keys.k_ri
+    data, data_secret = data_path(net)
     return {
         "description": "MAKA-E v1 test vector: one CM-CH AKE (IMPLEMENTATION_PLAN.md §4.6.8). "
                        "TEST ONLY: toy parameters are insecure, and this file contains secret "
@@ -86,7 +90,34 @@ def reference_run() -> dict[str, Any]:
         "secret_test_only": {"psk": psk.hex(), "x": x, "y": y, "Z": codec.enc_point(z).hex(),
                              "kc_r": keys.kc_r.hex(), "kc_i": keys.kc_i.hex(), "k_ir": keys.k_ir.hex(),
                              "k_ri": keys.k_ri.hex()},
+        "data": data,
+        "data_secret_test_only": data_secret,
     }
+
+
+def data_path(net: en.EnhancedNetwork) -> tuple[dict[str, Any], dict[str, Any]]:
+    """CM-0101's first reading: DATA_CM on the CM->CH hop, recomputed from the spec formulas."""
+    cm = net.device("CM-0101")
+    to_bs, hop = cm.current_session("BS-01", m.CM_BS), cm.current_session("CH-01", m.CM_CH)
+    assert to_bs is not None and hop is not None
+    k_cm_bs, hop_key = cm.keystore.get(to_bs.key("send")), cm.keystore.get(hop.key("hop"))
+    t0 = len(net.scheduler.bus.transcript)
+    net.send_reading("CM-0101", READING)
+    net.run()
+    data_cm = next(e.frame.payload for e in net.scheduler.bus.transcript[t0:] if e.frame.label == "DATA_CM")
+    sid, hop_seq, inner, tag = m.decode_data_cm(data_cm)
+    assert sid == hop.sid and hop_seq == 1
+    assert tag == hmac256(hop_key, m.hop_mac_input(sid, hop_seq, inner))
+    sec = m.decode_secure(inner)
+    ad = m.secure_ad(sec.mtype, sec.sid, "CM-0101", "BS-01", sec.seq)
+    nonce = aead.counter_nonce(sec.seq)
+    assert sec.sid == to_bs.sid and len(sec.ct) == len(READING) + 16  # no nonce on the wire (D6)
+    assert aead.decrypt(k_cm_bs, nonce + sec.ct, ad=ad) == READING.encode()
+    assert any(r["value"] == READING for r in net.readings())
+    return ({"reading": READING, "data_cm": data_cm.hex(), "sid_cm_ch": sid.hex(), "hop_seq": hop_seq,
+             "inner": inner.hex(), "inner_sid_cm_bs": sec.sid.hex(), "inner_seq": sec.seq, "inner_ad": ad.hex(),
+             "nonce_not_transmitted": nonce.hex(), "ciphertext_with_tag": sec.ct.hex(), "hop_tag": tag.hex()},
+            {"k_cm_bs": k_cm_bs.hex(), "hop_key": hop_key.hex()})
 
 
 def main() -> int:

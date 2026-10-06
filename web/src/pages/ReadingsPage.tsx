@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { ApiProblem } from "../api/client";
 import { useNetwork, useReadings, useSubmitJob } from "../api/hooks";
 import { PageHeader } from "../components/Layout";
+import { DesignationBanner } from "../components/DesignationNotice";
 import { ModeBanner } from "../components/ModeBanner";
 import { Empty, ErrorPanel, Loading } from "../components/States";
 import { useToast } from "../components/Toast";
@@ -36,6 +37,7 @@ export function ReadingsPage() {
       <PageHeader title={`Readings at the base station — ${network.data.name}`}
         subtitle="Simulated sensor values, decrypted by the BS. Viewers cannot see this page."
         actions={<Link className="btn-secondary" to={`/networks/${id}`}>← Topology</Link>} />
+      <DesignationBanner devices={network.data.devices} />
       <div className="mx-6 mb-3 flex flex-wrap items-end gap-2">
         <button type="button" className="btn-secondary" onClick={() => job("send_readings", { count: 1 })}>Send one round</button>
         <div>

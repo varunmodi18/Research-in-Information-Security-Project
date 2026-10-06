@@ -63,7 +63,7 @@ All §6 metrics were produced on 2026-10-04 (`artifacts/eval/`). **No threshold 
 | V-PERF-03 pairings per CM during onboarding | 2 | ≤ 2 | same |
 | V-PERF-03 per-reading CM public-key operations | 0 | 0 | same |
 | V-PERF-03 per-reading CM AEAD + MAC | 2 | ≤ 2 | same |
-| V-PERF-03 bytes per reading on the CM→CH hop, minus payload | 116 | ≤ 120 | same |
+| V-PERF-03 bytes per reading on the CM→CH hop, minus payload | 116 (114 after the follow-up's D1/D6, E-09) | ≤ 120 | same; `tests/enhanced/test_data.py::test_per_reading_cost_and_size` |
 | V-PERF-04 API p95 with `net` (`demo`) loaded | 7.99 ms (200 requests) | ≤ 200 ms | `api_latency_2026-10-04.md` |
 | Lab L1–L8 outcomes | all 16 as predicted in §3.6 | — | `compare_2026-10-04.md` |
 

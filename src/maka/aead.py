@@ -48,3 +48,15 @@ def decrypt(key: bytes, blob: bytes, *, ad: bytes) -> bytes:
     """Inverse of encrypt. Raises cryptography.exceptions.InvalidTag on any mismatch."""
     nonce, ct = blob[:NONCE_BYTES], blob[NONCE_BYTES:]
     return AESGCM(key).decrypt(nonce, ct, ad)
+
+
+def encrypt_seq(key: bytes, plaintext: bytes, *, ad: bytes, seq: int) -> bytes:
+    """Counter-nonce encryption whose nonce is NOT transmitted: the receiver rebuilds it from the
+    seq it already gets in the message (follow-up D6, saves NONCE_BYTES per message). Returns
+    ciphertext_with_tag only."""
+    return encrypt(key, plaintext, ad=ad, nonce=counter_nonce(seq))[NONCE_BYTES:]
+
+
+def decrypt_seq(key: bytes, ciphertext: bytes, *, ad: bytes, seq: int) -> bytes:
+    """Inverse of encrypt_seq. Raises InvalidTag on any mismatch, ValueError on a seq out of range."""
+    return decrypt(key, counter_nonce(seq) + ciphertext, ad=ad)

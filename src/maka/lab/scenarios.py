@@ -315,14 +315,14 @@ class L5DeviceCapture(Scenario):
         cm = net.device("CM-0101")
         exposed: list[str] = []
         for frame in [f for f in rec.frames if f.label == "DATA_CM"]:
-            _, inner, _ = em.decode_data_cm(frame.payload)
+            _, _, inner, _ = em.decode_data_cm(frame.payload)
             sec = em.decode_secure(inner)
             ad = em.secure_ad(sec.mtype, sec.sid, frame.src, "BS-01", sec.seq)
             for value in stolen.values():
                 if len(value) != 32:
                     continue
                 try:
-                    aead.decrypt(value, sec.ct, ad=ad)
+                    aead.decrypt_seq(value, sec.ct, ad=ad, seq=sec.seq)
                     exposed.append(frame.src)
                     break
                 except (InvalidTag, ValueError):

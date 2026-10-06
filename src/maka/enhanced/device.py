@@ -9,8 +9,10 @@ Checks 1-5 run before any pairing or scalar multiplication (the P-07 DoS mitigat
 
 from __future__ import annotations
 
+import functools
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypeVar
 
 from cryptography.exceptions import InvalidTag
 
@@ -29,6 +31,10 @@ from maka.runtime.keystore import Keystore, SecretClass
 
 SECRET = SecretClass.SECRET
 PUBLIC = SecretClass.PUBLIC
+# Follow-up D5: a sender never uses seq >= 2^32 with one key; at that point it refuses to send and
+# the session is rekeyed. The wire field stays 8 bytes; the bound keeps every key far below
+# AES-GCM's per-key message limit.
+SEQ_LIMIT = 2**32
 
 
 @dataclass(frozen=True)
@@ -42,6 +48,7 @@ class EnhancedConfig:
     max_retries: int = 3
     batch_steps: int = 5
     batch_max: int = 8
+    grant_refresh_steps: int = 50  # follow-up D3: the CH re-claims its grant this often
 
 
 class Rejected(Exception):
@@ -50,6 +57,23 @@ class Rejected(Exception):
     def __init__(self, code: str, peer: str | None = None, sid: bytes | None = None, **details: Any) -> None:
         super().__init__(code)
         self.code, self.peer, self.sid, self.details = code, peer, sid, details
+
+
+F = TypeVar("F", bound=Callable[..., list[Frame]])
+
+
+def guarded(method: F) -> F:
+    """For operator commands that may seal (send_reading, revoke, refresh_grant): a Rejected raised
+    inside becomes a REJECT verdict and an event, as it does for frames, instead of an exception."""
+    @functools.wraps(method)
+    def wrapper(self: EnhancedDevice, *args: Any, **kwargs: Any) -> list[Frame]:
+        try:
+            out = method(self, *args, **kwargs)
+        except Rejected as r:
+            self.check(r.code, False, str(r.details.get("reason", "")))
+            out = self.reject(r.code, peer=r.peer, sid=r.sid.hex() if r.sid else None, **r.details)
+        return out + self._extras()
+    return wrapper  # type: ignore[return-value]
 
 
 class EnhancedDevice(Device):
@@ -66,6 +90,17 @@ class EnhancedDevice(Device):
         self.retry_via: dict[tuple[str, str], str | None] = {}
         self._gave_up: list[Session] = []  # initiators out of retries, reported after the call
         self._pending_out: list[Frame] = []  # notices produced while rejecting a frame
+        self.known_epoch = 0  # the latest registry epoch the BS has told this device (follow-up D4)
+
+    def registry_epoch(self) -> int:
+        """The registry epoch as this device knows it; the BS overrides this with its own."""
+        return self.known_epoch
+
+    def learn_epoch(self, epoch: int, s: Session | None = None) -> None:
+        """An epoch received from the BS inside session `s` is that session's epoch."""
+        self.known_epoch = max(self.known_epoch, epoch)
+        if s is not None:
+            s.epoch = epoch
 
     # == dispatch ===============================================================================
 
@@ -304,6 +339,7 @@ class EnhancedDevice(Device):
 
     def _establish(self, s: Session) -> list[Frame]:
         s.state, s.established_step = st.ESTABLISHED, self.now
+        s.epoch = self.registry_epoch()  # D4: both sides stamp the epoch they know at establishment
         self.cancel_timer(f"hs:{s.sid_hex}")
         if s.purpose == m.CM_CH:  # hop-MAC key, derived once per session from k_CM->CH = k_IR
             k_ir = self.keystore.get(s.key("send" if s.role == st.INITIATOR else "recv"))
@@ -346,16 +382,19 @@ class EnhancedDevice(Device):
 
     def on_timer(self, name: str) -> list[Frame]:
         out: list[Frame] = []
-        if name.startswith("hs:"):
-            s = self.sessions.get(name[3:])
-            if s is not None and s.state in st.PENDING:
-                self.emit("TIMEOUT", peer=s.peer, sid=s.sid_hex, purpose=s.purpose)
-                self._fail_session(s, "TIMEOUT")
-        elif name.startswith("retry:"):
-            peer, _, purpose = name[6:].partition("|")
-            out = self.start_ake(peer, purpose, self.retry_via.get((peer, purpose)))
-        else:
-            out = self.on_role_timer(name)
+        try:
+            if name.startswith("hs:"):
+                s = self.sessions.get(name[3:])
+                if s is not None and s.state in st.PENDING:
+                    self.emit("TIMEOUT", peer=s.peer, sid=s.sid_hex, purpose=s.purpose)
+                    self._fail_session(s, "TIMEOUT")
+            elif name.startswith("retry:"):
+                peer, _, purpose = name[6:].partition("|")
+                out = self.start_ake(peer, purpose, self.retry_via.get((peer, purpose)))
+            else:
+                out = self.on_role_timer(name)
+        except Rejected as r:
+            out = self.reject(r.code, peer=r.peer, sid=r.sid.hex() if r.sid else None, **r.details)
         return out + self._extras()
 
     def on_role_timer(self, name: str) -> list[Frame]:
@@ -378,11 +417,25 @@ class EnhancedDevice(Device):
     # == session-sealed messages (§4.6.5-4.6.6) ======================================================
 
     def seal(self, s: Session, t: int, plaintext: bytes) -> bytes:
+        if s.send_seq + 1 >= SEQ_LIMIT:
+            self._seq_exhausted(s)
         s.send_seq += 1
         s.sent += 1
         ad = m.secure_ad(t, s.sid, self.identity, s.peer, s.send_seq)
-        ct = aead.encrypt(self.keystore.get(s.key("send")), plaintext, ad=ad, nonce=aead.counter_nonce(s.send_seq))
+        # D6: the nonce is 0^32 || seq and is not sent; the receiver rebuilds it from seq
+        ct = aead.encrypt_seq(self.keystore.get(s.key("send")), plaintext, ad=ad, seq=s.send_seq)
         return m.encode_secure(t, s.sid, s.send_seq, ct)
+
+    def _seq_exhausted(self, s: Session) -> None:
+        """D5: refuse to send and rekey. The initiator starts a fresh handshake; a responder cannot,
+        so it tells the initiator the session is unusable (SESSION_UNKNOWN, which only ever triggers
+        a fresh authenticated handshake). The new session supersedes this one."""
+        self.emit("SEQ_EXHAUSTED", peer=s.peer, sid=s.sid_hex, purpose=s.purpose, seq=s.send_seq)
+        if s.role == st.INITIATOR:
+            self._pending_out += self.start_ake(s.peer, s.purpose, s.via, fresh_budget=True)
+        else:
+            self._notify_unknown(s.sid, s.peer, s.via)
+        raise Rejected("SEQ_EXHAUSTED", peer=s.peer, sid=s.sid, reason="send seq reached 2^32; rekeying")
 
     def open_sealed(self, payload: bytes, *, peer: str | None, purpose: str,
                     notify_via: str | None = None) -> tuple[Session, m.Secure, bytes]:
@@ -402,8 +455,8 @@ class EnhancedDevice(Device):
             raise Rejected("REPLAY_REJECTED", peer=s.peer, sid=s.sid, seq=sec.seq)
         ad = m.secure_ad(sec.mtype, s.sid, s.peer, self.identity, sec.seq)
         try:
-            pt = aead.decrypt(self.keystore.get(s.key("recv")), sec.ct, ad=ad)
-        except InvalidTag as exc:
+            pt = aead.decrypt_seq(self.keystore.get(s.key("recv")), sec.ct, ad=ad, seq=sec.seq)
+        except (InvalidTag, ValueError) as exc:
             self.check("AEAD tag valid", False)
             raise Rejected("BAD_TAG", peer=s.peer, sid=s.sid) from exc
         self.check("AEAD tag valid", True)

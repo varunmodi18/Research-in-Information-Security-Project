@@ -100,6 +100,38 @@ test("V-E2E-04 J3 revoke", async ({ page }) => {
   await expect(page.getByTestId("events-table")).toContainText("CM-0102");
 });
 
+// Follow-up D2: revoking a CH leaves its members "CH revoked, awaiting re-designation" and the
+// readings they send are visibly lost; reprovisioning the CH re-designates them.
+test("D2 CH revoked: members await re-designation, then rejoin", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page, "operator");
+  await createNetwork(page, { name: uniqueName("chrevoke"), kind: "product", template: "small", params: "toy" });
+  await page.getByTestId("btn-onboard").click();
+  await expect(page.getByTestId("node-CM-0101")).toHaveAttribute("data-status", "active", { timeout: 60_000 });
+  const nid = new URL(page.url()).pathname.split("/")[2];
+  await page.goto(`/networks/${nid}/devices/CH-01`);
+  await page.getByTestId("btn-revoke").click();
+  await page.getByLabel(/Type CH-01 to confirm/).fill("CH-01");
+  await page.getByRole("button", { name: "Revoke device" }).click();
+  await expect(page.getByText("⊘revoked").first()).toBeVisible({ timeout: 30_000 });
+  await page.goto(`/networks/${nid}`);
+  for (const cm of ["CM-0101", "CM-0102", "CM-0103"])
+    await expect(page.getByTestId(`node-${cm}`)).toHaveAttribute("data-designation", "ch_revoked_awaiting_redesignation");
+  await expect(page.getByTestId("designation-banner")).toContainText("CH revoked, awaiting re-designation");
+  await page.getByTestId("btn-readings").click();
+  await expect(page.getByTestId("lost-readings")).toContainText("3", { timeout: 30_000 });
+  await page.goto(`/networks/${nid}/devices/CM-0101`);
+  await expect(page.getByTestId("device-awaiting")).toContainText("1 lost so far");
+  await page.goto(`/networks/${nid}/devices/CH-01`);
+  await page.getByLabel("New identity").fill("CH-01-r1");
+  await page.getByRole("button", { name: "Reprovision" }).click();
+  await page.goto(`/networks/${nid}`);
+  for (const cm of ["CM-0101", "CM-0102", "CM-0103"])
+    await expect(page.getByTestId(`node-${cm}`)).toHaveAttribute("data-designation", "ok", { timeout: 60_000 });
+  await expect(page.getByTestId("lost-readings")).toContainText("3");  // the loss stays on record
+  await expect(page.getByTestId("designation-banner")).not.toContainText("awaiting re-designation:");
+});
+
 // Viewers see a restricted state on the readings page (M5-T4, V-WEB-08 in the UI).
 test("viewer cannot open readings", async ({ page }) => {
   await login(page, "viewer");

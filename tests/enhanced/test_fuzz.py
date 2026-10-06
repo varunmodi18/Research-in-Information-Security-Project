@@ -16,7 +16,7 @@ SAMPLES = [
     m.encode_secure(m.DATA_INNER, b"s" * 16, 7, b"c" * 40),
     m.encode_relay("BS-01", b"\x02\x10abc"),
     m.encode_open("CH-01", 3),
-    m.encode_data_cm(b"s" * 16, b"inner", b"t" * 32),
+    m.encode_data_cm(b"s" * 16, 1, b"inner", b"t" * 32),
     m.encode_session_unknown(b"s" * 16, "CH-1", "CM-1"),
 ]
 

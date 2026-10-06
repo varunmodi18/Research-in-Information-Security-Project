@@ -48,6 +48,8 @@ class RuntimeNet(Protocol):
     def session_infos(self) -> list[dict[str, Any]]: ...
     def readings(self) -> list[dict[str, Any]]: ...
     def device_epoch(self, ident: str) -> int: ...
+    def designation(self, ident: str) -> str | None: ...
+    def undelivered_readings(self, ident: str) -> int: ...
 
 
 def pu_fingerprint(params_name: str, ident: str) -> str:
@@ -115,6 +117,8 @@ class NetworkRuntime:
                 dev_row.status_history = [*dev_row.status_history, {"step": sched.step_no, "status": dev.status}]
                 dev_row.status = dev.status
             dev_row.epoch = self.net.device_epoch(ident)
+            dev_row.designated = self.net.designation(ident)
+            dev_row.undelivered = self.net.undelivered_readings(ident)
 
         db.execute(delete(models.ProtocolSession).where(models.ProtocolSession.network_id == self.network_id))
         for s in self.net.session_infos():

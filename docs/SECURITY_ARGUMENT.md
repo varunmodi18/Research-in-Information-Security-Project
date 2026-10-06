@@ -115,7 +115,12 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
   - A responder rejects an HS1 whose `sid` it has seen before.
   - HS2 and HS3 must match a pending `sid`.
   - Session messages carry a per-direction counter `seq`, accepted only if strictly increasing. The
-    counter also forms the AEAD nonce, so a (key, nonce) pair is never reused (A4).
+    counter also forms the AEAD nonce `0^32 ‖ seq`, so a (key, nonce) pair is never reused (A4). The
+    nonce is not transmitted; the receiver rebuilds it from `seq` (E-09, D6).
+  - A sender never uses `seq ≥ 2^32` under one key: it refuses to send and the session is rekeyed
+    (the initiator starts a handshake; a responder asks it to with `SESSION_UNKNOWN`) (E-09, D5).
+  - On the CM→CH hop, `DATA_CM` carries its own counter `hop_seq`, covered by the hop MAC. The CH
+    rejects a non-increasing `hop_seq` with `REPLAY_REJECTED` before batching (E-09, D1).
 - **Evidence**: V-ADV-01/02/08/09; Lab L1. OFMC's strong (injective) authentication goal holds for
   MAKA-E. For RP9, by contrast, OFMC 2024 finds a cross-session replay at 2 sessions: without a
   receiver-side nonce record, replay succeeds; RP9's replay protection rests entirely on that
@@ -135,8 +140,13 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
 - **Limits**:
   - Exclusion is by authorisation lists, not cryptography: a revoked `Pr` is still mathematically
     valid (R-05).
-  - A CH that misses a notice keeps the revoked member until its next grant refresh, which happens
-    at every CH–BS rekey (R-06; V-LIFE-03 shows the window closing).
+  - A CH that misses a notice keeps the revoked member until its next grant refresh: after every
+    CH–BS handshake and every `MAKA_GRANT_REFRESH_STEPS` steps over the sealed CH–BS session
+    (R-06; V-LIFE-03 shows the window closing without a rekey).
+  - The revoked device itself is not told, by design: nothing it could be told would bind it. When
+    a CH is revoked, its members are not told either. They keep their sessions and PSK with it until
+    the replacement CH relays a new `DESIGNATION`, and then destroy them. Readings sent in between
+    are lost, and the console shows them as lost (E-09, D2, D7).
 - **Evidence**: V-ADV-13/15, V-LIFE-01..04; Lab L6, L8.
 
 ### P6. Data confidentiality, integrity and attribution on the CM→CH→BS path
@@ -144,7 +154,7 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
 - **Mechanism**:
   - Readings are sealed end to end under the CM→BS session key. AD carries type, `sid`, parties
     and `seq`.
-  - The CM→CH hop is authenticated by `HMAC(HKDF(k_CM→CH, "hop-mac"), LP(inner))`.
+  - The CM→CH hop is authenticated by `HMAC(HKDF(k_CM→CH, "hop-mac"), LP(sid_CM-CH, hop_seq, inner))`.
   - The CH batches inner frames under the CH→BS session.
   - The BS checks that each sender is a granted member of the delivering CH, then opens it with
     that member's session.

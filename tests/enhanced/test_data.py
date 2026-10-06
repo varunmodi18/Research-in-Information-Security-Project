@@ -9,6 +9,7 @@ import pytest
 from maka.enhanced import messages as m
 from maka.enhanced import network as en
 from maka.runtime import adversary
+from maka.runtime.bus import Frame
 
 from .util import SEED, events, frames, mark, onboarded
 
@@ -59,10 +60,23 @@ def test_per_reading_cost_and_size() -> None:
     assert delta.get("T_S", 0) + delta.get("T_MAC", 0) <= 2
     net.run()
     data_cm = frames(net, "DATA_CM", src="CM-0101")[0]
-    assert len(data_cm.payload) <= len(value) + 120
+    # 114 bytes: 116 before the follow-up, minus the 12-byte nonce no longer sent (D6), plus the
+    # LP-prefixed 8-byte hop_seq (D1). The §6.6 threshold stays 120.
+    assert len(data_cm.payload) == len(value) + 114 <= len(value) + 120
+
+
+def test_d6_sealed_messages_do_not_carry_the_nonce() -> None:
+    net = onboarded("paper")
+    net.send_reading("CM-0101", "21.4")
+    net.run()
+    _, _, inner, _ = m.decode_data_cm(frames(net, "DATA_CM", src="CM-0101")[0].payload)
+    sec = m.decode_secure(inner)
+    assert len(sec.ct) == len("21.4") + 16  # ciphertext + GCM tag; the nonce 0^32||seq is rebuilt
+    assert [r["value"] for r in net.readings()] == ["21.4"]
 
 
 def test_v_adv_08_replayed_data_rejected() -> None:
+    """D1: the CH rejects the replayed DATA_CM on its hop_seq, before batching it."""
     net = onboarded("paper")
     net.send_reading("CM-0101", "21.4")
     net.run()
@@ -70,8 +84,33 @@ def test_v_adv_08_replayed_data_rejected() -> None:
     t0 = mark(net)
     net.scheduler.bus.inject(captured, net.scheduler.step_no)
     net.run()
-    assert [e.type for e in events(net, "REPLAY_REJECTED", t0)] == ["REPLAY_REJECTED"]
-    assert not events(net, "DATA_ACCEPTED", t0)
+    assert [(e.type, e.device) for e in events(net, "REPLAY_REJECTED", t0)] == [("REPLAY_REJECTED", "CH-01")]
+    assert not events(net, "BATCH_SENT", t0) and not events(net, "DATA_ACCEPTED", t0)
+
+
+def test_d1_hop_seq_is_covered_by_the_hop_mac() -> None:
+    """Rewriting hop_seq to make a replay look fresh breaks the hop tag."""
+    net = onboarded("paper")
+    net.send_reading("CM-0101", "21.4")
+    net.run()
+    sid, hop_seq, inner, tag = m.decode_data_cm(frames(net, "DATA_CM", src="CM-0101")[0].payload)
+    t0 = mark(net)
+    net.scheduler.bus.inject(Frame("CM-0101", "CH-01", "DATA_CM", m.encode_data_cm(sid, hop_seq + 1, inner, tag)),
+                             net.scheduler.step_no)
+    net.run()
+    assert [(e.type, e.device, e.details.get("reason")) for e in events(net, "BAD_TAG", t0)] == [
+        ("BAD_TAG", "CH-01", "hop MAC")]
+    assert not events(net, "BATCH_SENT", t0)
+
+
+def test_d1_hop_seq_strictly_increasing_per_session() -> None:
+    net = onboarded("paper")
+    for v in ("a", "b", "c"):
+        net.send_reading("CM-0101", v)
+    net.run()
+    assert [m.decode_data_cm(f.payload)[1] for f in frames(net, "DATA_CM", src="CM-0101")] == [1, 2, 3]
+    assert net.device("CH-01").current_session("CM-0101", m.CM_CH).hop_last == 3
+    assert [r["value"] for r in net.readings()] == ["a", "b", "c"]
 
 
 def test_v_adv_09_reordered_data() -> None:

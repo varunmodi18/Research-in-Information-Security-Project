@@ -7,6 +7,7 @@ import { useJob, useNetwork, useSubmitJob } from "../api/hooks";
 import type { Device, JobType, NetworkDetail } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
 import { PageHeader } from "../components/Layout";
+import { AWAITING, AWAITING_LABEL, DesignationBanner } from "../components/DesignationNotice";
 import { ModeBanner } from "../components/ModeBanner";
 import { ErrorPanel, Loading, StreamIndicator } from "../components/States";
 import { SeverityBadge, STATUS_COLOURS, StatusBadge } from "../components/StatusBadge";
@@ -24,6 +25,7 @@ function DeviceNode({ data }: NodeProps<Node<DeviceNodeData>>) {
       style={{ borderColor: colour, minWidth: 116 }}
       data-testid={`node-${d.ident}`}
       data-status={d.status}
+      data-designation={d.designation_state ?? undefined}
     >
       <Handle type="target" position={Position.Top} className="!bg-slate-400" />
       <div className="text-[10px] font-semibold uppercase tracking-wide text-slate-500">{d.role}</div>
@@ -31,6 +33,11 @@ function DeviceNode({ data }: NodeProps<Node<DeviceNodeData>>) {
       <div className="mt-1">
         <StatusBadge status={d.status} />
       </div>
+      {d.designation_state === AWAITING && (
+        <div className="mt-1 rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-900" title={AWAITING_LABEL}>
+          ⚠ CH revoked
+        </div>
+      )}
       <Handle type="source" position={Position.Bottom} className="!bg-slate-400" />
     </div>
   );
@@ -135,6 +142,7 @@ export function TopologyPage() {
           </button>
         </div>
       )}
+      <DesignationBanner devices={net.devices} />
       {job.data && (
         <div className="mx-6 mb-3" data-testid="job-status">
           {running ? (
@@ -174,6 +182,11 @@ export function TopologyPage() {
                   <dt className="text-slate-500">Cluster</dt><dd>{sel.cluster ?? "—"}</dd>
                   <dt className="text-slate-500">Epoch</dt><dd>{sel.epoch}</dd>
                   <dt className="text-slate-500">Pu fingerprint</dt><dd className="font-mono">{sel.pu_fingerprint}</dd>
+                  {sel.role === "CM" && <>
+                    <dt className="text-slate-500">Designated CH</dt>
+                    <dd>{sel.designated ?? "—"}{sel.designation_state === AWAITING && <span className="ml-1 text-xs font-semibold text-amber-800">({AWAITING_LABEL})</span>}</dd>
+                    <dt className="text-slate-500">Readings lost</dt><dd>{sel.undelivered ?? 0}</dd>
+                  </>}
                 </dl>
                 <Link className="btn-secondary mt-3" to={`/networks/${id}/devices/${sel.ident}`}>Device details →</Link>
               </>

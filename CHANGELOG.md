@@ -19,6 +19,18 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
   - A forward-secrecy AnB model was added.
   - The Evaluation page has two formal tables. OB-09 is corrected and OB-10 reworded. Errata E-08;
     OI-02 closed.
+- **Part D**: protocol fixes (E-09):
+  - D1: `DATA_CM` carries `hop_seq` under the hop MAC; the CH rejects replays before batching.
+  - D2: members of a revoked CH are shown as "CH revoked, awaiting re-designation", and their lost
+    readings are counted.
+  - D3: periodic grant refresh (`MAKA_GRANT_REFRESH_STEPS`, default 50) replaces the
+    `UNAUTHORISED_PEER` trigger.
+  - D4: session epochs are set.
+  - D5: `seq` is bounded at 2^32, with a rekey.
+  - D6: the AEAD nonce is derived from `seq` and not sent.
+  - D7: the revoked device is not told, as intended.
+  - Per-reading CM→CH overhead goes from 116 to 114 bytes (threshold 120). The test vector gains a
+    data-path section; its AKE part is unchanged.
 
 ## v1.0.0 — 2026-10-04
 

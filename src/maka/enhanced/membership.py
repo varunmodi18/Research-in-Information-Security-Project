@@ -17,12 +17,14 @@ from typing import Any
 from maka import ledger
 from maka.codec import DecodeError
 from maka.enhanced import messages as m
-from maka.enhanced.device import EnhancedDevice, Rejected
+from maka.enhanced.device import EnhancedDevice, Rejected, guarded
 from maka.enhanced.states import Session
 from maka.runtime import device as dv
 from maka.runtime.bus import Frame
+from maka.runtime.device import BACKGROUND
 
 REVOKED = "revoked"
+GRANT_REFRESH = BACKGROUND + "grant_refresh"
 
 
 @dataclass
@@ -46,6 +48,9 @@ class BSMembership(EnhancedDevice):
 
     def handlers(self) -> dict[int, Any]:
         return {**super().handlers(), m.RELAY: self._on_relay, m.CLUSTER_CLAIM: self._on_claim}
+
+    def registry_epoch(self) -> int:
+        return self.epoch
 
     def _on_relay(self, payload: bytes, link: str) -> list[Frame]:
         try:
@@ -109,6 +114,7 @@ class CHMembership(EnhancedDevice):
         self.member_config = list(member_config)  # provisioning config: "local discovery"
         self.grant: set[str] = set()
         self.grant_epoch = -1
+        self._timer_claims = 0  # claims sent by the refresh timer whose grant has not arrived yet
 
     def handlers(self) -> dict[int, Any]:
         return {**super().handlers(), m.RELAY: self._on_relay, m.CLUSTER_GRANT: self._on_grant}
@@ -116,8 +122,10 @@ class CHMembership(EnhancedDevice):
     def start_onboarding(self) -> list[Frame]:
         return self.start_ake(self.cfg.id_bs, m.CH_BS, fresh_budget=True)
 
+    @guarded
     def refresh_grant(self) -> list[Frame]:
-        """Re-requests CLUSTER_GRANT over the current CH-BS session (§4.6.7 recovery)."""
+        """Re-requests CLUSTER_GRANT over the current CH-BS session (§4.6.7 recovery): after every
+        CH-BS handshake and every grant_refresh_steps steps (follow-up D3, docs/PLAN_ERRATA.md E-09)."""
         s = self.current_session(self.cfg.id_bs, m.CH_BS)
         if s is None:
             return self.start_onboarding()
@@ -139,19 +147,34 @@ class CHMembership(EnhancedDevice):
 
     def _on_grant(self, payload: bytes, link: str) -> list[Frame]:
         with ledger.LedgerScope(self.identity, "membership"):
-            _, _, pt = self.open_sealed(payload, peer=self.cfg.id_bs, purpose=m.CH_BS)
+            s, _, pt = self.open_sealed(payload, peer=self.cfg.id_bs, purpose=m.CH_BS)
             try:
                 epoch, granted, _rejected = m.decode_grant(pt)
             except DecodeError as exc:
                 raise Rejected("DECODE_ERROR", peer=link, error=str(exc)) from exc
         if not self.check("grant epoch not stale", epoch >= self.grant_epoch):
             raise Rejected("REPLAY_REJECTED", peer=link, reason="stale grant epoch")
+        self.learn_epoch(epoch, s)
         for gone in self.grant - set(granted):
             self.drop_peer(gone)
+        # A grant answering a timer refresh opens only members new to the grant: re-opening the
+        # others could restart a member's onboarding that is still under way (follow-up D3).
+        periodic, self._timer_claims = self._timer_claims > 0, max(0, self._timer_claims - 1)
+        previous = self.grant
         self.grant, self.grant_epoch = set(granted), epoch
         self.set_status(dv.ACTIVE)
+        self.set_timer(GRANT_REFRESH, self.cfg.grant_refresh_steps)
         return [self.frame(cm, "CLUSTER_OPEN", m.encode_open(self.identity, epoch))
-                for cm in granted if self.current_session(cm, m.CM_CH) is None]
+                for cm in granted if self.current_session(cm, m.CM_CH) is None
+                and not (periodic and cm in previous)]
+
+    def on_role_timer(self, name: str) -> list[Frame]:
+        if name == GRANT_REFRESH:
+            out = self.refresh_grant()
+            if any(f.label == "CLUSTER_CLAIM" for f in out):
+                self._timer_claims += 1
+            return out
+        return super().on_role_timer(name)
 
     def _on_relay(self, payload: bytes, link: str) -> list[Frame]:
         try:
@@ -220,13 +243,14 @@ class CMMembership(EnhancedDevice):
 
     def _on_designation(self, payload: bytes, link: str) -> list[Frame]:
         with ledger.LedgerScope(self.identity, "membership"):
-            _, _, pt = self.open_sealed(payload, peer=self.cfg.id_bs, purpose=m.CM_BS, notify_via=link)
+            s, _, pt = self.open_sealed(payload, peer=self.cfg.id_bs, purpose=m.CM_BS, notify_via=link)
             try:
                 epoch, id_ch = m.decode_epoch_id(pt)
             except DecodeError as exc:
                 raise Rejected("DECODE_ERROR", peer=link, error=str(exc)) from exc
         if not self.check("designation epoch not stale", epoch >= self.designation_epoch):
             raise Rejected("REPLAY_REJECTED", peer=link, reason="stale designation")
+        self.learn_epoch(epoch, s)
         if self.designated is not None and self.designated != id_ch:
             self.drop_peer(self.designated)
         self.designated, self.designation_epoch = id_ch, epoch

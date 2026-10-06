@@ -71,6 +71,8 @@ class Device(Base):
     epoch: Mapped[int] = mapped_column(Integer, default=0)
     pu_fingerprint: Mapped[str] = mapped_column(String(16), default="")
     status_history: Mapped[list] = mapped_column(JSON, default=list)  # type: ignore[type-arg]
+    designated: Mapped[str | None] = mapped_column(String(20), nullable=True)  # a CM's designated CH (D2)
+    undelivered: Mapped[int] = mapped_column(Integer, default=0, server_default="0")  # readings lost (D2)
 
 
 class KeystoreEntry(Base):

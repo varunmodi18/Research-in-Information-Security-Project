@@ -463,6 +463,10 @@ export interface components {
         DeviceOut: {
             /** Cluster */
             cluster: string | null;
+            /** Designated */
+            designated?: string | null;
+            /** Designation State */
+            designation_state?: string | null;
             /** Epoch */
             epoch: number;
             /** Ident */
@@ -473,6 +477,11 @@ export interface components {
             role: string;
             /** Status */
             status: string;
+            /**
+             * Undelivered
+             * @default 0
+             */
+            undelivered: number;
         };
         /** EventOut */
         EventOut: {

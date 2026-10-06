@@ -76,6 +76,25 @@ def test_designate_replacement_ch(operator_api: Api) -> None:
     assert st["CH-01-r1"] == "active" and all(st[c] == "active" for c in ("CM-0101", "CM-0102", "CM-0103"))
 
 
+def test_d2_console_shows_ch_revoked_awaiting_redesignation(operator_api: Api) -> None:
+    nid = _product(operator_api)["id"]
+    operator_api.run_job(nid, "onboard")
+    operator_api.run_job(nid, "revoke", {"device": "CH-01"})
+    operator_api.run_job(nid, "send_readings", {"devices": ["CM-0101"]})
+    devices = {d["ident"]: d for d in operator_api.get(f"/api/networks/{nid}").json()["devices"]}
+    for cm in ("CM-0101", "CM-0102", "CM-0103"):
+        assert (devices[cm]["designated"], devices[cm]["designation_state"]) == (
+            "CH-01", "ch_revoked_awaiting_redesignation")
+    assert devices["CM-0101"]["undelivered"] == 1 and devices["CH-01"]["designation_state"] is None
+    detail = operator_api.get(f"/api/networks/{nid}/devices/CM-0102").json()["device"]
+    assert detail["designation_state"] == "ch_revoked_awaiting_redesignation"
+    operator_api.run_job(nid, "designate", {"cluster": "CH-01", "ch": "CH-01-r1"})
+    devices = {d["ident"]: d for d in operator_api.get(f"/api/networks/{nid}").json()["devices"]}
+    assert {(devices[c]["designated"], devices[c]["designation_state"]) for c in ("CM-0101", "CM-0102", "CM-0103")} \
+        == {("CH-01-r1", "ok")}
+    assert devices["CM-0101"]["undelivered"] == 1
+
+
 def test_reset_network(operator_api: Api) -> None:
     net = _product(operator_api, "paper")
     nid = net["id"]

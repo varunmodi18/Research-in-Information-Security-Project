@@ -37,6 +37,8 @@ class Session:
     epoch: int = 0
     send_seq: int = 0
     recv_last: int = 0
+    hop_seq: int = 0  # CM side of a CM-CH session: last DATA_CM hop_seq sent (follow-up D1)
+    hop_last: int = 0  # CH side: highest DATA_CM hop_seq accepted
     sent: int = 0
     recv: int = 0
     superseded_by: str | None = None

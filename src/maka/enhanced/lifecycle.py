@@ -4,7 +4,9 @@ final MAKA-E device classes.
 Revoke(ID) at the BS: registry status revoked, epoch + 1, BS destroys its sessions and PSK with
 ID, REVOKE_NOTICE(epoch, ID) to the affected CH (all CHs if ID is a CH); the CH destroys its
 sessions/PSK with ID, removes it from the grant and ACKs. A CH that missed the notice keeps the
-revoked member until its next grant refresh, which happens at every CH-BS rekey (V-LIFE-03).
+revoked member until its next grant refresh: after every CH-BS handshake and every
+grant_refresh_steps steps over the sealed CH-BS session (MAKA_GRANT_REFRESH_STEPS, default 50;
+follow-up D3, V-LIFE-03). The revoked device itself is not told (E-09, D7).
 Residual (documented): a revoked device's Pr stays mathematically valid; exclusion relies on
 the authorisation lists, not on cryptography.
 """
@@ -17,7 +19,7 @@ from maka import codec, hashing, ledger
 from maka.codec import DecodeError
 from maka.enhanced import messages as m
 from maka.enhanced.data import BSData, CHData, CMData
-from maka.enhanced.device import Rejected
+from maka.enhanced.device import Rejected, guarded
 from maka.enhanced.membership import REVOKED, RegistryEntry
 from maka.runtime import device as dv
 from maka.runtime.bus import Frame
@@ -58,6 +60,7 @@ class EnhancedBS(BSData):
 
     # -- revocation ----------------------------------------------------------------------------------
 
+    @guarded
     def revoke(self, ident: str) -> list[Frame]:
         reg = self.registry.get(ident)
         if reg is None or reg.status == REVOKED:
@@ -117,6 +120,7 @@ class EnhancedCH(CHData):
             if not self.check("notice epoch fresh", epoch > self.notice_epoch):
                 raise Rejected("REPLAY_REJECTED", peer=link, reason="stale revocation notice")
             self.notice_epoch = epoch
+            self.learn_epoch(epoch)
             closed = self.drop_peer(ident)
             self.grant.discard(ident)
             self.emit("DEVICE_REVOKED", peer=ident, sessions_closed=closed, epoch=epoch)
