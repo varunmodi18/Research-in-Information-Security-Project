@@ -4,6 +4,13 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 §2.3 protocol weaknesses P-*, deployment limits D-*). Errata to the plan are in
 `docs/PLAN_ERRATA.md`; anything not closed is in `docs/OPEN_ISSUES.md`.
 
+## Unreleased — follow-up after review (2026-10-06)
+
+- **Part A**: CI fixed (the workflow lacked the `server` extra); a web job runs tsc, the build and
+  the Playwright journeys. The owner's working documents are git-ignored.
+- **Part B**: Docker dropped by owner decision (E-07). `deploy/` removed, `.env.example` at the root,
+  OI-01 closed.
+
 ## v1.0.0 — 2026-10-04
 
 ### M8 — Demo, documentation, release
@@ -49,7 +56,8 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 - FastAPI, SQLite/Alembic, Argon2id sessions, CSRF, lockout, problem+json errors, audit log, jobs and
   SSE.
 - Keystores encrypted under the KEK.
-- React console skeleton, Playwright harness and Docker packaging (not built here: OI-01).
+- React console skeleton and Playwright harness. (Docker packaging was written here and later
+  withdrawn by owner decision: follow-up Part B, E-07.)
 
 ### M2 — Device runtime (I-01, I-03, I-04, I-07, I-11)
 

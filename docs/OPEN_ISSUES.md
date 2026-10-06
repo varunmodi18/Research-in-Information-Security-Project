@@ -3,31 +3,27 @@
 Findings, missed thresholds and acceptance steps that could not be completed, each with its
 evidence (IMPLEMENTATION_PLAN.md §5 rules, §6.6, §7.3). Newest at the bottom of each section.
 
-## Awaiting project-owner approval (§7.3 item 1)
+## Owner decisions (2026-10-06)
 
-The definition of done accepts an unmet **M**-priority criterion only with a documented,
-evidence-backed reason **approved by the project owner**. OI-01 (Docker) and OI-02 (HLPSL/CL-AtSe)
-below are documented with evidence. They have **not yet been approved**: approval is the owner's
-decision, not the implementer's.
+- **OI-01 (Docker): closed, out of scope by owner decision.** Docker is dropped from the project;
+  E2E against `web/e2e/serve.sh` is the accepted acceptance path (`docs/PLAN_ERRATA.md` E-07).
+- **OI-02 (formal): not accepted as it stood.** The owner requires real AVISPA runs on the HLPSL
+  files (OFMC and CL-AtSe back-ends) in addition to the OFMC 2024 runs on the AnB models.
+
+## Closed
+
+### OI-01 · Docker acceptance (M3-T7, M5-T7, M8-T4): closed by owner decision
+
+- **What the plan asked:** `docker compose up` on a clean machine, then `create-admin`, reaches the
+  dashboard; E2E journeys run against the Docker build.
+- **What happened:** Docker was never installed on the development host, so the Docker files written
+  in M3/M8 were never built.
+- **Resolution (2026-10-06):** the owner dropped Docker from the project. `deploy/Dockerfile`,
+  `deploy/docker-compose.yml` and `.dockerignore` were deleted; `.env.example` moved to the
+  repository root. The supported way to run is `make dev` / `make serve`, and the accepted
+  acceptance path is the Playwright suite against `web/e2e/serve.sh` (E-07).
 
 ## Acceptance steps not run
-
-### OI-01 · Docker acceptance (M3-T7, M5-T7, M8-T4) not executed on this host
-
-- **What the plan asks:** `docker compose up` on a clean machine, then `create-admin`, reaches the
-  dashboard; E2E journeys run against the Docker build.
-- **What happened:** Docker is not installed on the development host (`which docker` finds
-  nothing; see `docs/PLAN_ERRATA.md` E-03). `deploy/Dockerfile`, `deploy/docker-compose.yml`
-  and `deploy/.env.example` are written but have not been built.
-- **What was run instead:** the same image layout without Docker. `web/e2e/serve.sh` starts
-  the backend (`python -m maka_server serve`) serving the production build of the UI
-  (`web/dist`) on one port, exactly as the container does, and the Playwright journeys run
-  against it (`make e2e`).
-- **To close:** on a machine with Docker 24+, run the commands in `docs/OPERATIONS.md`
-  ("First start with Docker") and `cd web && E2E_BASE=... npx playwright test` against the container.
-- **Also unverified for the same reason:** the change that installs the package in place
-  (`pip install -e`) and copies `artifacts/eval` and `docs/baseline` into the image, so that the
-  Evaluation page finds the committed comparison and the RP9 reference data inside the container.
 
 ### OI-02 · Formal analysis: HLPSL models and CL-AtSe results not obtained (M7-T1..T3)
 

@@ -26,7 +26,8 @@ PYTHONPATH=src .venv/bin/python -m maka_server seed-demo   # users admin/operato
 make serve                                     # http://127.0.0.1:8000
 ```
 
-Or with Docker: `docs/OPERATIONS.md`.
+Configuration, backups and resets: `docs/OPERATIONS.md`. Docker is not supported (dropped by owner
+decision, `docs/PLAN_ERRATA.md` E-07).
 
 | Document | Contents |
 |---|---|
@@ -130,5 +131,5 @@ parameter or a correction to RP9:
 - `PLAN.md` — the execution order this repository was built from.
 - `src/maka/runtime`, `src/maka/original_rt`, `src/maka/enhanced`, `src/maka/lab` — the device runtime,
   RP9 on it, MAKA-E, and the Lab adversary (console).
-- `src/maka_server/`, `web/`, `deploy/` — the console backend, UI and Docker packaging.
+- `src/maka_server/`, `web/` — the console backend and UI; `.env.example` — configuration template.
 - `eval/bench/` — benchmarks and the original-vs-enhanced comparison.

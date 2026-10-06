@@ -13,7 +13,7 @@ cd web && npx playwright test e2e/demo.spec.ts --repeat-each 2   # twice in a ro
 
 ## Before you start
 
-1. Start the console (`docker compose -f deploy/docker-compose.yml up -d`, or `make serve`).
+1. Start the console with `make serve` (see `docs/OPERATIONS.md`).
 2. Seed it once: `python -m maka_server seed-demo`. This creates the users `admin`, `operator` and
    `viewer`. It asks for their passwords, or reads them from `MAKA_DEMO_PASSWORDS_FILE`, one
    `username:password` line each.
@@ -99,7 +99,7 @@ Onboarding Vineyard at `demo` parameters takes about 10 s on the reference lapto
 
 - **Do**: **L2 Tamper** → **Run both**.
 - **Show**: MAKA-E rejects the tampered handshake (`BAD_TAG`), and the retry succeeds.
-- **Optional**: restart the container during an onboarding. The job is shown as `aborted`, the
+- **Optional**: restart the server (stop and re-run `make serve`) during an onboarding. The job is shown as `aborted`, the
   devices are reset to *provisioned* (§4.8), and onboarding again succeeds.
 - **Fallback**: `07_lab_L2.png`.
 

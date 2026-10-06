@@ -89,3 +89,21 @@ V-E2E-05 drives the same form with `paper`/`toy`/1 seed, which exercises the sam
 charts, table view and threshold display. The full matrix, including `net`/`demo`/5 seeds, is
 produced by `eval/bench/compare.py` and committed under `artifacts/eval/`. The Evaluation page shows
 that artefact when no run has been made in the console.
+
+## E-07 · M3-T7, M5-T7, M8-T4 and §7.2: Docker withdrawn by owner decision (2026-10-06)
+
+**Decision.** The project owner dropped Docker. The following are withdrawn:
+
+- M3-T7's acceptance (`docker compose up` on a clean machine, then `create-admin`);
+- M5-T7's "against `docker compose`";
+- the Docker parts of M8-T4 and §7.2 (the image, compose file and Docker deployment steps);
+- §7.3's "Tagged release with Docker image build instructions".
+
+**Accepted acceptance path.** The Playwright journeys run against `web/e2e/serve.sh`, which starts the
+backend (`python -m maka_server serve`, fresh database, `MAKA_ENV=test`) serving the production
+build of the UI on one port. They run locally before every push and in CI (`.github/workflows/ci.yml`,
+job `web`). The supported ways to run the console are `make dev` and `make serve`
+(`docs/OPERATIONS.md`).
+
+**Removed.** `deploy/Dockerfile`, `deploy/docker-compose.yml` and `.dockerignore`. `deploy/.env.example`
+moved to `.env.example` in the repository root. OI-01 is closed with this reason.

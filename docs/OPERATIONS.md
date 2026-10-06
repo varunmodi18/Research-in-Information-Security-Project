@@ -6,37 +6,26 @@ system: it binds to loopback by default, has no TLS, and is not meant for intern
 
 ## Requirements
 
-- **Docker 24+** (recommended), or **Python 3.12** and **Node 20**.
+- **Python 3.12** and **Node 22** (Node 20 also works).
+- Docker is not supported: it was dropped by owner decision (`docs/PLAN_ERRATA.md` E-07).
 - 4 GB RAM.
 - No network access at runtime. The UI loads nothing from the internet (CSP `default-src 'self'`).
 
-## First start with Docker
-
-```
-cp deploy/.env.example .env
-python -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())"   # paste as MAKA_KEK in .env
-docker compose -f deploy/docker-compose.yml up -d
-docker compose -f deploy/docker-compose.yml exec app python -m maka_server create-admin --username admin
-docker compose -f deploy/docker-compose.yml exec app python -m maka_server seed-demo   # optional demo state
-```
-
-Then open <http://127.0.0.1:8000>. The container publishes port 8000 on the host's loopback
-interface only. The database lives in the `maka-var` volume (`/app/var/maka.db`).
-
-The Docker path has not been run on the development host, which has no Docker (`docs/OPEN_ISSUES.md`
-OI-01). The steps below without Docker are the ones the tests and E2E suite use.
-
-## First start without Docker
+## First start
 
 ```
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev,server]"    # or: make setup
 make web web-build                                                    # npm ci, then build web/dist
-export MAKA_KEK=$(python3 -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())")
+cp .env.example .env                                                  # then set MAKA_KEK in .env:
+python3 -c "import os,base64;print(base64.b64encode(os.urandom(32)).decode())"
 PYTHONPATH=src .venv/bin/python -m maka_server create-admin --username admin
+PYTHONPATH=src .venv/bin/python -m maka_server seed-demo             # optional demo state
 make serve                                                            # http://127.0.0.1:8000
 ```
 
-For development, `make dev` runs the backend with auto-reload on :8000 and Vite on :5173.
+The database is `var/maka.db` (`MAKA_DB_URL`). For development, `make dev` runs the backend with
+auto-reload on :8000 and Vite on :5173. The E2E suite starts its own throwaway backend with
+`web/e2e/serve.sh` (fresh database, `MAKA_ENV=test`) serving the built UI.
 
 ## Configuration
 
@@ -103,10 +92,10 @@ Passwords are stored as Argon2id hashes, and no default users exist.
 
 | Log | Where | Contents |
 |---|---|---|
-| Server log | uvicorn on stdout/stderr (`docker compose logs app`) | Requests and errors. Never secrets |
+| Server log | uvicorn on stdout/stderr | Requests and errors. Never secrets |
 | Audit log | `audit_log` table; **Admin → Audit** | Every state-changing request: user, action, target, outcome |
 | Security events | `security_events` table; **Security events** page; `GET /api/events/export` | Protocol events (`HANDSHAKE_OK`, `BAD_TAG`, `REPLAY_REJECTED`, ...) |
-| Health | `GET /api/health` | Used by the Docker health check |
+| Health | `GET /api/health` | For monitoring scripts |
 
 ## Recovery after a crash or restart
 
