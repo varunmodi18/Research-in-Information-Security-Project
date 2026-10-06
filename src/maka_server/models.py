@@ -146,6 +146,7 @@ class Reading(Base):
     seq: Mapped[int] = mapped_column(Integer)
     value_json: Mapped[dict] = mapped_column(JSON)  # type: ignore[type-arg]
     received_step: Mapped[int] = mapped_column(Integer)
+    session_sid: Mapped[str | None] = mapped_column(String(32), nullable=True)  # public CM-BS sid (F5)
 
 
 class Job(Base):

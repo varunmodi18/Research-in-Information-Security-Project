@@ -215,6 +215,9 @@ class ReadingOut(BaseModel):
     seq: int
     value: Any
     received_step: int
+    # the CM-BS session the reading was sealed under (a public identifier). seq restarts at 1 in
+    # every new session, so a change of session_sid marks a rekey (follow-up F5). None in RP9 mode.
+    session_sid: str | None = None
 
 
 class UserCreate(BaseModel):

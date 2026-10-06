@@ -13,7 +13,8 @@ import { useNetworkStream } from "../hooks/useNetworkStream";
 
 const COL_W = 132;
 const ROW_H = 30;
-const TOP = 46;
+const TOP = 16;
+const HEADER_H = 34;
 const LEFT = 64;
 
 function colour(f: Frame): string {
@@ -39,17 +40,23 @@ export function TimelinePage() {
   const [selected, setSelected] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
   const [hexOpen, setHexOpen] = useState(false);
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
 
-  const devices = useMemo(() => {
+  const allLanes = useMemo(() => {
     const d = network.data?.devices ?? [];
     const order = { BS: 0, CH: 1, CM: 2 } as Record<string, number>;
     return [...d].sort((a, b) => order[a.role] - order[b.role] || a.ident.localeCompare(b.ident)).map((x) => x.ident);
   }, [network.data]);
+  // F4: lane filter. Frames to or from a hidden lane are drawn to the "other" lane on the right.
+  const devices = allLanes.filter((d) => !hidden.has(d));
+  const toggle = (d: string) => setHidden((h) => { const n = new Set(h); if (n.has(d)) n.delete(d); else n.add(d); return n; });
 
   if (network.isLoading) return <Loading />;
   if (network.error || !network.data) return <ErrorPanel error={network.error} />;
-  const all = frames.data?.items ?? [];
+  const fetched = frames.data?.items ?? [];
+  const all = fetched.filter((f) => devices.includes(f.src) || devices.includes(f.to ?? f.dst));
   const shown = showAll ? all : all.slice(-250);
+  const others = shown.some((f) => !devices.includes(f.src) || !devices.includes(f.to ?? f.dst));
   const col = (ident: string | null | undefined) => {
     const i = devices.indexOf(ident ?? "");
     return LEFT + (i < 0 ? devices.length : i) * COL_W + COL_W / 2;
@@ -96,7 +103,21 @@ export function TimelinePage() {
             </button>
           </div>
         )}
-        <div className="ml-auto">
+        <details className="relative ml-auto" data-testid="lane-filter">
+          <summary className="btn-secondary cursor-pointer select-none">Lanes ({devices.length}/{allLanes.length})</summary>
+          <div className="absolute right-0 z-20 mt-1 max-h-80 w-56 overflow-y-auto rounded-md border border-slate-200 bg-white p-2 shadow-lg">
+            <div className="mb-1 flex gap-2 text-xs">
+              <button type="button" className="text-blue-700 underline" onClick={() => setHidden(new Set())}>All</button>
+              <button type="button" className="text-blue-700 underline" onClick={() => setHidden(new Set(allLanes))}>None</button>
+            </div>
+            {allLanes.map((d) => (
+              <label key={d} className="flex items-center gap-2 py-0.5 font-mono text-xs">
+                <input type="checkbox" checked={!hidden.has(d)} onChange={() => toggle(d)} aria-label={`Lane ${d}`} />{d}
+              </label>
+            ))}
+          </div>
+        </details>
+        <div>
           <label className="label" htmlFor="tl-label">Filter label</label>
           <input id="tl-label" className="input w-44 font-mono" placeholder="e.g. HS2" value={label} onChange={(e) => setLabel(e.target.value.toUpperCase())} />
         </div>
@@ -105,13 +126,25 @@ export function TimelinePage() {
         <div className="card overflow-auto" style={{ maxHeight: "70vh" }}>
           {frames.isLoading && <Loading />}
           {frames.error && <ErrorPanel error={frames.error} />}
-          {frames.data && all.length === 0 && <Empty title="No frames yet" hint="Start onboarding, then step through it." />}
+          {frames.data && fetched.length === 0 && <Empty title="No frames yet" hint="Start onboarding, then step through it." />}
+          {fetched.length > 0 && all.length === 0 && <Empty title="No frames in the selected lanes" hint="Show more lanes with the Lanes filter." />}
           {all.length > 250 && !showAll && (
             <button type="button" className="m-2 text-xs text-blue-700 underline" onClick={() => setShowAll(true)}>
               Show all {all.length} frames (showing the latest 250)
             </button>
           )}
           {all.length > 0 && (
+            <div style={{ width }}>
+            {/* F4: the lane header stays at the top while the diagram scrolls, and scrolls sideways with it */}
+            <div className="sticky top-0 z-10 border-b border-slate-200 bg-white" data-testid="timeline-header">
+              <svg width={width} height={HEADER_H} aria-hidden="true">
+                <text x={8} y={22} className="fill-slate-400 text-[10px]">step</text>
+                {devices.map((d) => (
+                  <text key={d} x={col(d)} y={22} textAnchor="middle" className="fill-slate-700 font-mono text-[11px] font-semibold">{d}</text>
+                ))}
+                {others && <text x={col(null)} y={22} textAnchor="middle" className="fill-slate-400 text-[11px] italic">other</text>}
+              </svg>
+            </div>
             <svg width={width} height={height} role="img" aria-label="Sequence diagram of frames" data-testid="timeline-svg">
               <defs>
                 {["#059669", "#dc2626", "#94a3b8", "#ea580c"].map((c) => (
@@ -121,10 +154,7 @@ export function TimelinePage() {
                 ))}
               </defs>
               {devices.map((d) => (
-                <g key={d}>
-                  <text x={col(d)} y={22} textAnchor="middle" className="fill-slate-700 font-mono text-[11px] font-semibold">{d}</text>
-                  <line x1={col(d)} x2={col(d)} y1={30} y2={height} stroke="#cbd5e1" strokeDasharray="4 4" />
-                </g>
+                <line key={d} x1={col(d)} x2={col(d)} y1={0} y2={height} stroke="#cbd5e1" strokeDasharray="4 4" />
               ))}
               {shown.map((f, i) => {
                 const y = TOP + i * ROW_H;
@@ -145,6 +175,7 @@ export function TimelinePage() {
                 );
               })}
             </svg>
+            </div>
           )}
         </div>
         <aside className="card p-4" aria-label="Frame details">

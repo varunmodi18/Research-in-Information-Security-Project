@@ -171,7 +171,7 @@ def list_readings(network_id: int, device: str | None = None, cursor: int | None
         q = q.where(models.Reading.id > cursor)
     rows = list(db.scalars(q.order_by(models.Reading.id).limit(limit + 1)))
     items = [ReadingOut(id=r.id, device=r.device, seq=r.seq, value=r.value_json.get("value"),
-                        received_step=r.received_step) for r in rows[:limit]]
+                        received_step=r.received_step, session_sid=r.session_sid) for r in rows[:limit]]
     return Page[ReadingOut](items=items, next_cursor=rows[limit - 1].id if len(rows) > limit else None)
 
 

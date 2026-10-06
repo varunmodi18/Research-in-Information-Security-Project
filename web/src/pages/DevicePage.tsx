@@ -10,8 +10,15 @@ import { AWAITING, AWAITING_LABEL } from "../components/DesignationNotice";
 import { ModeBanner } from "../components/ModeBanner";
 import { Empty, ErrorPanel, Loading } from "../components/States";
 import { StatusBadge } from "../components/StatusBadge";
-import { useToast } from "../components/Toast";
+import { useJobToast, useToast } from "../components/Toast";
 import { useNetworkStream } from "../hooks/useNetworkStream";
+
+// A session row holds "initiator/responder" when the two sides differ (network.session_infos).
+function sides(state: string, initiatorIsMe: boolean): { own: string; peer: string } {
+  const [ini, rsp = ini] = state.split("/");
+  return initiatorIsMe ? { own: ini, peer: rsp } : { own: rsp, peer: ini };
+}
+const CLOSED_BY_PEER = "closed by peer (device revoked)";
 
 // Device detail (§3.7): identity, public-key fingerprint, status history, sessions (metadata
 // only, no key material or key fingerprints, §4.4 rule 4), lifecycle actions.
@@ -21,6 +28,7 @@ export function DevicePage() {
   const ident = params.dev ?? "";
   const { can } = useAuth();
   const toast = useToast();
+  const trackJob = useJobToast();
   const network = useNetwork(id);
   const device = useDevice(id, ident);
   useNetworkStream(id);
@@ -35,12 +43,21 @@ export function DevicePage() {
     return <ErrorPanel error={network.error ?? device.error} onRetry={() => void device.refetch()} />;
   const d = device.data.device;
   const enhanced = network.data.mode === "enhanced";
+  // F2: after a revocation the peers destroy their side of each session; the revoked device is not
+  // told (E-09 D7), so its own side still reads ESTABLISHED.
+  const stateLabel = (state: string, initiatorIsMe: boolean): string => {
+    const { own, peer } = sides(state, initiatorIsMe);
+    if (d.status === "revoked" && peer === "CLOSED" && own !== "CLOSED") return CLOSED_BY_PEER;
+    return state;
+  };
+  const closedByPeer = device.data.sessions.some((s) => stateLabel(s.state, s.a === d.ident) === CLOSED_BY_PEER);
   const running = job.data && !["succeeded", "failed", "cancelled", "aborted"].includes(job.data.state);
 
-  const run = async (type: JobType, args: Record<string, unknown>, done: string) => {
+  const run = async (type: JobType, args: Record<string, unknown>, running: string, done: string) => {
     try {
-      setJobId((await submit.mutateAsync({ type, args })).job_id);
-      toast(done, "info");
+      const jid = (await submit.mutateAsync({ type, args })).job_id;
+      setJobId(jid);
+      trackJob(jid, running, done);  // F3: replaced by the outcome when the job finishes
     } catch (err) {
       toast(err instanceof ApiProblem ? `${err.title}: ${err.detail}` : String(err), "error");
     }
@@ -67,7 +84,7 @@ export function DevicePage() {
             <dt className="text-slate-500">Status</dt><dd><StatusBadge status={d.status} /></dd>
             <dt className="text-slate-500">Role</dt><dd>{d.role}</dd>
             <dt className="text-slate-500">Cluster</dt><dd>{d.cluster ?? "—"}</dd>
-            <dt className="text-slate-500">Epoch</dt><dd>{d.epoch}</dd>
+            <dt className="text-slate-500">Epoch</dt><dd title="Registry epoch of this device's last registry change (registration, designation or revocation)">{d.epoch}</dd>
             <dt className="text-slate-500">Pu fingerprint</dt><dd className="font-mono" title="First 8 hex of SHA-256 of the public key H(ID)">{d.pu_fingerprint}</dd>
             {d.role === "CM" && enhanced && <>
               <dt className="text-slate-500">Designated CH</dt><dd className="font-mono">{d.designated ?? "—"}</dd>
@@ -78,7 +95,8 @@ export function DevicePage() {
             <div className="mt-4 space-y-2 border-t border-slate-200 pt-3">
               {!enhanced && <p className="text-xs text-slate-500">RP9 has no revocation or rekey (OB-05); these actions need a MAKA-E network.</p>}
               <button type="button" className="btn-secondary w-full justify-center" disabled={!enhanced || d.status === "revoked" || !!running}
-                onClick={() => run("rekey", { device: d.ident }, d.role === "CH" ? "Rekeying the whole cluster…" : "Rekeying…")}>
+                onClick={() => run("rekey", { device: d.ident }, d.role === "CH" ? "Rekeying the whole cluster…" : "Rekeying…",
+                  d.role === "CH" ? `Cluster ${d.ident} rekeyed` : `${d.ident} rekeyed`)}>
                 ↻ Rekey {d.role === "CH" ? "cluster" : "sessions"}
               </button>
               <button type="button" className="btn-danger w-full justify-center" disabled={!enhanced || d.status === "revoked" || !!running}
@@ -86,7 +104,7 @@ export function DevicePage() {
                 ⊘ Revoke…
               </button>
               {enhanced && d.status === "revoked" && (
-                <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); void run("reprovision", { device: d.ident, new_ident: newIdent }, "Reprovisioning…"); }}>
+                <form className="flex gap-2" onSubmit={(e) => { e.preventDefault(); void run("reprovision", { device: d.ident, new_ident: newIdent }, "Reprovisioning…", `${d.ident} reprovisioned as ${newIdent}`); }}>
                   <label className="sr-only" htmlFor="new-ident">New identity</label>
                   <input id="new-ident" className="input font-mono" value={newIdent} onChange={(e) => setNewIdent(e.target.value)} />
                   <button type="submit" className="btn-primary" disabled={!!running}>Reprovision</button>
@@ -116,7 +134,7 @@ export function DevicePage() {
               <thead>
                 <tr>
                   <th className="th">Peer</th><th className="th">Purpose</th><th className="th">State</th>
-                  <th className="th">Established</th><th className="th">Epoch</th><th className="th">Sent / recv</th><th className="th">Session id</th>
+                  <th className="th">Established</th><th className="th" title="Registry epoch when the session was established">Epoch</th><th className="th">Sent / recv</th><th className="th">Session id</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,7 +142,11 @@ export function DevicePage() {
                   <tr key={s.sid_hex + s.state + s.a}>
                     <td className="td font-mono">{s.a === d.ident ? s.b : s.a}</td>
                     <td className="td">{s.purpose}</td>
-                    <td className="td">{s.state === "ESTABLISHED" ? "✓ " : s.state.startsWith("ABORTED") || s.state.includes("FAILED") ? "✕ " : ""}{s.state}</td>
+                    <td className="td" data-testid="session-state"
+                      title={stateLabel(s.state, s.a === d.ident) === CLOSED_BY_PEER
+                        ? `This side: ${sides(s.state, s.a === d.ident).own}. Peer: CLOSED (destroyed when ${d.ident} was revoked).` : undefined}>
+                      {stateLabel(s.state, s.a === d.ident) === CLOSED_BY_PEER ? "⊘ " : s.state === "ESTABLISHED" ? "✓ "
+                        : s.state.startsWith("ABORTED") || s.state.includes("FAILED") ? "✕ " : ""}{stateLabel(s.state, s.a === d.ident)}</td>
                     <td className="td">{s.established_step ?? "—"}</td>
                     <td className="td">{s.epoch}</td>
                     <td className="td">{s.sent} / {s.recv}</td>
@@ -133,6 +155,13 @@ export function DevicePage() {
                 ))}
               </tbody>
             </table>
+          )}
+          {closedByPeer && (
+            <p className="mx-4 my-2 rounded border border-slate-300 bg-slate-50 p-2 text-xs text-slate-700" data-testid="closed-by-peer-note">
+              When {d.ident} was revoked, its peers destroyed their side of these sessions and their PSK with it. The device
+              itself is not told (by design: nothing it is told could bind a compromised device), so its own side still reads
+              ESTABLISHED. Nothing it sends on these sessions is accepted, and any new handshake from it is refused.
+            </p>
           )}
           <p className="px-4 py-2 text-xs text-slate-500">Session keys are never shown, not even as fingerprints (§4.4 rule 4).</p>
         </section>
@@ -145,7 +174,7 @@ export function DevicePage() {
           confirmLabel="Revoke device"
           busy={!!running}
           onCancel={() => setConfirmRevoke(false)}
-          onConfirm={() => { setConfirmRevoke(false); void run("revoke", { device: d.ident }, `Revoking ${d.ident}…`); }}
+          onConfirm={() => { setConfirmRevoke(false); void run("revoke", { device: d.ident }, `Revoking ${d.ident}…`, `${d.ident} revoked`); }}
         />
       )}
     </div>

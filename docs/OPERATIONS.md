@@ -55,6 +55,10 @@ directory (`src/maka_server/settings.py`).
 - Session keys, ephemerals and handshake state are **never** persisted. After a restart, devices
   re-establish sessions.
 - Generate the KEK with the command above and keep it outside the repository. `.env` is git-ignored.
+- Without a valid KEK (unless `MAKA_ENV=test`), `python -m maka_server serve` stops at once with one
+  line on stderr and exit status 2. The line is either
+  `maka_server: MAKA_KEK is required (32 random bytes, base64) unless MAKA_ENV=test` or
+  `maka_server: invalid configuration: MAKA_KEK: …`.
 - Whoever has both `.env` and the database can decrypt the stored keys (residual risk R-10).
 - **Losing or changing the KEK** makes existing keystores unreadable. The affected networks cannot be
   rebuilt; recover with `python -m maka_server reset-demo` (demo state), or delete and recreate the

@@ -42,6 +42,7 @@ interface Reference {
   table4: { phase: string; rp9: number; derived: number; note: string }[];
   table5: { scheme: string; formula: string; published_ms: number; recomputed_ms: number; flag: string }[];
   table6: { features: string[]; rows: Record<string, string[]> };
+  transcription_check?: { date: string; by: string; source: string; table5_rows: number; table6_cells: number; result: string };
   formal: { tool?: string; date?: string; hlpsl?: string; cl_atse?: string;
     results: Record<string, { sessions: number; summary: string; goal: string;
       statistics?: Record<string, string | number>; file?: string }[]> };
@@ -389,6 +390,13 @@ export function EvaluationPage() {
                     <tr key={s}><td>{s}</td>{row.map((c, i) => <td key={i} className="text-center">{c}</td>)}</tr>
                   ))}</tbody>
                 </table>
+                {ref.data.transcription_check && (
+                  <p className="mt-2 text-xs text-slate-600" data-testid="transcription-check">
+                    ✓ Tables 5 and 6 were checked against {ref.data.transcription_check.source} by {ref.data.transcription_check.by} on{" "}
+                    {ref.data.transcription_check.date}: {ref.data.transcription_check.table5_rows} rows of Table 5 and{" "}
+                    {ref.data.transcription_check.table6_cells} cells of Table 6, {ref.data.transcription_check.result} (V-EVAL-05).
+                  </p>
+                )}
               </div>
             </Section>
 

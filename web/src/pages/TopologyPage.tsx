@@ -1,17 +1,18 @@
 import { Background, Controls, Handle, Position, ReactFlow, type Edge, type Node, type NodeProps } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { ApiProblem } from "../api/client";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { api as http, ApiProblem } from "../api/client";
 import { useJob, useNetwork, useSubmitJob } from "../api/hooks";
 import type { Device, JobType, NetworkDetail } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
+import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PageHeader } from "../components/Layout";
 import { AWAITING, AWAITING_LABEL, DesignationBanner } from "../components/DesignationNotice";
 import { ModeBanner } from "../components/ModeBanner";
 import { ErrorPanel, Loading, StreamIndicator } from "../components/States";
 import { SeverityBadge, STATUS_COLOURS, StatusBadge } from "../components/StatusBadge";
-import { useToast } from "../components/Toast";
+import { useJobToast, useToast } from "../components/Toast";
 import { useNetworkStream, type StreamMessage } from "../hooks/useNetworkStream";
 
 type DeviceNodeData = { device: Device; selected: boolean };
@@ -77,7 +78,12 @@ export function TopologyPage() {
   const id = Number(useParams().id);
   const { can } = useAuth();
   const toast = useToast();
+  const trackJob = useJobToast();
+  const navigate = useNavigate();
   const network = useNetwork(id);
+  const [dialog, setDialog] = useState<"reset" | "delete" | "designate" | null>(null);
+  const [desCluster, setDesCluster] = useState("");
+  const [desCh, setDesCh] = useState("");
   const submit = useSubmitJob(id);
   const [jobId, setJobId] = useState<number | null>(null);
   const job = useJob(jobId);
@@ -102,21 +108,34 @@ export function TopologyPage() {
   const running = job.data && !["succeeded", "failed", "cancelled", "aborted"].includes(job.data.state);
   const sel = net.devices.find((d) => d.ident === selected) ?? null;
 
-  const run = async (type: JobType, args?: Record<string, unknown>) => {
+  const run = async (type: JobType, args?: Record<string, unknown>, track?: [string, string]) => {
     try {
       const r = await submit.mutateAsync({ type, args });
       setJobId(r.job_id);
+      if (track) trackJob(r.job_id, track[0], track[1]);
     } catch (err) {
       toast(err instanceof ApiProblem ? `${err.title}: ${err.detail}` : String(err), "error");
     }
   };
+  const deleteNetwork = async () => {
+    setDialog(null);
+    try {
+      await http.del(`/networks/${id}`, { confirm_name: net.name });
+      toast(`Network “${net.name}” deleted`);
+      navigate("/");
+    } catch (err) {
+      toast(err instanceof ApiProblem ? `${err.title}: ${err.detail}` : String(err), "error");
+    }
+  };
+  const clusters = [...new Set(net.devices.filter((d) => d.role === "CH").map((d) => d.cluster ?? d.ident))];
 
   return (
     <div className={net.kind === "lab" ? "border-l-4 border-red-500" : ""}>
       <ModeBanner network={net} />
       <PageHeader
         title={net.name}
-        subtitle={`${net.template} · step ${net.step} · ${net.devices.length} devices`}
+        subtitle={`${net.template} · step ${net.step} · ${net.devices.length} devices${net.mode === "enhanced"
+          ? ` · registry epoch ${Math.max(0, ...net.devices.map((d) => d.epoch))}` : ""}`}
         actions={
           <>
             <StreamIndicator status={stream} />
@@ -140,7 +159,52 @@ export function TopologyPage() {
           <button type="button" className="btn-secondary" disabled={!!running} onClick={() => run("send_readings", { count: 1 })} data-testid="btn-readings">
             Send readings
           </button>
+          <span className="mx-1 h-6 w-px bg-slate-300" aria-hidden="true" />
+          {net.mode === "enhanced" && (
+            <button type="button" className="btn-secondary" disabled={!!running} data-testid="btn-designate"
+              onClick={() => { setDesCluster(clusters[0] ?? ""); setDesCh(`${clusters[0] ?? "CH"}-r1`); setDialog("designate"); }}>
+              Designate CH…
+            </button>
+          )}
+          <button type="button" className="btn-danger" disabled={!!running} onClick={() => setDialog("reset")} data-testid="btn-reset-network">
+            Reset network…
+          </button>
+          {can("admin") && (
+            <button type="button" className="btn-danger" disabled={!!running} onClick={() => setDialog("delete")} data-testid="btn-delete-network">
+              Delete network…
+            </button>
+          )}
         </div>
+      )}
+      {dialog === "reset" && (
+        <ConfirmDialog title={`Reset ${net.name}?`} expected={net.name} confirmLabel="Reset network" busy={!!running}
+          body="Re-creates the template's devices under a new master key. Every session ends and every device returns to provisioned. Devices added later (by reprovisioning or designation) are removed, and periodic readings stop. Frames, events and readings recorded so far are kept."
+          onCancel={() => setDialog(null)}
+          onConfirm={() => { setDialog(null); void run("reset_network", {}, [`Resetting ${net.name}…`, `${net.name} reset`]); }} />
+      )}
+      {dialog === "delete" && (
+        <ConfirmDialog title={`Delete ${net.name}?`} expected={net.name} confirmLabel="Delete network"
+          body="Deletes the network with its devices, keystores, frames, events and readings. This cannot be undone."
+          onCancel={() => setDialog(null)} onConfirm={() => void deleteNetwork()} />
+      )}
+      {dialog === "designate" && (
+        <ConfirmDialog title="Designate a cluster head" expected={desCluster} confirmLabel="Designate" busy={!!running}
+          body="The base station designates this CH for the cluster (a new identity is provisioned as a CH first). The previous CH of the cluster is no longer designated; its members follow the new one when it relays their new designation."
+          onCancel={() => setDialog(null)}
+          onConfirm={() => { setDialog(null); void run("designate", { cluster: desCluster, ch: desCh }, [`Designating ${desCh} for ${desCluster}…`, `${desCh} designated for cluster ${desCluster}`]); }}>
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div>
+              <label className="label" htmlFor="des-cluster">Cluster</label>
+              <select id="des-cluster" className="input" value={desCluster} onChange={(e) => setDesCluster(e.target.value)}>
+                {clusters.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="label" htmlFor="des-ch">Cluster head identity</label>
+              <input id="des-ch" className="input font-mono" value={desCh} onChange={(e) => setDesCh(e.target.value)} />
+            </div>
+          </div>
+        </ConfirmDialog>
       )}
       <DesignationBanner devices={net.devices} />
       {job.data && (

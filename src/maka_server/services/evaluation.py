@@ -147,7 +147,7 @@ def reference() -> dict[str, Any]:
             break
     return {
         "table2": table2, "table3": table3, "table4": table4, "table5": table5, "table6": table6,
-        "cost_constants_ms": cost_model.ALL,
+        "cost_constants_ms": cost_model.ALL, "transcription_check": comparison.TRANSCRIPTION_CHECK,
         "formal": formal, "formal_avispa": avispa_rows(), "security_levels": SECURITY_LEVELS, "limitations": LIMITATIONS,
         "latest_comparison": latest,
     }

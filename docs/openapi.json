@@ -1035,6 +1035,17 @@
       "title": "Seq",
       "type": "integer"
      },
+     "session_sid": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Session Sid"
+     },
      "value": {
       "title": "Value"
      }

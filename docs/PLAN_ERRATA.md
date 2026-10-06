@@ -214,3 +214,31 @@ intruder capability was weakened; every change is marked in the files.
    - Before any designation, the hint still tells a new member where to send its first handshake,
      as E-05 intended.
    - Test: `tests/enhanced/test_review_e3.py::test_forged_cluster_open_from_another_ch_changes_nothing`.
+
+## E-11 · §3.7 and FR-12: console fixes after review (follow-up Part F, 2026-10-06)
+
+1. **F1 · session epoch in the console.** Each side stamps a session with the registry epoch it
+   knows at establishment (E-09 item 4). A member that rekeys both its sessions at once can
+   complete the CM–CH handshake before the new `DESIGNATION` tells it the epoch, so the two sides
+   can differ (CM 0, CH 1). The console's session row shows the larger of the two, which is the
+   registry epoch the session was established in. The topology subtitle shows the network's
+   registry epoch.
+2. **F2 · revoked devices' sessions** read "closed by peer (device revoked)" when the peer's side
+   is CLOSED and the device's own side is not, with an explanation (the device is not told, E-09
+   item 7).
+3. **F3 · job toasts** follow the job: a pending toast stays until the job ends and is then replaced
+   by its outcome. This covers revoke, rekey, reprovision, sending readings, periodic readings,
+   demo reset, network reset and designation.
+4. **F5 · readings carry their CM–BS session id** (a public identifier). This needs migration
+   0004, `readings.session_sid`. The Readings page shows its first 8 hex digits next to `seq` and
+   marks with ↻ the first reading of each new session, since `seq` restarts at 1 after a rekey.
+5. **F6 · Reset network, Delete network (admin only) and Designate CH** have buttons, each with a
+   typed confirmation: the network's name to reset or delete it, the cluster label to designate.
+   This withdraws USER_GUIDE's "no button in this release" for designation.
+6. **F7 · configuration errors.** A missing or malformed `MAKA_KEK` (or any invalid `MAKA_*` value)
+   ends the CLI with one line on stderr and exit status 2. Before this fix it printed a Python
+   traceback from inside uvicorn's application factory.
+7. **F8 · V-EVAL-05's human check is recorded.** The project owner checked RP9 Tables 5 and 6
+   against the PDF on 2026-10-06: all 11 rows and all 99 cells match. The Evaluation page states
+   this (`eval/comparison.py::TRANSCRIPTION_CHECK`), and a test ties the counts to the committed
+   tables.

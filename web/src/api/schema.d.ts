@@ -792,6 +792,8 @@ export interface components {
             received_step: number;
             /** Seq */
             seq: number;
+            /** Session Sid */
+            session_sid?: string | null;
             /** Value */
             value: unknown;
         };

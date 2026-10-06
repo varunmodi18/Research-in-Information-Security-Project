@@ -65,6 +65,14 @@ seed (lab only). Creating a network provisions every device.
   The graph updates live as frames and events stream in.
 - **Onboard (step mode)** goes to the Timeline instead.
 - **Send readings** sends one reading from every active CM.
+- **Designate CH…** (MAKA-E networks) designates a cluster head for a cluster. If the identity is
+  new, it is provisioned as a CH first. Type the cluster label to confirm.
+- **Reset network…** re-creates the template's devices under a new master key (type the network
+  name to confirm). Recorded frames, events and readings are kept.
+- **Delete network…** (admin only) deletes the network and everything recorded for it. Type the
+  network name to confirm.
+- The subtitle shows the network's current **registry epoch**: it goes up at every revocation and
+  designation.
 - Click a node for its summary, then **Device details →**.
 - Links: **Frames**, **Timeline**, **Readings** (operator).
 
@@ -73,6 +81,12 @@ seed (lab only). Creating a network provisions every device.
 - Status history, role and cluster.
 - The sessions table: peer, purpose (CM-BS, CM-CH, CH-BS), state, public session id, epoch and
   counters. No key values or key fingerprints are ever shown.
+  - **Epoch** is the registry epoch in which the session was established.
+  - On a revoked device, sessions read **⊘ closed by peer (device revoked)**. Its peers destroyed
+    their side when it was revoked. The device itself is not told, so its own side still reads
+    ESTABLISHED (hover for both sides).
+- While a job you started from this page runs, a ⟳ notice stays in the corner. It is replaced by the
+  outcome (✓ or ✕) when the job ends.
 - Operator actions:
 
 | Action | What it does |
@@ -87,14 +101,16 @@ sessions with the revoked CH, and every reading they send is lost; the banner co
 readings. Reprovision the CH (or designate a replacement). The new CH relays a new designation to
 each member, which then drops the revoked CH's sessions and PSK.
 
-Designating a replacement CH for a cluster is available as the `designate` job (`docs/API.md`). It
-has no button in this release.
+A replacement CH can also be designated with **Designate CH…** on the topology page.
 
 ### Timeline
 
 A step-by-step view of the frames, for teaching:
 
 - **Step**, **Step ×10** and **Run to end** advance the scheduler.
+- The diagram scrolls in both directions. The lane header (one lane per device) stays at the top.
+- **Lanes** chooses which devices get a lane. Frames to or from a hidden device are drawn to the
+  "other" lane on the right.
 - Click a frame to see its decoded public fields and the checks the receiver ran, each with pass or
   fail (for example `sid matches a pending HS1`, `Y is a valid subgroup point`, `tag_R valid`).
   Key values are never displayed.
@@ -109,6 +125,10 @@ run.
 ### Readings (operator and admin)
 
 Readings as decrypted *at the BS*, with sender, sequence number and step.
+
+- Next to each sequence number is the short id of the CM–BS session that carried it.
+  - `seq` counts readings within one session and restarts at 1 after a rekey.
+  - **↻** marks the first reading of a new session.
 
 - **Send one round** sends one reading per active CM.
 - **▶ Start periodic** and **■ Stop periodic** schedule readings every N steps.

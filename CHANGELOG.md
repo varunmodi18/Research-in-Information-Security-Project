@@ -42,6 +42,16 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
   - V-WEB-02: exact statuses, all endpoints.
   - V-UNIT-08: uniqueness over real encryptions.
   - R-13 cites the hint tests.
+- **Part F**: console (E-11):
+  - The real session epoch, and the registry epoch on the topology.
+  - "closed by peer (device revoked)" on a revoked device's sessions.
+  - Job toasts that end with the job.
+  - The timeline scrolls sideways under a fixed lane header and has a lane filter.
+  - Readings show their session id, with a rekey marker (migration 0004).
+  - Reset network, Delete network (admin) and Designate CH, each with a typed confirmation.
+  - A one-line error for a missing KEK.
+  - Tables 5–6 are recorded as checked against the PDF.
+  - Playwright covers all of this, plus the loading, empty, failure and disconnected states.
 
 ## v1.0.0 — 2026-10-04
 

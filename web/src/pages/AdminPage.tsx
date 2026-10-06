@@ -7,12 +7,13 @@ import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PageHeader } from "../components/Layout";
 import { ModeBanner } from "../components/ModeBanner";
 import { Empty, ErrorPanel, Loading } from "../components/States";
-import { useToast } from "../components/Toast";
+import { useJobToast, useToast } from "../components/Toast";
 
 // FR-18..FR-20: users and roles, demo reset, audit log (Admin only; enforced server-side).
 export function AdminPage() {
   const { session } = useAuth();
   const toast = useToast();
+  const trackJob = useJobToast();
   const qc = useQueryClient();
   const users = useQuery({ queryKey: ["users"], queryFn: () => api.get<User[]>("/admin/users") });
   const audit = useQuery({ queryKey: ["audit"], queryFn: () => api.get<Page<Audit>>("/admin/audit?limit=200") });
@@ -31,8 +32,8 @@ export function AdminPage() {
     onError: err,
   });
   const reset = useMutation({
-    mutationFn: () => api.post("/admin/reset-demo", { confirm: "RESET" }),
-    onSuccess: () => { toast("Demo reset started"); setResetOpen(false); void qc.invalidateQueries(); },
+    mutationFn: () => api.post<{ job_id: number }>("/admin/reset-demo", { confirm: "RESET" }),
+    onSuccess: (r) => { trackJob(r.job_id, "Resetting the demo…", "Demo reset finished"); setResetOpen(false); void qc.invalidateQueries(); },
     onError: err,
   });
 

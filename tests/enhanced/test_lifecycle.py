@@ -264,3 +264,20 @@ def test_d5_hop_seq_bound_refuses_and_rekeys_the_cm_ch_session() -> None:
     net.send_reading("CM-0101", "after rekey")
     net.run()
     assert [x["value"] for x in net.readings()] == ["after rekey"]
+
+
+def test_f1_console_shows_the_better_informed_sides_epoch() -> None:
+    """A member rekeys both its sessions at once after a revocation: its CM-CH session can complete
+    before the new DESIGNATION tells it the epoch. Each side keeps what it knew (D4); the console row
+    shows the larger, i.e. the registry epoch the session was established in."""
+    net = onboarded("small")
+    net.revoke("CM-0103")
+    net.run()
+    net.rekey("CM-0101")
+    net.run()
+    cm_side = net.device("CM-0101").current_session("CH-01", m.CM_CH)
+    ch_side = net.device("CH-01").current_session("CM-0101", m.CM_CH)
+    assert (cm_side.epoch, ch_side.epoch) == (0, 1)
+    rows = {(r["a"], r["b"], r["purpose"]): r for r in net.session_infos() if r["state"] == "ESTABLISHED"}
+    assert rows[("CM-0101", "CH-01", m.CM_CH)]["epoch"] == 1 and rows[("CM-0101", "BS-01", m.CM_BS)]["epoch"] == 1
+    assert rows[("CM-0102", "CH-01", m.CM_CH)]["epoch"] == 0  # established before the revocation

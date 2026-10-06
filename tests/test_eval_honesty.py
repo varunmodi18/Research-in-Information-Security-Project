@@ -49,7 +49,8 @@ def test_v_eval_02_table3_row4_counts_frames(monkeypatch: pytest.MonkeyPatch) ->
 def test_v_eval_05_table5_transcription_is_internally_consistent() -> None:
     """Each published time must follow from its printed formula and RP9's constants, except the
     flagged rows, which must fail in exactly the documented way. A transcription error in
-    either the formula or the value breaks this (the PDF check itself is human, §8)."""
+    either the formula or the value breaks this. The PDF check itself is human (§8): the owner
+    checked all 11 rows and 99 cells against the PDF on 2026-10-06 (comparison.TRANSCRIPTION_CHECK)."""
     assert len(comparison.TABLE5) == 11
     for name, formula, published, flag in comparison.TABLE5:
         recomputed = comparison.recompute(formula)
@@ -61,6 +62,13 @@ def test_v_eval_05_table5_transcription_is_internally_consistent() -> None:
         else:
             assert abs(recomputed - published) < 5e-4, name
     assert cost_model.ALL["T_SM"] == 2.226
+
+
+def test_v_eval_05_human_check_covers_exactly_the_tables_as_committed() -> None:
+    check = comparison.TRANSCRIPTION_CHECK
+    assert (check["date"], check["result"]) == ("2026-10-06", "all match")
+    assert check["table5_rows"] == len(comparison.TABLE5) == 11
+    assert check["table6_cells"] == sum(len(c) for c in comparison.TABLE6.values()) == 11 * 9
 
 
 def test_v_eval_05_table6_shape_and_prose_consistency() -> None:

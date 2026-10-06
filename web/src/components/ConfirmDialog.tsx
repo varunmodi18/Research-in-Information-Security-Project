@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 // Typed confirmation for destructive actions: revoke, network delete, demo reset (§3.7).
 export function ConfirmDialog(props: {
@@ -9,10 +9,11 @@ export function ConfirmDialog(props: {
   onConfirm: () => void;
   onCancel: () => void;
   busy?: boolean;
+  children?: ReactNode;  // extra fields shown above the typed confirmation (e.g. Designate CH)
 }) {
   const [typed, setTyped] = useState("");
   const input = useRef<HTMLInputElement>(null);
-  useEffect(() => input.current?.focus(), []);
+  useEffect(() => { if (!props.children) input.current?.focus(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
       <div className="card w-[28rem] p-5">
@@ -20,6 +21,7 @@ export function ConfirmDialog(props: {
           {props.title}
         </h2>
         <p className="mt-2 text-sm text-slate-600">{props.body}</p>
+        {props.children}
         <label className="label mt-4" htmlFor="confirm-input">
           Type <span className="font-mono normal-case text-slate-800">{props.expected}</span> to confirm
         </label>

@@ -99,6 +99,25 @@ def _demo(reset_only: bool) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Configuration errors (a missing or malformed MAKA_KEK, a bad MAKA_* value) end with one line
+    on stderr and exit status 2, never a traceback (follow-up F7)."""
+    from pydantic import ValidationError
+
+    from maka_server.settings import SettingsError
+
+    try:
+        return _main(argv)
+    except SettingsError as exc:
+        sys.stderr.write(f"maka_server: {exc}\n")
+        return 2
+    except ValidationError as exc:
+        first = exc.errors()[0]
+        where = ".".join(str(x) for x in first.get("loc", ())) or "settings"
+        sys.stderr.write(f"maka_server: invalid configuration: MAKA_{where.upper()}: {first.get('msg', exc)}\n")
+        return 2
+
+
+def _main(argv: list[str] | None) -> int:
     ap = argparse.ArgumentParser(prog="python -m maka_server")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("migrate")
@@ -131,7 +150,9 @@ def main(argv: list[str] | None = None) -> int:
 
         from maka_server.settings import get_settings
 
-        host, _, port = get_settings().bind.rpartition(":")
+        settings = get_settings()
+        settings.kek_bytes()  # fail here, in one line, rather than inside uvicorn's app factory
+        host, _, port = settings.bind.rpartition(":")
         uvicorn.run("maka_server.main:create_app", factory=True, host=host, port=int(port))
         return 0
     return 2

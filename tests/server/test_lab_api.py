@@ -68,6 +68,6 @@ def test_migration_upgrades_a_populated_m3_database(tmp_path: Path) -> None:
     upgrade(url)
     con = sqlite3.connect(tmp_path / "old.db")
     assert con.execute("SELECT label, run_tag FROM frames").fetchall() == [("EM1", None)]
-    assert con.execute("SELECT version_num FROM alembic_version").fetchone() == ("0003",)
+    assert con.execute("SELECT version_num FROM alembic_version").fetchone() == ("0004",)
     # 0003 (follow-up D2): existing devices get no designation and no undelivered readings
     assert con.execute("SELECT ident, designated, undelivered FROM devices").fetchall() == [("CM-0101", None, 0)]

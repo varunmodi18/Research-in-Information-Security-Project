@@ -106,7 +106,8 @@ class NetworkRuntime:
         readings = self.net.readings()
         for r in readings[self._reading_cursor:]:
             db.add(models.Reading(network_id=self.network_id, device=str(r["device"]), seq=int(r["seq"]),
-                                  value_json={"value": r["value"]}, received_step=int(r["step"])))
+                                  value_json={"value": r["value"]}, received_step=int(r["step"]),
+                                  session_sid=r.get("sid")))
         self._reading_cursor = len(readings)
 
         for ident, dev in sched.devices.items():

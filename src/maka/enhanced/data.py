@@ -131,7 +131,7 @@ class BSData(BSMembership):
                     self.emit(r.code, peer=r.peer, sid=r.sid.hex() if r.sid else None, **r.details)
                     continue
                 self.readings.append({"device": cm, "seq": sec.seq, "value": reading.decode("utf-8", "replace"),
-                                      "step": self.now})
+                                      "step": self.now, "sid": s.sid_hex})  # sid: public (F5)
                 self.emit("DATA_ACCEPTED", peer=cm, sid=s.sid_hex, seq=sec.seq, via=link)
                 accepted += 1
         if accepted == 0 and first_failure is not None:

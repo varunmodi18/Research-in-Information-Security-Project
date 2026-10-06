@@ -228,13 +228,17 @@ class EnhancedNetwork:
 
     def session_infos(self) -> list[dict[str, Any]]:
         """One row per handshake, from the initiator's view, with the responder's state when the
-        two differ (e.g. HS3 lost: ESTABLISHED/FAILED)."""
+        two differ (e.g. HS3 lost: ESTABLISHED/FAILED). The epoch is the larger of the two sides':
+        each side stamps the registry epoch it knows at establishment (D4), and a CM may not yet
+        have heard of a newer one when its CM-CH session completes (follow-up F1)."""
         rows: dict[str, dict[str, Any]] = {}
         resp: dict[str, str] = {}
+        resp_epoch: dict[str, int] = {}
         for d in self.scheduler.devices.values():
             for s in cast(EnhancedDevice, d).sessions.values():
                 if s.role == st.RESPONDER:
                     resp[s.sid_hex] = s.state
+                    resp_epoch[s.sid_hex] = s.epoch
                     rows.setdefault(s.sid_hex, _row(s.peer, d.identity, s))
         for d in self.scheduler.devices.values():
             for s in cast(EnhancedDevice, d).sessions.values():
@@ -244,6 +248,7 @@ class EnhancedNetwork:
             r = resp.get(sid)
             if r is not None and r != row["state"]:
                 row["state"] = f"{row['state']}/{r}"
+            row["epoch"] = max(row["epoch"], resp_epoch.get(sid, 0))
         return list(rows.values()) + list(self.aborted_sessions)
 
 
