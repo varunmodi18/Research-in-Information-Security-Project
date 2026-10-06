@@ -142,8 +142,10 @@ Vite + React 18 + TypeScript + Tailwind, with TanStack Query for server state an
 - `eval/bench/compare.py` builds fresh runtimes for RP9 (two variants) and MAKA-E and measures them,
   then renders `artifacts/eval/`.
 - `eval/bench/primitives.py`, `api_latency.py`: V-PERF-01 and V-PERF-04.
-- `formal/avispa/`: the HLPSL transcriptions (lint only) and the AnB models checked with OFMC
-  (`results/SUMMARY.json`). The Evaluation page reads both, through `services/evaluation.reference()`.
+- `formal/avispa/`: the HLPSL models run through AVISPA (`run_avispa.sh`: hlpsl2if, OFMC, CL-AtSe;
+  raw outputs and `SUMMARY.json` in `results/avispa/`) and the AnB models checked with OFMC 2024
+  (`run_all.sh`; `results/SUMMARY.json`). `summarize_avispa.py` builds both summaries from the raw
+  outputs. The Evaluation page reads both, through `services/evaluation.reference()`.
 
 ## Testing layers
 

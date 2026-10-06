@@ -1,7 +1,9 @@
 """HLPSL structural self-check (P11.7, extended by IMPLEMENTATION_PLAN.md M7-T1..T3).
 
-Not a full HLPSL grammar: it checks the structure the AVISPA translator would reject or that
-makes a goal meaningless --
+Not a full HLPSL grammar, and not the translator: the real hlpsl2if verdicts are in
+results/avispa/translate/ (follow-up Part C2). Running the tools showed that the translators accept
+actions on the left of =|> (D1, D2): CL-AtSe refuses `request` there ("request in left-hand side"),
+and OFMC accepts it. The lint flags --
   * balanced role ... end role blocks, a goal block, a trailing environment() call;
   * actions (request / witness / secret / SND / new()) on the left-hand side of =|> (D1, D2);
   * role invocations whose argument count differs from the role's parameter list;
@@ -21,8 +23,11 @@ HLPSL_PATH = HERE / "maka.hlpsl"
 MODELS = {
     "maka.hlpsl": "legacy model (not a faithful transcription; kept for history)",
     "rp9_transcribed.hlpsl": "RP9 Figs. 4-8 exactly as printed",
-    "rp9_fixed.hlpsl": "RP9 Figs. 4-8 with minimal syntax fixes",
+    "rp9_fixed.hlpsl": "RP9 Figs. 4-8, fixing only what a tool rejects (D1 for CL-AtSe, D8 for hlpsl2if 2.0)",
+    "rp9_executable.hlpsl": "RP9 Figs. 4-8 made executable (D1-D6, D8, D9)",
+    "rp9_insider.hlpsl": "rp9_executable with the intruder as a legitimate CM",
     "maka_e.hlpsl": "MAKA-E v1 AKE",
+    "maka_e_nopsk_control.hlpsl": "MAKA-E v1 AKE without the PSK (negative control)",
 }
 LHS_ACTIONS = re.compile(r"\b(request|witness|secret|wrequest|SND)\s*\(|new\(\)")
 

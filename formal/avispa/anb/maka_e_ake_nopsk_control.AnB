@@ -2,8 +2,8 @@
 # Diffie-Hellman). OFMC must find an attack here; if it did not, the clean result for the real
 # model would mean nothing.
 # MAKA-E v1 AKE (IMPLEMENTATION_PLAN.md §4.6.4) in OFMC's AnB language.
-# The same model as ../maka_e.hlpsl, written for OFMC 2024, which reads AnB (the HLPSL
-# translator hlpsl2if could not be obtained; see ../NOT_RUN.md).
+# The same exchange as ../maka_e.hlpsl, written for OFMC 2024, which reads AnB. Written in M7, when
+# hlpsl2if could not be obtained; the HLPSL model has since been run through AVISPA too (../TOOLING.md).
 #   psk(I,R): the pairwise PSK. psk is a function nobody publishes, so the intruder holds a
 #             PSK only for sessions it plays in (KCI and the BDH-based derivation are out of scope).
 #   exp(g,X): ephemeral Diffie-Hellman.   h: HKDF/HMAC/SHA-256 with distinct labels.

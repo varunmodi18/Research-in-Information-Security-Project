@@ -1,0 +1,5 @@
+# command: hlpsl2if(64-bit SPAN 1.6) rp9_fixed.hlpsl
+# date: 2026-10-06T10:11:01Z
+%% Translation of rp9_fixed.hlpsl
+%% IF output in results/avispa/if/rp9_fixed.if
+# exit: 0

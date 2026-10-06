@@ -1,0 +1,111 @@
+%% IF specification of maka_e.hlpsl
+
+section signature:
+
+state_responder: agent * agent * symmetric_key * text * text * hash_func * nat * text * text * text * text * message * message * message * message * set(agent) * set(agent) * nat -> fact
+state_initiator: agent * agent * symmetric_key * text * text * hash_func * nat * text * text * text * text * message * message * message * message * set(agent) * set(agent) * nat -> fact
+
+
+section types:
+
+Dummy_Set_40, Set_40, Dummy_Set_38, Set_60, Set_59, Dummy_Set_59, Set_38, ASGoal, Dummy_Set_60: set(agent)
+h, H: hash_func
+kai, kab, Psk, kib: symmetric_key
+Sid, dummy_nonce, kir, Nr, X, kcr, g, P, Dummy_Ni, hs3, cm_ch, Ni, hs2, Dummy_X, kri, Dummy_Y, Dummy_Sid, kci, Dummy_Nr, G, Y: text
+n_r, n_i, k_ri, k_ir: protocol_id
+0, State, 4, SID1, 10, 7, 1, Dummy_State, 2, 3, SID2, SID, 6, 12: nat
+Ini, A2Goal, a, i, A1Goal, b, Rsp: agent
+GY, Kri, GX, Dummy_GX, Dummy_Kri, Th, Dummy_Kir, start, dummy_msg, Dummy_GY, Kir, Dummy_Th, MGoal: message
+set_117, set_106, set_116, set_89, set_113, set_121, set_127, set_124, set_128, set_120, set_114, set_119, set_122, set_105, set_88, set_125: set
+
+
+section inits:
+
+initial_state init1 := 
+ iknows(start).
+ iknows(a).
+ iknows(b).
+ iknows(g).
+ iknows(cm_ch).
+ iknows(h).
+ iknows(kib).
+ iknows(kai).
+ iknows(kcr).
+ iknows(kci).
+ iknows(kir).
+ iknows(kri).
+ iknows(hs2).
+ iknows(hs3).
+ iknows(i).
+ state_initiator(a,b,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_88,set_89,3).
+ state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_105,set_106,4).
+ state_initiator(a,b,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_113,set_114,6).
+ state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_116,set_117,7).
+ state_responder(b,i,kib,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_121,set_122,10).
+ state_initiator(a,i,kai,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_124,set_125,12)
+
+
+section rules:
+
+step step_0 (Ini,Rsp,Psk,G,P,H,Dummy_Sid,Dummy_Ni,Nr,Dummy_X,GY,Th,Kir,Kri,Set_38,Set_40,SID,Sid,Ni,X) :=
+ state_initiator(Ini,Rsp,Psk,G,P,H,0,Dummy_Sid,Dummy_Ni,Nr,Dummy_X,GY,Th,Kir,Kri,Set_38,Set_40,SID).
+ iknows(start)
+=[exists X,Ni,Sid]=>
+ state_initiator(Ini,Rsp,Psk,G,P,H,1,Sid,Ni,Nr,X,GY,Th,Kir,Kri,Set_38,Set_40,SID).
+ iknows(pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,exp(G,X)))))))
+
+step step_1 (Ini,Rsp,Psk,G,P,H,Sid,Ni,Dummy_Nr,X,Dummy_GY,Dummy_Th,Dummy_Kir,Dummy_Kri,Dummy_Set_38,Dummy_Set_40,SID,Nr,GY) :=
+ state_initiator(Ini,Rsp,Psk,G,P,H,1,Sid,Ni,Dummy_Nr,X,Dummy_GY,Dummy_Th,Dummy_Kir,Dummy_Kri,Dummy_Set_38,Dummy_Set_40,SID).
+ iknows(pair(Sid,pair(Rsp,pair(Ini,pair(Nr,pair(GY,apply(H,pair(apply(H,pair(kcr,pair(Psk,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P))))),pair(hs2,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))))))))))))
+ =>
+ state_initiator(Ini,Rsp,Psk,G,P,H,2,Sid,Ni,Nr,X,GY,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),apply(H,pair(kir,pair(Psk,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P))))),apply(H,pair(kri,pair(Psk,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P))))),Dummy_Set_38,Dummy_Set_40,SID).
+ iknows(pair(Sid,apply(H,pair(apply(H,pair(kci,pair(Psk,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P))))),pair(hs3,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY)))))))))))))))).
+ request(Ini,Rsp,n_r,Nr,SID).
+ contains(Ini,Dummy_Set_38).
+ contains(Rsp,Dummy_Set_38).
+ contains(Ini,Dummy_Set_40).
+ contains(Rsp,Dummy_Set_40)
+
+step step_2 (Rsp,Ini,Psk,G,P,H,Dummy_Sid,Dummy_Ni,Dummy_Nr,Dummy_Y,Dummy_GX,Dummy_Th,Kir,Kri,Set_59,Set_60,SID,Sid,Ni,Nr,Y,GX) :=
+ state_responder(Rsp,Ini,Psk,G,P,H,0,Dummy_Sid,Dummy_Ni,Dummy_Nr,Dummy_Y,Dummy_GX,Dummy_Th,Kir,Kri,Set_59,Set_60,SID).
+ iknows(pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,GX))))))
+=[exists Y,Nr]=>
+ state_responder(Rsp,Ini,Psk,G,P,H,1,Sid,Ni,Nr,Y,GX,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(GX,pair(Sid,pair(Rsp,pair(Ini,pair(Nr,exp(G,Y)))))))))))),Kir,Kri,Set_59,Set_60,SID).
+ iknows(pair(Sid,pair(Rsp,pair(Ini,pair(Nr,pair(exp(G,Y),apply(H,pair(apply(H,pair(kcr,pair(Psk,pair(exp(GX,Y),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(GX,pair(Sid,pair(Rsp,pair(Ini,pair(Nr,exp(G,Y)))))))))))),P))))),pair(hs2,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(GX,pair(Sid,pair(Rsp,pair(Ini,pair(Nr,exp(G,Y))))))))))))))))))))).
+ witness(Rsp,Ini,n_r,Nr)
+
+step step_3 (Rsp,Ini,Psk,G,P,H,Sid,Ni,Nr,Y,GX,Th,Dummy_Kir,Dummy_Kri,Dummy_Set_59,Dummy_Set_60,SID) :=
+ state_responder(Rsp,Ini,Psk,G,P,H,1,Sid,Ni,Nr,Y,GX,Th,Dummy_Kir,Dummy_Kri,Dummy_Set_59,Dummy_Set_60,SID).
+ iknows(pair(Sid,apply(H,pair(apply(H,pair(kci,pair(Psk,pair(exp(GX,Y),pair(Th,P))))),pair(hs3,Th)))))
+ =>
+ state_responder(Rsp,Ini,Psk,G,P,H,2,Sid,Ni,Nr,Y,GX,Th,apply(H,pair(kir,pair(Psk,pair(exp(GX,Y),pair(Th,P))))),apply(H,pair(kri,pair(Psk,pair(exp(GX,Y),pair(Th,P))))),Dummy_Set_59,Dummy_Set_60,SID).
+ contains(Ini,Dummy_Set_59).
+ contains(Rsp,Dummy_Set_59).
+ contains(Ini,Dummy_Set_60).
+ contains(Rsp,Dummy_Set_60)
+
+
+section properties:
+
+property authentication_on_n_r (A1Goal,A2Goal,MGoal,SID,SID1,SID2) :=
+ [] (((request(A1Goal,A2Goal,n_r,MGoal,SID)
+       /\ ~ equal(A2Goal,i))
+      => witness(A2Goal,A1Goal,n_r,MGoal))
+     /\ ((request(A1Goal,A2Goal,n_r,MGoal,SID1)
+           /\ request(A1Goal,A2Goal,n_r,MGoal,SID2)
+           /\ ~ equal(A2Goal,i))
+          => equal(SID1,SID2)))
+
+
+section attack_states:
+
+attack_state authentication_on_n_r (A1Goal,A2Goal,MGoal,SID) :=
+ request(A1Goal,A2Goal,n_r,MGoal,SID) &
+ not(witness(A2Goal,A1Goal,n_r,MGoal)) &
+ not(equal(A2Goal,i))
+attack_state replay_protection_on_n_r (A2Goal,A1Goal,MGoal,SID1,SID2) :=
+ request(A1Goal,A2Goal,n_r,MGoal,SID1).
+ request(A1Goal,A2Goal,n_r,MGoal,SID2) &
+ not(equal(SID1,SID2)) &
+ not(equal(A2Goal,i))
+

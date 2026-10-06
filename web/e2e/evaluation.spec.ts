@@ -23,5 +23,12 @@ test("V-E2E-05 J5 evaluate", async ({ page }) => {
   await expect(page.getByTestId("table5")).toContainText("ER-02");
   await expect(page.getByTestId("table5")).toContainText("AM-04");
   await expect(page.getByTestId("ev-formal")).toContainText(/attack found|not obtained/);
+  // follow-up C4: two separate tables, AVISPA (HLPSL) and OFMC 2024 (AnB)
+  await expect(page.getByTestId("ev-formal")).toContainText("AVISPA (HLPSL): OFMC, CL-AtSe");
+  await expect(page.getByTestId("ev-formal")).toContainText("OFMC 2024 (AnB models)");
+  const avispa = page.getByTestId("avispa-rp9_transcribed").filter({ hasText: "OFMC (2006/02/13)" });
+  await expect(avispa).toContainText("1501 nodes, depth 7");
+  await expect(avispa).toContainText("results/avispa/runs/rp9_transcribed.ofmc2006.txt");
+  await expect(page.getByTestId("anb-rp9_auth_outsider-2")).toContainText(/without a receiver-side nonce record, replay succeeds; RP9.s replay protection rests entirely on that record, which RP9 does not specify/i);
   await expect(page.getByTestId("ev-levels")).toContainText("demonstration only");
 });

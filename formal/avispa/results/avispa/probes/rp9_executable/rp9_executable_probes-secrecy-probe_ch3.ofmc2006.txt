@@ -1,0 +1,57 @@
+# command: ofmc(2006/02/13) probes/rp9_executable/rp9_executable_probes-secrecy-probe_ch3.if
+# date: 2026-10-06T11:41:03Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  UNSAFE
+DETAILS
+  ATTACK_FOUND
+PROTOCOL
+  results/avispa/probes/rp9_executable/rp9_executable_probes-secrecy-probe_ch3.if
+GOAL
+  secrecy_of_probe_ch3
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 0.22s
+  visitedNodes: 65 nodes
+  depth: 3 plies
+ATTACK TRACE
+i -> (ch,3): start
+(ch,3) -> i: Probe_ch1(1),{dummy_nonce}_s
+i -> (bs,3): {dummy_nonce}_s
+(bs,3) -> i: Probe_bs1(2),{dummy_hash(e.dummy_nonce).dummy_hash(e.dummy_nonce)}_s
+i -> (ch,3): {dummy_hash(e.dummy_nonce).dummy_hash(e.dummy_nonce)}_s
+(ch,3) -> i: Probe_ch2(3),{dummy_hash(e.dummy_nonce)}_s
+i -> (ch,3): start
+(ch,3) -> i: Probe_ch3(4),{dummy_hash(Rch(4).dummy_nonce).dummy_hash(Rch(4).dummy_hash(e.dummy_nonce)).Nch(4)}_pucm
+i -> (i,17): Probe_ch3(4)
+i -> (i,17): Probe_ch3(4)
+
+
+% Reached State:
+% 
+% secret(Probe_ch3(4),probe_ch3,set_211)
+% contains(ch,set_211)
+% contains(dummy_nonce,set_212)
+% contains(ch,set_213)
+% contains(cm,set_213)
+% contains(ch,set_208)
+% contains(dummy_nonce,set_209)
+% contains(ch,set_210)
+% contains(bs,set_210)
+% contains(bs,set_231)
+% contains(dummy_nonce,set_232)
+% contains(ch,set_233)
+% contains(bs,set_233)
+% contains(ch,set_207)
+% state_basestation(bs,cm,i,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_275,set_276,set_277,set_278,13)
+% state_clustermember(cm,i,bs,pubs,puch,pucm,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_262,set_263,set_264,set_265,11)
+% state_basestation(bs,i,ch,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_257,set_258,set_259,set_260,8)
+% state_clusterhead(ch,i,bs,pubs,puch,pucm,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_248,set_249,set_250,set_251,set_252,set_253,set_254,set_255,8)
+% state_basestation(bs,cm,ch,pubs,puch,pucm,s,8,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,Probe_bs1(2),dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_hash(e.dummy_nonce),dummy_hash(e.dummy_nonce),dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_231,set_232,set_233,set_234,3)
+% state_clusterhead(ch,cm,bs,pubs,puch,pucm,s,7,dummy_nonce,dummy_nonce,Probe_ch1(1),Probe_ch2(3),Probe_ch3(4),dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,Nch(4),dummy_nonce,Rch(4),dummy_nonce,dummy_hash(e.dummy_nonce),dummy_hash(e.dummy_nonce),dummy_hash(Rch(4).dummy_nonce),dummy_hash(Rch(4).dummy_hash(e.dummy_nonce)),dummy_msg,dummy_msg,dummy_hash,set_207,set_208,set_209,set_210,set_211,set_212,set_213,set_214,3)
+% state_clustermember(cm,ch,bs,pubs,puch,pucm,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_183,set_184,set_185,set_186,3)
+# exit: 0

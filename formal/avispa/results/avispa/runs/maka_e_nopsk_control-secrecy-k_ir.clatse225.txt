@@ -1,0 +1,46 @@
+# command: cl-atse(2.2-5) split/maka_e_nopsk_control-secrecy-k_ir.if
+# date: 2026-10-06T10:11:02Z
+
+SUMMARY
+  UNSAFE
+
+DETAILS
+  ATTACK_FOUND
+  TYPED_MODEL
+
+PROTOCOL
+  results/avispa/split/maka_e_nopsk_control-secrecy-k_ir.if
+
+GOAL
+  Secrecy attack on ({kir.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h)
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 0 states
+  Reachable  : 0 states
+  Translation: 0.01 seconds
+  Computation: 0.00 seconds
+
+
+ATTACK TRACE
+ i -> (a,12):  start
+ (a,12) -> i:  n21(Sid).a.i.cm_ch.n21(Ni).exp(g,n21(X))
+
+ i -> (a,6):  start
+ (a,6) -> i:  n9(Sid).a.b.cm_ch.n9(Ni).exp(g,n9(X))
+
+ i -> (a,3):  start
+ (a,3) -> i:  n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X))
+
+ i -> (a,3):  n1(Sid).b.a.Nr(2).g.
+              {{kcr.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h.hs2.{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h}_h
+ (a,3) -> i:  n1(Sid).
+              {{kci.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h.hs3.{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h}_h
+              & Secret({kir.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h,set_88);
+              & Add a to set_88;  Add b to set_88;  Add a to set_89;
+              & Add b to set_89;
+
+# exit: 0

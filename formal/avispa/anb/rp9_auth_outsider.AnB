@@ -1,13 +1,13 @@
-# Variant with the cluster head as an honest constant `ch`: the intruder may only play cluster
-# members (insider, AT3). RP9 §5.4 node authentication (with ER-01: A4 = r_CM * P_CM) in OFMC's AnB language,
-# under RP9's own assumption that the pseudo-identity scalars (ID_BS xor ID_CH) and
-# (ID_CH xor ID_CM) are known only to the cluster's parties: xr is a function nobody publishes,
-# and each role knows exactly the scalars RP9 gives it.
+# RP9 §5.4 node authentication (with ER-01: A4 = r_CM * P_CM) in OFMC's AnB language, OUTSIDER-ONLY
+# variant: the cluster member, cluster head and base station are honest constants (cm, ch, bs); the
+# intruder plays none of them, so it knows no pseudo-identity scalar. Each role knows exactly the
+# scalars RP9 gives it; xr is a function nobody publishes.
 #   P_CH = exp(g, xr(BS,ch)), A1 = exp(g,Rch), A2 = exp(P_CH, Rch)
 #   Enc(m, Pu_i) (Boneh-Franklin IBE, IA-03) -> {m}pk(i)
 # The cm checks A2 = (ID_BS xor ID_CH) * A1 by computing exp(A1, xr(bs,ch)).
-# The base station is the honest constant `bs` (it is trusted: IMPLEMENTATION_PLAN.md §2.1
-# assumption 1); CMs and CHs may be played by the intruder, i.e. insiders are in scope (AT3).
+# Note on the 2-session result: AnB has no receiver-side record of nonces already accepted, shared
+# across sessions. Without such a record, replaying an EM1 succeeds; RP9's replay protection rests
+# entirely on that record, which RP9 does not specify. The runtime keeps one, so Lab L1 is blocked.
 
 Protocol: RP9_NodeAuthentication_OutsiderOnly
 

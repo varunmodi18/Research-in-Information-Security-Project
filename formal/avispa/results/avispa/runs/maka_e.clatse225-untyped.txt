@@ -1,0 +1,55 @@
+# command: cl-atse(2.2-5) if/maka_e.if -notype
+# date: 2026-10-06T10:11:21Z
+
+SUMMARY
+  UNSAFE
+
+DETAILS
+  ATTACK_FOUND
+  UNTYPED_MODEL
+
+PROTOCOL
+  results/avispa/if/maka_e.if
+
+GOAL
+  Authentication attack on (b.a.n_r.exp(g,n1(X)).n1(Sid).b.a.n13(Nr))
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 16 states
+  Reachable  : 14 states
+  Translation: 0.02 seconds
+  Computation: 0.00 seconds
+
+
+ATTACK TRACE
+ i -> (a,12):  start
+ (a,12) -> i:  n21(Sid).a.i.cm_ch.n21(Ni).exp(g,n21(X))
+
+ i -> (b,10):  Sid(17).i.b.cm_ch.Ni(17).GX(17)
+ (b,10) -> i:  Sid(17).b.i.n17(Nr).exp(g,n17(Y)).
+               {{kcr.kib.exp(GX(17),n17(Y)).{Sid(17).i.b.cm_ch.Ni(17).GX(17).Sid(17).b.i.n17(Nr).exp(g,n17(Y))}_h.cm_ch}_h.hs2.{Sid(17).i.b.cm_ch.Ni(17).GX(17).Sid(17).b.i.n17(Nr).exp(g,n17(Y))}_h}_h
+
+ i -> (a,3):  start
+ (a,3) -> i:  n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X))
+              & Witness(a,b,n_i,n1(Ni));
+
+ i -> (b,7):  n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X))
+ (b,7) -> i:  n1(Sid).b.a.n13(Nr).exp(g,n13(Y)).
+              {{kcr.kab.exp(g,n13(Y)*n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h.cm_ch}_h.hs2.{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h}_h
+              & Witness(b,a,n_r,n13(Nr));
+
+ i -> (a,3):  n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y)).
+              {{kcr.kab.exp(g,n1(X)*n13(Y)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h.cm_ch}_h.hs2.{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h}_h
+ (a,3) -> i:  n1(Sid).
+              {{kci.kab.exp(g,n1(X)*n13(Y)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h.cm_ch}_h.hs3.{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h}_h
+              & Secret({kri.kab.exp(g,n1(X)*n13(Y)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h.cm_ch}_h,set_89);
+              & Secret({kir.kab.exp(g,n1(X)*n13(Y)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.exp(g,n1(X)).n1(Sid).b.a.n13(Nr).exp(g,n13(Y))}_h.cm_ch}_h,set_88);
+              & Request(a,b,n_r,exp(g,n1(X)).n1(Sid).b.a.n13(Nr));
+              & Add a to set_88;  Add b to set_88;  Add a to set_89;
+              & Add b to set_89;
+
+# exit: 0

@@ -1,0 +1,36 @@
+# MAKA-E v1 AKE: forward secrecy under long-term key compromise (follow-up Part C3.1).
+# Same exchange as maka_e_ake.AnB. After the session completes (both sides hold k_IR, k_RI), the
+# responder publishes psk(I,R): this models the later compromise of Pr_A (and so of every PSK it
+# derives). Goal: the session keys of that completed session stay secret. AnB has no explicit
+# "compromise after the session" event, so the leak is written as a final protocol message; the
+# intruder sees it only after the keys were derived. Authentication goals are omitted: after the
+# PSK leaks, impersonation in LATER sessions is expected and is not a forward-secrecy failure.
+#   psk(I,R): the pairwise PSK.   exp(g,X): ephemeral Diffie-Hellman.   h: HKDF/HMAC.
+
+Protocol: MAKAE_AKE_ForwardSecrecy
+
+Types: Agent I,R;
+       Number Sid,NI,NR,X,Y;
+       Number g,cmch,kcr,kci,kir,kri,hs2,hs3;
+       Function psk,h
+
+Knowledge: I: I,R,psk(I,R),h,g,cmch,kcr,kci,kir,kri,hs2,hs3;
+           R: I,R,psk(I,R),h,g,cmch,kcr,kci,kir,kri,hs2,hs3
+where I!=R
+
+Actions:
+
+I->R: Sid,I,R,cmch,NI,exp(g,X)
+R->I: Sid,R,I,NR,exp(g,Y),
+      h(h(kcr,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch),hs2,
+        h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)))
+I->R: Sid,
+      h(h(kci,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch),hs3,
+        h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)))
+# long-term compromise AFTER the session: the PSK is published
+R->I: psk(I,R)
+
+Goals:
+
+h(kir,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch) secret between I,R
+h(kri,psk(I,R),exp(exp(g,X),Y),h(Sid,I,R,cmch,NI,exp(g,X),Sid,R,I,NR,exp(g,Y)),cmch) secret between I,R

@@ -47,7 +47,8 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
   model is shown by Dupont and Enge (2006) and by Paterson and Srinivasan (2009).
 - **Evidence**: V-UNIT-10 (symmetry, distinctness, equality with the BS's computation from `k`);
   Lab L3 enhanced (an insider's best PSK guesses all fail, 0/100 in V-ADV-10).
-- **Not modelled symbolically**: the AnB/HLPSL models take `psk(A,B)` as an uninterpreted function.
+- **Not modelled symbolically**: the AnB models take `psk(A,B)` as an uninterpreted function, and the
+  HLPSL model as one secret constant per pair (`kab`; the intruder's own are `kib`, `kai`).
 
 ### P2. Mutual authentication and key confirmation (AKE)
 
@@ -62,8 +63,16 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
   symbolic ones (Cremers et al., Tamarin). MAKA-E has fewer options than TLS: no 0-RTT, no
   negotiation, and one PSK per pair.
 - **Evidence**:
-  - OFMC finds no attack on `authentication_on n_i`/`n_r` with 1–3 sessions, the intruder free to
-    play either role with its own PSKs. The no-PSK negative control is attacked
+  - AVISPA on `formal/avispa/maka_e.hlpsl` (4 sessions: two honest in parallel, the intruder as
+    initiator and as responder with its own PSKs): OFMC 2006 and CL-AtSe 2.2-5/2.3-4 report SAFE
+    for `authentication_on n_i`, `n_r`, each goal also checked alone. Every transition of both
+    roles can execute (probes), so the SAFE is not vacuous. The no-PSK control is UNSAFE under
+    every back-end.
+  - In AVISPA's untyped model CL-AtSe attacks `n_r` by shifting a field boundary (the intruder
+    appends fields to `X`; the initiator reads them as part of `N_R`). The implementation's
+    length-prefixed, fixed-width fields reject both shifted messages
+    (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`).
+  - OFMC 2024 on the AnB model: no attack at 1–3 sessions; the no-PSK control is attacked
     (`formal/avispa/README.md`).
   - Tests V-ADV-03/04/05/11/14 and Lab L2/L3/L4.
 
@@ -82,7 +91,16 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
     recorded runs, which is a Gap-CDH instance (A2), and HKDF hides everything else (A3).
 - **Analogue**: forward secrecy of TLS 1.3 `psk_dhe_ke` against later compromise of the PSK.
 - **Evidence**:
-  - OFMC finds no attack on `secrecy_of k_ir, k_ri` (bounded).
+  - AVISPA (OFMC 2006, CL-AtSe) finds no attack on `secrecy_of k_ir, k_ri` in the 4-session HLPSL
+    model; OFMC 2024 none in the AnB model at 1–3 sessions.
+  - Forward secrecy, symbolically (`anb/maka_e_ake_fs.AnB`, the PSK published after the session):
+    no attack at 1 session. At 2 sessions OFMC 2024 reports an attack, and the trace does not show
+    a forward-secrecy failure: the leaked keys belong to a responder session that the intruder
+    itself opened (with `X = g`) and completed *after* the PSK leaked, i.e. impersonation after
+    compromise, which no PSK protocol prevents. AnB cannot restrict the leak to "after every
+    session has completed", so this model does not establish forward secrecy at 2 sessions either
+    way. The no-DH control is attacked at 1 and 2 sessions, so the model does detect loss of
+    keys from completed sessions when DH is absent.
   - V-ADV-12: with the PSKs and `Pr` taken after the session ended, the adversary module's key
     derivations fail and no ephemeral remains in the keystore.
   - Lab L5 enhanced: recorded data from ended sessions stays confidential.
@@ -99,8 +117,9 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
   - Session messages carry a per-direction counter `seq`, accepted only if strictly increasing. The
     counter also forms the AEAD nonce, so a (key, nonce) pair is never reused (A4).
 - **Evidence**: V-ADV-01/02/08/09; Lab L1. OFMC's strong (injective) authentication goal holds for
-  MAKA-E. For RP9, by contrast, OFMC finds a cross-session replay, because RP9 never specifies the
-  receiver's nonce state.
+  MAKA-E. For RP9, by contrast, OFMC 2024 finds a cross-session replay at 2 sessions: without a
+  receiver-side nonce record, replay succeeds; RP9's replay protection rests entirely on that
+  record, which RP9 does not specify.
 
 ### P5. Authorisation: membership, designation, revocation (C4)
 
@@ -164,10 +183,12 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
 1. **No computational proof of MAKA-E as composed.** The argument above reasons by analogy with
    SOK and TLS 1.3 `psk_dhe_ke` under standard assumptions. Composing the SOK-derived PSK with the
    key exchange, the membership layer and the data path has not been proven.
-2. **Symbolic analysis is bounded and abstract.** OFMC checked up to 3 sessions of the key exchange
-   alone, with perfect cryptography, `psk(A,B)` uninterpreted and DH as the only algebra. The
-   membership, revocation and data layers are not modelled. The HLPSL models were not run (no
-   `hlpsl2if`), and CL-AtSe results were not obtained (`formal/avispa/NOT_RUN.md`).
+2. **Symbolic analysis is bounded and abstract.** AVISPA (OFMC, CL-AtSe) checked the key exchange
+   with the 4 sessions of `maka_e.hlpsl`, and OFMC 2024 the AnB model with up to 3, with perfect
+   cryptography, the PSK as an opaque secret and DH as the only algebra. The membership,
+   revocation and data layers are not modelled. Forward secrecy is not established symbolically
+   beyond 1 session (P3). The tools are 2006-era builds run on a modern host
+   (`formal/avispa/TOOLING.md` records how they were calibrated).
 3. **Key-compromise impersonation (KCI).** With a symmetric PSK, whoever holds `Pr_A` can
    impersonate any peer *to A*. This is accepted and demonstrated (V-CAP-02).
 4. **BS compromise is total.** The BS holds `k` and can derive every key.

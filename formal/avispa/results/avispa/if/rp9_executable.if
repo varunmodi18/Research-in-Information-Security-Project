@@ -1,0 +1,224 @@
+%% IF specification of rp9_executable.hlpsl
+
+section signature:
+
+state_basestation: agent * agent * agent * public_key * public_key * public_key * symmetric_key * nat * text * text * text * text * text * text * text * text * text * message * message * message * message * message * message * hash_func * set(text) * set(agent) * nat -> fact
+state_clusterhead: agent * agent * agent * public_key * public_key * public_key * symmetric_key * nat * text * text * text * text * text * text * text * text * text * message * message * message * message * message * message * hash_func * set(text) * set(agent) * set(text) * set(agent) * nat -> fact
+state_clustermember: agent * agent * agent * public_key * public_key * public_key * symmetric_key * nat * text * text * text * text * text * text * text * text * text * message * message * message * message * message * message * hash_func * set(text) * set(agent) * nat -> fact
+
+
+section types:
+
+Set_111, Set_79, Dummy_Set_76, Dummy_Set_40, Set_76, Set_40, Dummy_Set_79, Dummy_Set_111: set(text)
+S, s: symmetric_key
+F, dummy_hash: hash_func
+bs, ch, CM, i, cm, CH, A1Goal, A2Goal, BS: agent
+sec3, em1, sec2, em3, sec1, em2: protocol_id
+set_182, set_188, set_185, set_180, set_164, set_195, set_190, set_197, set_181, set_143, set_193, set_187, set_161, set_196, set_144, set_194, set_183, set_173, set_191, set_184, set_162, set_163, set_198, set_174: set
+A2, A3, Pcm, A4, A1, Dummy_A4, Dummy_A3, Dummy_Pch, Pch, dummy_msg, Dummy_Pcm, Dummy_A1, Dummy_A2, start, MGoal: message
+Set_80, Set_77, Dummy_Set_80, ASGoal, Set_112, Dummy_Set_77, Set_41, Dummy_Set_41, Dummy_Set_112: set(agent)
+4, 9, State, SID1, 7, SID, 6, 5, 8, 11, 13, Dummy_State, SID2, 1, 10, 3, 0, 2: nat
+Pucm, Pubs, puch, pubs, Puch, pucm: public_key
+Idbs, Idcm, dummy_nonce, Ncm, Rch, Nch, Pac, Dummy_Rcm, Rcm, Idch, G, Dummy_Ncm, Dummy_Nch, Dummy_Rch, Dummy_Pac: text
+
+
+section inits:
+
+initial_state init1 := 
+ iknows(start).
+ iknows(cm).
+ iknows(ch).
+ iknows(bs).
+ iknows(pucm).
+ iknows(puch).
+ iknows(pubs).
+ iknows(i).
+ state_clustermember(cm,ch,bs,pubs,puch,pucm,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_143,set_144,3).
+ state_clusterhead(ch,cm,bs,pubs,puch,pucm,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_161,set_162,set_163,set_164,4).
+ state_basestation(bs,cm,ch,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_173,set_174,5).
+ state_clusterhead(ch,i,bs,pubs,puch,pucm,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_182,set_183,set_184,set_185,8).
+ state_basestation(bs,i,ch,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_187,set_188,9).
+ state_clustermember(cm,i,bs,pubs,puch,pucm,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_190,set_191,11).
+ state_basestation(bs,cm,i,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_197,set_198,13)
+
+
+section rules:
+
+step step_0 (CM,CH,BS,Pubs,Puch,Pucm,S,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_40,Dummy_Set_41,SID,Pcm) :=
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,0,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_40,Dummy_Set_41,SID).
+ iknows(scrypt(S,Pcm))
+ =>
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Dummy_Set_40,Dummy_Set_41,SID).
+ secret(Dummy_Set_40,sec2,Dummy_Set_41).
+ contains(Idch,Dummy_Set_40).
+ contains(Idcm,Dummy_Set_40).
+ contains(G,Dummy_Set_40).
+ contains(CH,Dummy_Set_41).
+ contains(CM,Dummy_Set_41)
+
+step step_1 (CM,CH,BS,Pubs,Puch,Pucm,S,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Dummy_Ncm,Rch,Dummy_Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,Dummy_A3,Dummy_A4,F,Set_40,Set_41,SID,Nch,Ncm,Rcm,A1,A2) :=
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,2,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Dummy_Ncm,Rch,Dummy_Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,Dummy_A3,Dummy_A4,F,Set_40,Set_41,SID).
+ iknows(crypt(Pucm,pair(A1,pair(A2,Nch))))
+=[exists Ncm,Rcm]=>
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,4,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,apply(F,pair(Rcm,G)),apply(F,pair(Rcm,Pcm)),F,Set_40,Set_41,SID).
+ request(CM,CH,em2,Nch,SID).
+ iknows(crypt(Puch,pair(apply(F,pair(Rcm,G)),pair(apply(F,pair(Rcm,Pcm)),Ncm)))).
+ witness(CM,CH,em3,Ncm)
+
+step step_2 (CH,CM,BS,Pubs,Puch,Pucm,S,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_76,Set_77,Set_79,Set_80,SID) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,1,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_76,Set_77,Set_79,Set_80,SID).
+ iknows(start)
+ =>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,3,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_76,Set_77,Set_79,Set_80,SID).
+ iknows(scrypt(S,Pac)).
+ secret(Pac,sec1,CH)
+
+step step_3 (CH,CM,BS,Pubs,Puch,Pucm,S,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_76,Dummy_Set_77,Set_79,Set_80,SID,Pch,Pcm) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,3,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_76,Dummy_Set_77,Set_79,Set_80,SID).
+ iknows(scrypt(S,pair(Pch,Pcm)))
+ =>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,5,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Dummy_Set_76,Dummy_Set_77,Set_79,Set_80,SID).
+ secret(Dummy_Set_76,sec2,Dummy_Set_77).
+ iknows(scrypt(S,Pcm)).
+ contains(Idbs,Dummy_Set_76).
+ contains(Idch,Dummy_Set_76).
+ contains(Idcm,Dummy_Set_76).
+ contains(G,Dummy_Set_76).
+ contains(CH,Dummy_Set_77).
+ contains(BS,Dummy_Set_77)
+
+step step_4 (CH,CM,BS,Pubs,Puch,Pucm,S,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Dummy_Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_76,Set_77,Dummy_Set_79,Dummy_Set_80,SID,Nch,Rch) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,5,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Dummy_Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_76,Set_77,Dummy_Set_79,Dummy_Set_80,SID).
+ iknows(start)
+=[exists Nch,Rch]=>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,7,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,apply(F,pair(Rch,G)),apply(F,pair(Rch,Pch)),A3,A4,F,Set_76,Set_77,Dummy_Set_79,Dummy_Set_80,SID).
+ secret(Dummy_Set_79,sec2,Dummy_Set_80).
+ iknows(crypt(Pucm,pair(apply(F,pair(Rch,G)),pair(apply(F,pair(Rch,Pch)),Nch)))).
+ witness(CH,CM,em2,Nch).
+ contains(Idch,Dummy_Set_79).
+ contains(Idcm,Dummy_Set_79).
+ contains(G,Dummy_Set_79).
+ contains(CH,Dummy_Set_80).
+ contains(CM,Dummy_Set_80)
+
+step step_5 (CH,CM,BS,Pubs,Puch,Pucm,S,Pac,Idcm,Idch,Idbs,G,Nch,Dummy_Ncm,Rch,Rcm,Pch,Pcm,A1,A2,Dummy_A3,Dummy_A4,F,Set_76,Set_77,Set_79,Set_80,SID,Ncm,A3,A4) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,7,Pac,Idcm,Idch,Idbs,G,Nch,Dummy_Ncm,Rch,Rcm,Pch,Pcm,A1,A2,Dummy_A3,Dummy_A4,F,Set_76,Set_77,Set_79,Set_80,SID).
+ iknows(crypt(Puch,pair(A3,pair(A4,Ncm))))
+ =>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,9,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_76,Set_77,Set_79,Set_80,SID).
+ request(CH,CM,em3,Ncm,SID).
+ iknows(crypt(Pubs,pair(A1,pair(A2,Nch)))).
+ witness(CH,BS,em1,Nch)
+
+step step_6 (BS,CM,CH,Pubs,Puch,Pucm,S,Dummy_Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_111,Dummy_Set_112,SID,Pac) :=
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,6,Dummy_Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_111,Dummy_Set_112,SID).
+ iknows(scrypt(S,Pac))
+ =>
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,8,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,apply(F,pair(xor(Idbs,Idch),G)),apply(F,pair(xor(Idch,Idcm),G)),A1,A2,A3,A4,F,Dummy_Set_111,Dummy_Set_112,SID).
+ secret(Pac,sec1,CH).
+ secret(Dummy_Set_111,sec2,Dummy_Set_112).
+ iknows(scrypt(S,pair(apply(F,pair(xor(Idbs,Idch),G)),apply(F,pair(xor(Idch,Idcm),G))))).
+ contains(Idbs,Dummy_Set_111).
+ contains(Idch,Dummy_Set_111).
+ contains(Idcm,Dummy_Set_111).
+ contains(G,Dummy_Set_111).
+ contains(CH,Dummy_Set_112).
+ contains(BS,Dummy_Set_112)
+
+step step_7 (BS,CM,CH,Pubs,Puch,Pucm,S,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_111,Set_112,SID,Nch,A1,A2) :=
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,8,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_111,Set_112,SID).
+ iknows(crypt(Pubs,pair(A1,pair(A2,Nch))))
+ =>
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,10,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_111,Set_112,SID).
+ request(BS,CH,em1,Nch,SID)
+
+
+section properties:
+
+property secrecy_of_sec1 (MGoal,ASGoal) :=
+ [] ((secret(MGoal,sec1,ASGoal) /\ iknows(MGoal))
+     => contains(i,ASGoal))
+
+property secrecy_of_sec2 (MGoal,ASGoal) :=
+ [] ((secret(MGoal,sec2,ASGoal) /\ iknows(MGoal))
+     => contains(i,ASGoal))
+
+property secrecy_of_sec3 (MGoal,ASGoal) :=
+ [] ((secret(MGoal,sec3,ASGoal) /\ iknows(MGoal))
+     => contains(i,ASGoal))
+
+property authentication_on_em1 (A1Goal,A2Goal,MGoal,SID,SID1,SID2) :=
+ [] (((request(A1Goal,A2Goal,em1,MGoal,SID)
+       /\ ~ equal(A2Goal,i))
+      => witness(A2Goal,A1Goal,em1,MGoal))
+     /\ ((request(A1Goal,A2Goal,em1,MGoal,SID1)
+           /\ request(A1Goal,A2Goal,em1,MGoal,SID2)
+           /\ ~ equal(A2Goal,i))
+          => equal(SID1,SID2)))
+
+property authentication_on_em2 (A1Goal,A2Goal,MGoal,SID,SID1,SID2) :=
+ [] (((request(A1Goal,A2Goal,em2,MGoal,SID)
+       /\ ~ equal(A2Goal,i))
+      => witness(A2Goal,A1Goal,em2,MGoal))
+     /\ ((request(A1Goal,A2Goal,em2,MGoal,SID1)
+           /\ request(A1Goal,A2Goal,em2,MGoal,SID2)
+           /\ ~ equal(A2Goal,i))
+          => equal(SID1,SID2)))
+
+property authentication_on_em3 (A1Goal,A2Goal,MGoal,SID,SID1,SID2) :=
+ [] (((request(A1Goal,A2Goal,em3,MGoal,SID)
+       /\ ~ equal(A2Goal,i))
+      => witness(A2Goal,A1Goal,em3,MGoal))
+     /\ ((request(A1Goal,A2Goal,em3,MGoal,SID1)
+           /\ request(A1Goal,A2Goal,em3,MGoal,SID2)
+           /\ ~ equal(A2Goal,i))
+          => equal(SID1,SID2)))
+
+
+section attack_states:
+
+attack_state secrecy_of_sec1 (MGoal,ASGoal) :=
+ iknows(MGoal).
+ secret(MGoal,sec1,ASGoal) &
+ not(contains(i,ASGoal))
+
+attack_state secrecy_of_sec2 (MGoal,ASGoal) :=
+ iknows(MGoal).
+ secret(MGoal,sec2,ASGoal) &
+ not(contains(i,ASGoal))
+
+attack_state secrecy_of_sec3 (MGoal,ASGoal) :=
+ iknows(MGoal).
+ secret(MGoal,sec3,ASGoal) &
+ not(contains(i,ASGoal))
+
+attack_state authentication_on_em1 (A1Goal,A2Goal,MGoal,SID) :=
+ request(A1Goal,A2Goal,em1,MGoal,SID) &
+ not(witness(A2Goal,A1Goal,em1,MGoal)) &
+ not(equal(A2Goal,i))
+attack_state replay_protection_on_em1 (A2Goal,A1Goal,MGoal,SID1,SID2) :=
+ request(A1Goal,A2Goal,em1,MGoal,SID1).
+ request(A1Goal,A2Goal,em1,MGoal,SID2) &
+ not(equal(SID1,SID2)) &
+ not(equal(A2Goal,i))
+
+attack_state authentication_on_em2 (A1Goal,A2Goal,MGoal,SID) :=
+ request(A1Goal,A2Goal,em2,MGoal,SID) &
+ not(witness(A2Goal,A1Goal,em2,MGoal)) &
+ not(equal(A2Goal,i))
+attack_state replay_protection_on_em2 (A2Goal,A1Goal,MGoal,SID1,SID2) :=
+ request(A1Goal,A2Goal,em2,MGoal,SID1).
+ request(A1Goal,A2Goal,em2,MGoal,SID2) &
+ not(equal(SID1,SID2)) &
+ not(equal(A2Goal,i))
+
+attack_state authentication_on_em3 (A1Goal,A2Goal,MGoal,SID) :=
+ request(A1Goal,A2Goal,em3,MGoal,SID) &
+ not(witness(A2Goal,A1Goal,em3,MGoal)) &
+ not(equal(A2Goal,i))
+attack_state replay_protection_on_em3 (A2Goal,A1Goal,MGoal,SID1,SID2) :=
+ request(A1Goal,A2Goal,em3,MGoal,SID1).
+ request(A1Goal,A2Goal,em3,MGoal,SID2) &
+ not(equal(SID1,SID2)) &
+ not(equal(A2Goal,i))
+

@@ -107,3 +107,38 @@ job `web`). The supported ways to run the console are `make dev` and `make serve
 
 **Removed.** `deploy/Dockerfile`, `deploy/docker-compose.yml` and `.dockerignore`. `deploy/.env.example`
 moved to `.env.example` in the repository root. OI-01 is closed with this reason.
+
+## E-08 · M7-T1..T3 and §6 V-FORMAL-01..03: the formal models as actually run (2026-10-06)
+
+**Finding.** M7 committed the HLPSL files with a structural lint only. Run through the real AVISPA
+tools (follow-up Part C; tool chain and attempts in `formal/avispa/TOOLING.md`), several of the
+plan's assumptions turned out wrong, and the models were changed as follows. No goal, session or
+intruder capability was weakened; every change is marked in the files.
+
+1. **Tool chain.** No single SPAN build runs everything: the original `hlpsl2if` 2.0 rejects RP9's
+   `hash_func` type, and the 64-bit package's OFMC (2012c) fails calibration. The chain used is the
+   64-bit translator with the original back-ends (OFMC version of 2006/02/13, CL-AtSe 2.2-5) plus
+   CL-AtSe 2.3-4, calibrated on SPAN's own test suite.
+2. **`rp9_fixed.hlpsl` fixes only what a tool rejects.** The plan's "minimal syntax fixes" were
+   M7's lint findings (D1–D6). The tools reject only D1 (CL-AtSe: `request` on the left of `=|>`)
+   and D8 (the original translator: `hash_func`), so `rp9_fixed` now carries exactly FIX D1 and
+   FIX D8. The fuller set moved to a new file, `rp9_executable.hlpsl` (D1–D6, D8, D9), because
+   `rp9_fixed` runs but its authentication phase never executes (OB-11).
+3. **New models.** `rp9_insider.hlpsl` (the intruder as a legitimate CM, Part C2.3),
+   `maka_e_nopsk_control.hlpsl` (Part C2.5) and the AnB forward-secrecy pair
+   `anb/maka_e_ake_fs.AnB` / `anb/maka_e_ake_fs_nodh_control.AnB` (Part C3.1).
+4. **`maka_e.hlpsl` changes needed to make the model mean what it says.**
+   - The PSK `psk(A,B)` as a function application gave a model where no transition could fire (OFMC: 0
+     states). Replaced by one constant per pair, `kab`, `kib`, `kai`; the intruder knows its own
+     (`kib`, `kai`), as before.
+   - The HKDF labels (`kcr`, `kci`, `kir`, `kri`, `hs2`, `hs3`) are public constants in the
+     intruder's knowledge. Without them, even the no-PSK control was SAFE.
+   - The role parameters `I`, `R` were renamed `Ini`, `Rsp`: OFMC 2006 crashes on the name `I`
+     ("ofmc: I").
+5. **Executability probes** (`formal/avispa/probes.py`) are added for every model: a SAFE verdict
+   on a model whose transitions cannot fire is not evidence. They are part of V-FORMAL now.
+6. **Untyped runs** are recorded for the MAKA-E models in addition to AVISPA's default typed model.
+   CL-AtSe's untyped attack on `n_r` is a field-boundary ambiguity that the implementation
+   excludes; the exclusion is tested (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`).
+
+**Register.** OB-09 corrected, OB-10 reworded, OB-11 and OB-12 added. OI-02 updated.

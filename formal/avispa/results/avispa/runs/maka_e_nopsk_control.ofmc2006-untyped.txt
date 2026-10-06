@@ -1,0 +1,44 @@
+# command: ofmc(2006/02/13) if/maka_e_nopsk_control.if -untyped
+# date: 2026-10-06T10:11:02Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  UNSAFE
+DETAILS
+  ATTACK_FOUND
+PROTOCOL
+  results/avispa/if/maka_e_nopsk_control.if
+GOAL
+  authentication_on_n_r
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 0.00s
+  visitedNodes: 1 nodes
+  depth: 1 plies
+ATTACK TRACE
+i -> (a,3): start
+(a,3) -> i: Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1))
+i -> (a,3): Sid(1).b.a.x1003.g.h(h(kcr.exp(g,X(1)).h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g).cm_ch).hs2.h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g))
+(a,3) -> i: Sid(1).h(h(kci.exp(g,X(1)).h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g).cm_ch).hs3.h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g))
+
+
+% Reached State:
+% 
+% request(a,b,n_r,x1003,3)
+% secret(h(kir.exp(g,X(1)).h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g).cm_ch),k_ir,set_88)
+% secret(h(kri.exp(g,X(1)).h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g).cm_ch),k_ri,set_89)
+% contains(a,set_88)
+% contains(b,set_88)
+% contains(a,set_89)
+% contains(b,set_89)
+% witness(a,b,n_i,Ni(1))
+% state_initiator(a,i,kai,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_124,set_125,12)
+% state_responder(b,i,kib,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_121,set_122,10)
+% state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_116,set_117,6)
+% state_initiator(a,b,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_113,set_114,6)
+% state_initiator(a,b,kab,g,cm_ch,h,2,Sid(1),Ni(1),x1003,X(1),g,h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g),h(kir.exp(g,X(1)).h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g).cm_ch),h(kri.exp(g,X(1)).h(Sid(1).a.b.cm_ch.Ni(1).exp(g,X(1)).Sid(1).b.a.x1003.g).cm_ch),set_88,set_89,3)
+% state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_105,set_106,3)
+# exit: 0

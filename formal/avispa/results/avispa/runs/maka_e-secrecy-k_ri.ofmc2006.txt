@@ -1,0 +1,21 @@
+# command: ofmc(2006/02/13) split/maka_e-secrecy-k_ri.if
+# date: 2026-10-06T10:11:14Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  SAFE
+DETAILS
+  BOUNDED_NUMBER_OF_SESSIONS
+PROTOCOL
+  results/avispa/split/maka_e-secrecy-k_ri.if
+GOAL
+  as_specified
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 2.60s
+  visitedNodes: 3268 nodes
+  depth: 12 plies
+# exit: 0

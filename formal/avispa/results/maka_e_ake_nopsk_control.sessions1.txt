@@ -1,5 +1,5 @@
 # command: ofmc --numSess 1 anb/maka_e_ake_nopsk_control.AnB
-# date: 2026-10-03T19:24:09Z
+# date: 2026-10-06T05:14:14Z
 Open-Source Fixedpoint Model-Checker version 2024
 INPUT:
    /home/varun-modi/Desktop/Research-in-Information-Security-Project/formal/avispa/anb/maka_e_ake_nopsk_control.AnB
@@ -10,8 +10,8 @@ GOAL:
 BACKEND:
   Open-Source Fixedpoint Model-Checker version 2024
 STATISTICS:
-  TIME 212 ms
-  parseTime 0 ms
+  TIME 207 ms
+  parseTime 1 ms
   visitedNodes: 3 nodes
   depth: 2 plies
 

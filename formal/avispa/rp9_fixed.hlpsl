@@ -1,10 +1,19 @@
-%% RP9 Figs. 4-8 with the MINIMAL fixes needed to make the specification well formed
-%% (IMPLEMENTATION_PLAN.md M7-T3). Every change is marked "FIX Dn" and refers to the defect
-%% list in rp9_transcribed.hlpsl. Nothing else -- in particular not the protocol's security
-%% design -- has been changed, so this model can still contain the attacks RP9 has.
+%% RP9 (Harbi et al., Ad Hoc Networks 94 (2019) 101948) Figs. 4-8 with ONLY the fixes that an AVISPA
+%% tool rejects (follow-up Part C2.2). Each change is marked "FIX Dn"; nothing else differs from
+%% rp9_transcribed.hlpsl. Results: formal/avispa/README.md and results/avispa/.
+%%
+%%  D1 request(...) on the left of =|> (Figs. 4 and 5): CL-AtSe refuses the translated file
+%%     ("request in left-hand side."); OFMC accepts it. Moved to the right-hand side.
+%%  D8 `hash_func` (the type of F) is unknown to the original AVISPA translator (hlpsl2if 2.0 of the
+%%     32-bit SPAN 1.6 package: "Syn.Err(10): missing or invalid type"); the later translator of the
+%%     64-bit package accepts it. Written `function`, the older spelling, so both translators accept it.
+%%
+%% Defects D2-D7 and D9 are NOT fixed here: no tool rejects them. They make the authentication phase
+%% unexecutable (see rp9_executable.hlpsl and the executability probes in results/avispa/).
 
+%% ---- Fig. 4 -------------------------------------------------------------------------------
 role clustermember(CM,CH,BS:agent,
-                   Pubs,Puch,Pucm:public_key,              %% FIX D4: keys are parameters
+                   Pubs:public_key,
                    S:symmetric_key,
                    SND,RCV:channel(dy))
 played_by CM
@@ -13,7 +22,8 @@ def=
                 State:nat,
                 Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
                 Pch,Pcm,Rch,Rcm,A1,A2,A3,A4:text,
-                F: hash_func
+                Puch,Pucm:public_key,
+                F: function                              %% FIX D8: hash_func -> function
         const   em1,em2,em3,sec1,sec2,sec3:protocol_id
         init
                 State := 0
@@ -27,8 +37,9 @@ def=
                    /\ SND({A3'.A4'.Ncm'}_Puch) /\ witness(CM,CH,em3,Ncm')
 end role
 
+%% ---- Fig. 5 -------------------------------------------------------------------------------
 role clusterhead(CM,CH,BS:agent,
-                 Pubs,Puch,Pucm:public_key,                %% FIX D4
+                 Pubs:public_key,
                  S:symmetric_key,
                  SND,RCV:channel(dy))
 played_by CH
@@ -37,7 +48,8 @@ def=
                 State:nat,
                 Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
                 Pch,Pcm,Rch,Rcm,A1,A2,A3,A4:text,
-                F: hash_func
+                Puch,Pucm:public_key,
+                F: function                              %% FIX D8: hash_func -> function
         const   em1,em2,em3,sec1,sec2,sec3:protocol_id
         init
                 State := 1
@@ -46,18 +58,18 @@ def=
                    State':=3 /\ SND({Pac}_S) /\ secret(Pac,sec1,CH)
                 2. State=3 /\ RCV({Pch'.Pcm'}_S)  =|>
                    State':=5 /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
-                   /\ SND({Pcm'}_S)                          %% FIX D2: the forward is an action
-                3. State=5 /\ RCV(start) =|>                  %% FIX D2: next step needs a trigger
+                3. State=5 /\ SND({Pcm'}_S) =|>
                    State':=7 /\ secret({Idch,Idcm,G},sec2,{CH,CM}) /\ Rch':=new()
                    /\ Nch':=new() /\ A1':=F(Rch'.G) /\ A2':=F(Rch'.Pch)
                    /\ SND({A1'.A2'.Nch'}_Pucm) /\ witness(CH,CM,em2,Nch')
-                4. State=7 /\ RCV({A3'.A4'.Ncm'}_Puch) =|>  %% FIX D5: bind Ncm'
+                4. State=7 /\ RCV({A3'.A4'.Nch'}_Puch) =|>
                    State':=9 /\ request(CH,CM,em3,Ncm')      %% FIX D1: request moved right
-                   /\ SND({A1.A2.Nch}_Pubs) /\ witness(CH,BS,em1,Nch)   %% D5 consequence: own Nch
+                   /\ SND({A1.A2.Nch'}_Pubs) /\ witness(CH,BS,em1,Nch')
 end role
 
+%% ---- Fig. 6 -------------------------------------------------------------------------------
 role basestation(CM,CH,BS:agent,
-                 Pubs,Puch,Pucm:public_key,                %% FIX D4
+                 Pubs:public_key,
                  S:symmetric_key,
                  SND,RCV:channel(dy))
 played_by BS
@@ -66,31 +78,34 @@ def=
                 State:nat,
                 Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
                 Pch,Pcm,Rch,Rcm,A1,A2,A3,A4:text,
-                F: hash_func
+                Puch,Pucm:public_key,
+                F: function                              %% FIX D8: hash_func -> function
         const   em1,em2,em3,sec1,sec2,sec3:protocol_id
         init
                 State := 6
         transition
-                1. State=6 /\ RCV({Pac'}_S) =|>              %% FIX D6: bind Pac'
-                   State':=8 /\ secret(Pac',sec1,CH) /\ Pch':= F(xor(Idbs,Idch).G)
+                1. State=6 /\ RCV({Pac}_S) =|>
+                   State':=8 /\ secret(Pac,sec1,CH) /\ Pch':= F(xor(Idbs,Idch).G)
                    /\ Pcm':= F(xor(Idch,Idcm).G) /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
                    /\ SND({Pch'.Pcm'}_S)
                 2. State=8 /\ RCV({A1'.A2'.Nch'}_Pubs) =|>
-                   State':=10 /\ request(BS,CH,em1,Nch')     %% FIX D3: verifier first
+                   State':=10 /\ request(CH,BS,em1,Nch')
 end role
 
+%% ---- Fig. 7 -------------------------------------------------------------------------------
 role session(CM,CH,BS:agent,
-             Pubs,Puch,Pucm:public_key,                    %% FIX D4
+             Pubs:public_key,
              S:symmetric_key)
 def=
         local
                 SndCM,RcvCM,SndCH,RcvCH,SndBS,RcvBS:channel(dy)
         composition
-                clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,SndCM,RcvCM)
-             /\ clusterhead(CM,CH,BS,Pubs,Puch,Pucm,S,SndCH,RcvCH)
-             /\ basestation(CM,CH,BS,Pubs,Puch,Pucm,S,SndBS,RcvBS)
+                clustermember(CM,CH,BS,Pubs,S,SndCM,RcvCM)
+             /\ clusterhead(CM,CH,BS,Pubs,S,SndCH,RcvCH)
+             /\ basestation(CM,CH,BS,Pubs,S,SndBS,RcvBS)
 end role
 
+%% ---- Fig. 8 -------------------------------------------------------------------------------
 role environment()
 def=
         const
@@ -101,18 +116,22 @@ def=
 
         intruder_knowledge = {cm,ch,bs,pucm,puch,pubs}
         composition
-                session(cm,ch,bs,pubs,puch,pucm,s)
-             /\ session(i,ch,bs,pubs,puch,pucm,s)
-             /\ session(cm,i,bs,pubs,puch,pucm,s)
+                session(cm,ch,bs,pubs,s)
+             /\ session(i,ch,bs,pubs,s)
+             /\ session(cm,i,bs,pubs,s)
 end role
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 goal
         secrecy_of sec1
         secrecy_of sec2
-        secrecy_of sec3                                    %% D7 kept: vacuous, reported as such
+        secrecy_of sec3
         authentication_on em1
         authentication_on em2
         authentication_on em3
 end goal
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 environment()

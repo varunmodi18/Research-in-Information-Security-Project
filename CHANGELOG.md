@@ -10,6 +10,15 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
   the Playwright journeys. The owner's working documents are git-ignored.
 - **Part B**: Docker dropped by owner decision (E-07). `deploy/` removed, `.env.example` at the root,
   OI-01 closed.
+- **Part C**: the real AVISPA tools, obtained without root and calibrated (`formal/avispa/TOOLING.md`).
+  - Every HLPSL model was run with OFMC and CL-AtSe, with executability probes.
+  - RP9's Fig. 9 is reproduced exactly (SAFE, 1501 nodes, depth 7), and is vacuous (OB-11). The
+    executable RP9 model is attacked (OB-12).
+  - MAKA-E: SAFE (typed), with its negative control attacked. An untyped boundary-shift attack is
+    excluded by the encoding, and a test shows this.
+  - A forward-secrecy AnB model was added.
+  - The Evaluation page has two formal tables. OB-09 is corrected and OB-10 reworded. Errata E-08;
+    OI-02 closed.
 
 ## v1.0.0 — 2026-10-04
 

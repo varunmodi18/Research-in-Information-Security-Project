@@ -1,0 +1,19 @@
+# command: ofmc --numSess 1 anb/maka_e_ake_fs.AnB
+# date: 2026-10-06T05:14:15Z
+Open-Source Fixedpoint Model-Checker version 2024
+INPUT:
+   /home/varun-modi/Desktop/Research-in-Information-Security-Project/formal/avispa/anb/maka_e_ake_fs.AnB
+SUMMARY:
+  NO_ATTACK_FOUND
+GOAL:
+  as specified
+DETAILS:
+  BOUNDED_NUMBER_OF_SESSIONS
+BACKEND:
+  Open-Source Fixedpoint Model-Checker version 2024
+STATISTICS:
+  TIME 388 ms
+  parseTime 0 ms
+  visitedNodes: 15 nodes
+  depth: 6 plies
+

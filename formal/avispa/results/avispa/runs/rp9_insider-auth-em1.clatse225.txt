@@ -1,0 +1,42 @@
+# command: cl-atse(2.2-5) split/rp9_insider-auth-em1.if
+# date: 2026-10-06T10:11:02Z
+
+SUMMARY
+  UNSAFE
+
+DETAILS
+  ATTACK_FOUND
+  TYPED_MODEL
+
+PROTOCOL
+  results/avispa/split/rp9_insider-auth-em1.if
+
+GOAL
+  Authentication attack on (bs,ch,em1,Nch(14))
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 2 states
+  Reachable  : 2 states
+  Translation: 0.02 seconds
+  Computation: 0.00 seconds
+
+
+ATTACK TRACE
+ i -> (ch,12):  start
+ (ch,12) -> i:  {dummy_nonce}_s
+
+ i -> (bs,5):  {Pac(13)}_s
+ (bs,5) -> i:  {{xor().dummy_nonce}_dummy_hash.{xor().dummy_nonce}_dummy_hash}_s
+               & Add dummy_nonce to set_176;  Add dummy_nonce to set_176;
+               & Add dummy_nonce to set_176;  Add dummy_nonce to set_176;
+               & Add ch to set_177;  Add bs to set_177;
+
+ i -> (bs,5):  {A1(14).A2(14).Nch(14)}_pubs
+ (bs,5) -> i:  ()
+               & Request(bs,ch,em1,Nch(14));
+
+# exit: 0

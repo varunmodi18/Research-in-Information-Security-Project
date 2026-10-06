@@ -1,0 +1,6 @@
+# command: hlpsl2if(32-bit SPAN 1.6, original) maka_e_nopsk_control.hlpsl
+# date: 2026-10-06T10:11:01Z
+%% Translation of maka_e_nopsk_control.hlpsl
+%% Syntax error: Line 6, Col 61 (offset 466-474, string "hash_func")
+%%   Syn.Err(10): missing or invalid type in variables declaration
+# exit: 255

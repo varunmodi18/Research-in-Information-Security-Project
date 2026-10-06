@@ -1,0 +1,1162 @@
+{
+ "tool_chain": {
+  "translator": "hlpsl2if (64-bit SPAN 1.6 package; accepts hash_func) -- original 32-bit hlpsl2if 2.0 also recorded",
+  "backends": [
+   "OFMC version of 2006/02/13 (original 32-bit SPAN 1.6)",
+   "CL-AtSe 2.2-5 (original 32-bit SPAN 1.6)",
+   "CL-AtSe 2.3-4 (64-bit SPAN 1.6)"
+  ],
+  "not_used": "OFMC 2012c of the 64-bit SPAN 1.6 package: calibration shows it does not search (TOOLING.md)",
+  "model": "typed (SPAN default) unless marked untyped; bounded sessions as written in each environment"
+ },
+ "paper_fig9": {
+  "backend": "OFMC",
+  "verdict": "SAFE",
+  "visited_nodes": 1501,
+  "depth_plies": 7
+ },
+ "models": {
+  "rp9_transcribed": {
+   "sessions": "3 as printed in Fig. 8: (cm,ch,bs), (i,ch,bs), (cm,i,bs)",
+   "translation": {
+    "64": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [],
+     "file": "results/avispa/translate/rp9_transcribed.hlpsl2if-64.txt"
+    },
+    "32": {
+     "accepted": false,
+     "errors": [
+      "Syntax error: Line 26, Col 19 (offset 1367-1375, string \"hash_func\")",
+      "Syn.Err(10): missing or invalid type in variables declaration"
+     ],
+     "warnings": [],
+     "file": "results/avispa/translate/rp9_transcribed.hlpsl2if-32.txt"
+    }
+   },
+   "runs": [
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "1.36s"
+     },
+     "file": "results/avispa/runs/rp9_transcribed.ofmc2006.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed.clatse225.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.3-4",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed.clatse234.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "0.94s"
+     },
+     "file": "results/avispa/runs/rp9_transcribed-auth-em1.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed-auth-em1.clatse225.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "0.94s"
+     },
+     "file": "results/avispa/runs/rp9_transcribed-auth-em2.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed-auth-em2.clatse225.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "0.93s"
+     },
+     "file": "results/avispa/runs/rp9_transcribed-auth-em3.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed-auth-em3.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "0.99s"
+     },
+     "file": "results/avispa/runs/rp9_transcribed-secrecy-sec1.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed-secrecy-sec1.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "1.01s"
+     },
+     "file": "results/avispa/runs/rp9_transcribed-secrecy-sec2.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed-secrecy-sec2.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "1.39s"
+     },
+     "file": "results/avispa/runs/rp9_transcribed-secrecy-sec3.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 255,
+     "verdict": "REFUSED",
+     "message": "request in left-hand side.",
+     "file": "results/avispa/runs/rp9_transcribed-secrecy-sec3.clatse225.txt"
+    }
+   ],
+   "executability_ofmc2006": {
+    "bs1": "executes",
+    "bs2": "never executes",
+    "ch1": "executes",
+    "ch2": "never executes",
+    "ch3": "never executes",
+    "ch4": "never executes",
+    "cm1": "executes",
+    "cm2": "never executes"
+   }
+  },
+  "rp9_fixed": {
+   "sessions": "3 as printed in Fig. 8: (cm,ch,bs), (i,ch,bs), (cm,i,bs)",
+   "translation": {
+    "64": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [],
+     "file": "results/avispa/translate/rp9_fixed.hlpsl2if-64.txt"
+    },
+    "32": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [
+      "HLPSL spec: warning(7): unknown type of constant xor in transition 1 of role basestation"
+     ],
+     "file": "results/avispa/translate/rp9_fixed.hlpsl2if-32.txt"
+    }
+   },
+   "runs": [
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "1.21s"
+     },
+     "file": "results/avispa/runs/rp9_fixed.ofmc2006.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 1,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed.clatse225.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.3-4",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 1,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed.clatse234.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "0.94s"
+     },
+     "file": "results/avispa/runs/rp9_fixed-auth-em1.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed-auth-em1.clatse225.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "1.42s"
+     },
+     "file": "results/avispa/runs/rp9_fixed-auth-em2.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed-auth-em2.clatse225.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "1.02s"
+     },
+     "file": "results/avispa/runs/rp9_fixed-auth-em3.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed-auth-em3.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "0.97s"
+     },
+     "file": "results/avispa/runs/rp9_fixed-secrecy-sec1.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed-secrecy-sec1.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "1.00s"
+     },
+     "file": "results/avispa/runs/rp9_fixed-secrecy-sec2.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed-secrecy-sec2.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 1501,
+      "depth_plies": 7,
+      "search_time": "0.94s"
+     },
+     "file": "results/avispa/runs/rp9_fixed-secrecy-sec3.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_fixed-secrecy-sec3.clatse225.txt"
+    }
+   ],
+   "executability_ofmc2006": {
+    "bs1": "executes",
+    "bs2": "never executes",
+    "ch1": "executes",
+    "ch2": "never executes",
+    "ch3": "never executes",
+    "ch4": "never executes",
+    "cm1": "executes",
+    "cm2": "never executes"
+   }
+  },
+  "rp9_executable": {
+   "sessions": "3 as printed in Fig. 8: (cm,ch,bs), (i,ch,bs), (cm,i,bs)",
+   "translation": {
+    "64": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [],
+     "file": "results/avispa/translate/rp9_executable.hlpsl2if-64.txt"
+    },
+    "32": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [
+      "HLPSL spec: warning(7): unknown type of constant xor in transition 1 of role basestation"
+     ],
+     "file": "results/avispa/translate/rp9_executable.hlpsl2if-32.txt"
+    }
+   },
+   "runs": [
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_em2",
+     "statistics": {
+      "visited_nodes": 3,
+      "depth_plies": 2,
+      "search_time": "0.01s"
+     },
+     "file": "results/avispa/runs/rp9_executable.ofmc2006.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (cm,ch,em2,Nch(2))",
+     "statistics": {
+      "analysed_states": 345,
+      "reachable_states": 87
+     },
+     "file": "results/avispa/runs/rp9_executable.clatse225.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.3-4",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (cm,ch,em2,Nch(2))",
+     "statistics": {
+      "analysed_states": 345,
+      "reachable_states": 87
+     },
+     "file": "results/avispa/runs/rp9_executable.clatse234.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_em1",
+     "statistics": {
+      "visited_nodes": 6,
+      "depth_plies": 2,
+      "search_time": "0.03s"
+     },
+     "file": "results/avispa/runs/rp9_executable-auth-em1.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (bs,ch,em1,Nch(14))",
+     "statistics": {
+      "analysed_states": 372,
+      "reachable_states": 92
+     },
+     "file": "results/avispa/runs/rp9_executable-auth-em1.clatse225.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_em2",
+     "statistics": {
+      "visited_nodes": 3,
+      "depth_plies": 2,
+      "search_time": "0.01s"
+     },
+     "file": "results/avispa/runs/rp9_executable-auth-em2.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (cm,ch,em2,Nch(2))",
+     "statistics": {
+      "analysed_states": 345,
+      "reachable_states": 87
+     },
+     "file": "results/avispa/runs/rp9_executable-auth-em2.clatse225.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_em3",
+     "statistics": {
+      "visited_nodes": 553,
+      "depth_plies": 4,
+      "search_time": "1.04s"
+     },
+     "file": "results/avispa/runs/rp9_executable-auth-em3.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 2,
+     "verdict": "ERROR",
+     "message": "Fatal error: exception Failure(\"Atom number unknown (Output.str_term_light)\")",
+     "file": "results/avispa/runs/rp9_executable-auth-em3.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 124,
+     "verdict": "TIMEOUT",
+     "file": "results/avispa/runs/rp9_executable-secrecy-sec1.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 1037,
+      "reachable_states": 103
+     },
+     "file": "results/avispa/runs/rp9_executable-secrecy-sec1.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 124,
+     "verdict": "TIMEOUT",
+     "file": "results/avispa/runs/rp9_executable-secrecy-sec2.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 1037,
+      "reachable_states": 103
+     },
+     "file": "results/avispa/runs/rp9_executable-secrecy-sec2.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 124,
+     "verdict": "TIMEOUT",
+     "file": "results/avispa/runs/rp9_executable-secrecy-sec3.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 1037,
+      "reachable_states": 103
+     },
+     "file": "results/avispa/runs/rp9_executable-secrecy-sec3.clatse225.txt"
+    }
+   ],
+   "executability_ofmc2006": {
+    "bs1": "executes",
+    "bs2": "executes",
+    "ch1": "executes",
+    "ch2": "executes",
+    "ch3": "executes",
+    "ch4": "executes",
+    "cm1": "executes",
+    "cm2": "executes"
+   }
+  },
+  "rp9_insider": {
+   "sessions": "3: (cm,ch,bs), (cm2,ch,bs), (i,ch,bs) with i a legitimate CM holding S",
+   "translation": {
+    "64": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [],
+     "file": "results/avispa/translate/rp9_insider.hlpsl2if-64.txt"
+    },
+    "32": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [
+      "HLPSL spec: warning(7): unknown type of constant xor in transition 1 of role basestation"
+     ],
+     "file": "results/avispa/translate/rp9_insider.hlpsl2if-32.txt"
+    }
+   },
+   "runs": [
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "secrecy_of_sec1",
+     "statistics": {
+      "visited_nodes": 0,
+      "depth_plies": 0,
+      "search_time": "0.00s"
+     },
+     "file": "results/avispa/runs/rp9_insider.ofmc2006.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on (dummy_nonce)",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_insider.clatse225.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.3-4",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on (dummy_nonce)",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_insider.clatse234.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_em1",
+     "statistics": {
+      "visited_nodes": 6,
+      "depth_plies": 1,
+      "search_time": "0.03s"
+     },
+     "file": "results/avispa/runs/rp9_insider-auth-em1.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (bs,ch,em1,Nch(14))",
+     "statistics": {
+      "analysed_states": 2,
+      "reachable_states": 2
+     },
+     "file": "results/avispa/runs/rp9_insider-auth-em1.clatse225.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_em2",
+     "statistics": {
+      "visited_nodes": 1,
+      "depth_plies": 1,
+      "search_time": "0.01s"
+     },
+     "file": "results/avispa/runs/rp9_insider-auth-em2.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (cm,ch,em2,Nch(2))",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_insider-auth-em2.clatse225.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 124,
+     "verdict": "TIMEOUT",
+     "file": "results/avispa/runs/rp9_insider-auth-em3.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-em3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (ch,cm2,em3,Ncm(24))",
+     "statistics": {
+      "analysed_states": 12,
+      "reachable_states": 12
+     },
+     "file": "results/avispa/runs/rp9_insider-auth-em3.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "secrecy_of_sec1",
+     "statistics": {
+      "visited_nodes": 0,
+      "depth_plies": 0,
+      "search_time": "0.00s"
+     },
+     "file": "results/avispa/runs/rp9_insider-secrecy-sec1.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec1",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on (dummy_nonce)",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/rp9_insider-secrecy-sec1.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 124,
+     "verdict": "TIMEOUT",
+     "file": "results/avispa/runs/rp9_insider-secrecy-sec2.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec2",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 1,
+      "reachable_states": 1
+     },
+     "file": "results/avispa/runs/rp9_insider-secrecy-sec2.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 124,
+     "verdict": "TIMEOUT",
+     "file": "results/avispa/runs/rp9_insider-secrecy-sec3.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-sec3",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 1,
+      "reachable_states": 1
+     },
+     "file": "results/avispa/runs/rp9_insider-secrecy-sec3.clatse225.txt"
+    }
+   ],
+   "executability_ofmc2006": {
+    "bs1": "executes",
+    "bs2": "executes",
+    "ch1": "executes",
+    "ch2": "executes",
+    "ch3": "executes",
+    "ch4": "TIMEOUT",
+    "cm1": "executes",
+    "cm2": "executes"
+   }
+  },
+  "maka_e": {
+   "sessions": "4: (a,b) x2 honest, (i,b) with i's own PSK, (a,i) with i's own PSK",
+   "translation": {
+    "64": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [],
+     "file": "results/avispa/translate/maka_e.hlpsl2if-64.txt"
+    },
+    "32": {
+     "accepted": false,
+     "errors": [
+      "Syntax error: Line 31, Col 61 (offset 2287-2295, string \"hash_func\")",
+      "Syn.Err(10): missing or invalid type in variables declaration"
+     ],
+     "warnings": [],
+     "file": "results/avispa/translate/maka_e.hlpsl2if-32.txt"
+    }
+   },
+   "runs": [
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 3268,
+      "depth_plies": 12,
+      "search_time": "3.89s"
+     },
+     "file": "results/avispa/runs/maka_e.ofmc2006.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13), untyped",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 3918,
+      "depth_plies": 12,
+      "search_time": "4.11s"
+     },
+     "file": "results/avispa/runs/maka_e.ofmc2006-untyped.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 7885,
+      "reachable_states": 4809
+     },
+     "file": "results/avispa/runs/maka_e.clatse225.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5, untyped",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (b.a.n_r.exp(g,n1(X)).n1(Sid).b.a.n13(Nr))",
+     "statistics": {
+      "analysed_states": 16,
+      "reachable_states": 14
+     },
+     "file": "results/avispa/runs/maka_e.clatse225-untyped.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.3-4",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 7885,
+      "reachable_states": 4809
+     },
+     "file": "results/avispa/runs/maka_e.clatse234.txt"
+    },
+    {
+     "goal": "auth-n_i",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 3268,
+      "depth_plies": 12,
+      "search_time": "2.30s"
+     },
+     "file": "results/avispa/runs/maka_e-auth-n_i.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-n_i",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 7885,
+      "reachable_states": 4809
+     },
+     "file": "results/avispa/runs/maka_e-auth-n_i.clatse225.txt"
+    },
+    {
+     "goal": "auth-n_r",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 3268,
+      "depth_plies": 12,
+      "search_time": "2.43s"
+     },
+     "file": "results/avispa/runs/maka_e-auth-n_r.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-n_r",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 139,
+      "reachable_states": 119
+     },
+     "file": "results/avispa/runs/maka_e-auth-n_r.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-k_ir",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 3268,
+      "depth_plies": 12,
+      "search_time": "2.63s"
+     },
+     "file": "results/avispa/runs/maka_e-secrecy-k_ir.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-k_ir",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 893,
+      "reachable_states": 715
+     },
+     "file": "results/avispa/runs/maka_e-secrecy-k_ir.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-k_ri",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "visited_nodes": 3268,
+      "depth_plies": 12,
+      "search_time": "2.60s"
+     },
+     "file": "results/avispa/runs/maka_e-secrecy-k_ri.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-k_ri",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "SAFE",
+     "statistics": {
+      "analysed_states": 893,
+      "reachable_states": 715
+     },
+     "file": "results/avispa/runs/maka_e-secrecy-k_ri.clatse225.txt"
+    }
+   ],
+   "executability_ofmc2006": {
+    "i1": "executes",
+    "i2": "executes",
+    "r1": "executes",
+    "r2": "executes"
+   }
+  },
+  "maka_e_nopsk_control": {
+   "sessions": "4: (a,b) x2 honest, (i,b), (a,i); no PSK in the tags",
+   "translation": {
+    "64": {
+     "accepted": true,
+     "errors": [],
+     "warnings": [],
+     "file": "results/avispa/translate/maka_e_nopsk_control.hlpsl2if-64.txt"
+    },
+    "32": {
+     "accepted": false,
+     "errors": [
+      "Syntax error: Line 6, Col 61 (offset 466-474, string \"hash_func\")",
+      "Syn.Err(10): missing or invalid type in variables declaration"
+     ],
+     "warnings": [],
+     "file": "results/avispa/translate/maka_e_nopsk_control.hlpsl2if-32.txt"
+    }
+   },
+   "runs": [
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_n_r",
+     "statistics": {
+      "visited_nodes": 1,
+      "depth_plies": 1,
+      "search_time": "0.01s"
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control.ofmc2006.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "OFMC (2006/02/13), untyped",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_n_r",
+     "statistics": {
+      "visited_nodes": 1,
+      "depth_plies": 1,
+      "search_time": "0.00s"
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control.ofmc2006-untyped.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on ({kir.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h)",
+     "statistics": {
+      "analysed_states": 9,
+      "reachable_states": 9
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control.clatse225.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.2-5, untyped",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on ({kir.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h)",
+     "statistics": {
+      "analysed_states": 11,
+      "reachable_states": 11
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control.clatse225-untyped.txt"
+    },
+    {
+     "goal": "all goals",
+     "backend": "CL-AtSe 2.3-4",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on ({kir.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h)",
+     "statistics": {
+      "analysed_states": 9,
+      "reachable_states": 9
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control.clatse234.txt"
+    },
+    {
+     "goal": "auth-n_i",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_n_i",
+     "statistics": {
+      "visited_nodes": 4,
+      "depth_plies": 1,
+      "search_time": "0.00s"
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-auth-n_i.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-n_i",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (b,a,n_i,Ni(13))",
+     "statistics": {
+      "analysed_states": 13,
+      "reachable_states": 13
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-auth-n_i.clatse225.txt"
+    },
+    {
+     "goal": "auth-n_r",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "authentication_on_n_r",
+     "statistics": {
+      "visited_nodes": 1,
+      "depth_plies": 1,
+      "search_time": "0.00s"
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-auth-n_r.ofmc2006.txt"
+    },
+    {
+     "goal": "auth-n_r",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Authentication attack on (a,b,n_r,Nr(2))",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-auth-n_r.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-k_ir",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "secrecy_of_k_ir",
+     "statistics": {
+      "visited_nodes": 1,
+      "depth_plies": 1,
+      "search_time": "0.00s"
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-secrecy-k_ir.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-k_ir",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on ({kir.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h)",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-secrecy-k_ir.clatse225.txt"
+    },
+    {
+     "goal": "secrecy-k_ri",
+     "backend": "OFMC (2006/02/13)",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "secrecy_of_k_ri",
+     "statistics": {
+      "visited_nodes": 1,
+      "depth_plies": 1,
+      "search_time": "0.00s"
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-secrecy-k_ri.ofmc2006.txt"
+    },
+    {
+     "goal": "secrecy-k_ri",
+     "backend": "CL-AtSe 2.2-5",
+     "exit": 0,
+     "verdict": "UNSAFE",
+     "violated": "Secrecy attack on ({kri.exp(g,n1(X)).{n1(Sid).a.b.cm_ch.n1(Ni).exp(g,n1(X)).n1(Sid).b.a.Nr(2).g}_h.cm_ch}_h)",
+     "statistics": {
+      "analysed_states": 0,
+      "reachable_states": 0
+     },
+     "file": "results/avispa/runs/maka_e_nopsk_control-secrecy-k_ri.clatse225.txt"
+    }
+   ],
+   "executability_ofmc2006": {
+    "i1": "executes",
+    "i2": "executes",
+    "r1": "executes",
+    "r2": "executes"
+   }
+  }
+ }
+}

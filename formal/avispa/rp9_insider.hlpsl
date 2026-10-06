@@ -1,0 +1,135 @@
+%% RP9 node authentication with an INSIDER (follow-up Part C2.3). Same roles as rp9_executable.hlpsl
+%% (Figs. 4-8 with the FIX D1..D6, D8, D9 executability fixes); only the environment differs: the intruder
+%% plays a legitimate CM of ch's cluster with a real CM's knowledge, beside two honest CMs.
+%%
+%% Question asked: does AVISPA itself find the insider impersonation of the CH (gap P-01)?
+%% What this model CAN show: whether an insider holding the cluster key S and its own keys can
+%% make an honest CM accept a CH authentication (em2) or the BS accept one (em1) that the CH did not
+%% send, and whether the sec1/sec2 secrets leak to an insider.
+%% What it CANNOT show: RP9's actual check A2 = (ID_BS xor ID_CH) * A1. The paper models scalar
+%% multiplication as an opaque hash F(r.G), so that algebraic relation is not expressible. In this
+%% model a CM performs no check on A1/A2 at all: any attack found on em2 would also be open to an
+%% outsider who knows pucm (see rp9_executable.hlpsl), so it is NOT evidence of the specific algebraic
+%% insider forgery P-01. That forgery is shown on real bytes by Lab L3 and by OFMC 2024 on
+%% anb/rp9_auth_honest_ch.AnB, which models the scalar multiplication with exp.
+
+role clustermember(CM,CH,BS:agent,
+                   Pubs,Puch,Pucm:public_key,              %% FIX D4: keys are parameters
+                   S:symmetric_key,
+                   SND,RCV:channel(dy))
+played_by CM
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Rch,Rcm:text,
+                Pch,Pcm,A1,A2,A3,A4:message,              %% FIX D9: they hold F(...) values
+                F: function                              %% FIX D8: hash_func -> function
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 0
+        transition
+                1. State=0 /\ RCV({Pcm'}_S)  =|>
+                   State':=2 /\ secret({Idch,Idcm,G},sec2,{CH,CM})
+                2. State=2 /\ RCV({A1'.A2'.Nch'}_Pucm) =|>
+                   State':=4 /\ request(CM,CH,em2,Nch')      %% FIX D1: request moved right
+                   /\ Rcm':=new()
+                   /\ Ncm':=new() /\ A3':=F(Rcm'.G) /\ A4':=F(Rcm'.Pcm)
+                   /\ SND({A3'.A4'.Ncm'}_Puch) /\ witness(CM,CH,em3,Ncm')
+end role
+
+role clusterhead(CM,CH,BS:agent,
+                 Pubs,Puch,Pucm:public_key,                %% FIX D4
+                 S:symmetric_key,
+                 SND,RCV:channel(dy))
+played_by CH
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Rch,Rcm:text,
+                Pch,Pcm,A1,A2,A3,A4:message,              %% FIX D9: they hold F(...) values
+                F: function                              %% FIX D8: hash_func -> function
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 1
+        transition
+                1. State=1 /\ RCV(start) =|>
+                   State':=3 /\ SND({Pac}_S) /\ secret(Pac,sec1,CH)
+                2. State=3 /\ RCV({Pch'.Pcm'}_S)  =|>
+                   State':=5 /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
+                   /\ SND({Pcm'}_S)                          %% FIX D2: the forward is an action
+                3. State=5 /\ RCV(start) =|>                  %% FIX D2: next step needs a trigger
+                   State':=7 /\ secret({Idch,Idcm,G},sec2,{CH,CM}) /\ Rch':=new()
+                   /\ Nch':=new() /\ A1':=F(Rch'.G) /\ A2':=F(Rch'.Pch)
+                   /\ SND({A1'.A2'.Nch'}_Pucm) /\ witness(CH,CM,em2,Nch')
+                4. State=7 /\ RCV({A3'.A4'.Ncm'}_Puch) =|>  %% FIX D5: bind Ncm'
+                   State':=9 /\ request(CH,CM,em3,Ncm')      %% FIX D1: request moved right
+                   /\ SND({A1.A2.Nch}_Pubs) /\ witness(CH,BS,em1,Nch)   %% D5 consequence: own Nch
+end role
+
+role basestation(CM,CH,BS:agent,
+                 Pubs,Puch,Pucm:public_key,                %% FIX D4
+                 S:symmetric_key,
+                 SND,RCV:channel(dy))
+played_by BS
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Rch,Rcm:text,
+                Pch,Pcm,A1,A2,A3,A4:message,              %% FIX D9: they hold F(...) values
+                F: function                              %% FIX D8: hash_func -> function
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 6
+        transition
+                1. State=6 /\ RCV({Pac'}_S) =|>              %% FIX D6: bind Pac'
+                   State':=8 /\ secret(Pac',sec1,CH) /\ Pch':= F(xor(Idbs,Idch).G)
+                   /\ Pcm':= F(xor(Idch,Idcm).G) /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
+                   /\ SND({Pch'.Pcm'}_S)
+                2. State=8 /\ RCV({A1'.A2'.Nch'}_Pubs) =|>
+                   State':=10 /\ request(BS,CH,em1,Nch')     %% FIX D3: verifier first
+end role
+
+role session(CM,CH,BS:agent,
+             Pubs,Puch,Pucm:public_key,                    %% FIX D4
+             S:symmetric_key)
+def=
+        local
+                SndCM,RcvCM,SndCH,RcvCH,SndBS,RcvBS:channel(dy)
+        composition
+                clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,SndCM,RcvCM)
+             /\ clusterhead(CM,CH,BS,Pubs,Puch,Pucm,S,SndCH,RcvCH)
+             /\ basestation(CM,CH,BS,Pubs,Puch,Pucm,S,SndBS,RcvBS)
+end role
+
+role environment()
+def=
+        const
+                cm,cm2,ch,bs:agent,
+                pubs,puch,pucm,pucm2,pui:public_key,
+                s:symmetric_key,
+                em1,em2,em3,sec1,sec2,sec3:protocol_id
+
+        %% INSIDER: the intruder is a legitimate cluster member of ch's cluster. It holds what a real
+        %% CM holds in RP9's model: the cluster key S (a CM decrypts {Pcm}_S), its own private key
+        %% inv(pui) and every public key and identity. RP9's model leaves G and the ID texts as
+        %% unbound local variables, so "knowing g and the identities" cannot be expressed in it.
+        intruder_knowledge = {cm,cm2,ch,bs,pucm,pucm2,puch,pubs,pui,inv(pui),s}
+        composition
+                session(cm,ch,bs,pubs,puch,pucm,s)          %% honest cluster member cm
+             /\ session(cm2,ch,bs,pubs,puch,pucm2,s)        %% a second honest member cm2
+             /\ session(i,ch,bs,pubs,puch,pui,s)            %% the insider, as a legitimate member
+end role
+
+goal
+        secrecy_of sec1
+        secrecy_of sec2
+        secrecy_of sec3                                    %% D7 kept: vacuous, reported as such
+        authentication_on em1
+        authentication_on em2
+        authentication_on em3
+end goal
+
+environment()

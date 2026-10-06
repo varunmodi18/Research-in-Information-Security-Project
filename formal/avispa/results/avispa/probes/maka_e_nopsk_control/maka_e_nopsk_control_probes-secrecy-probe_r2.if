@@ -1,0 +1,108 @@
+%% IF specification of results/avispa/probes/maka_e_nopsk_control/maka_e_nopsk_control_probes.hlpsl
+
+section signature:
+
+state_responder: agent * agent * symmetric_key * text * text * hash_func * nat * text * text * text * text * text * text * text * text * message * message * message * message * set(agent) * set(agent) * set(agent) * set(agent) * nat -> fact
+state_initiator: agent * agent * symmetric_key * text * text * hash_func * nat * text * text * text * text * text * text * text * text * message * message * message * message * set(agent) * set(agent) * set(agent) * set(agent) * nat -> fact
+
+
+section types:
+
+Rsp, b, i, A2Goal, a, Ini, A1Goal: agent
+h, H: hash_func
+Th, Dummy_Th, GX, Kri, Kir, dummy_msg, Dummy_Kir, Dummy_GX, Dummy_Kri, GY, Dummy_GY, MGoal, start: message
+SID2, SID1, 3, 6, 12, SID, 10, State, 0, 4, 7, Dummy_State, 1, 2: nat
+set_129, set_166, set_104, set_130, set_106, set_141, set_168, set_152, set_160, set_128, set_167, set_156, set_105, set_107, set_146, set_143, set_165, set_161, set_155, set_142, set_144, set_154, set_151, set_157, set_158, set_127, set_147, set_148, set_162, set_163, set_149, set_153: set
+Psk, kai, kab, kib: symmetric_key
+k_ri, probe_r2, n_r, probe_i2, k_ir, probe_r1, n_i, probe_i1: protocol_id
+Set_50, Set_49, Dummy_Set_47, Dummy_Set_76, Set_76, ASGoal, Dummy_Set_49, Dummy_Set_43, Dummy_Set_74, Set_74, Set_75, Dummy_Set_75, Set_47, Set_73, Dummy_Set_73, Dummy_Set_50, Set_43: set(agent)
+X, dummy_nonce, kci, Probe_r1, Probe_r2, Dummy_Probe_r1, G, kcr, P, Dummy_Probe_i2, Dummy_Y, Probe_i2, Sid, cm_ch, hs3, Nr, Probe_i1, Ni, Dummy_X, Dummy_Probe_r2, hs2, Dummy_Probe_i1, kri, Y, Dummy_Sid, Dummy_Nr, g, Dummy_Ni, kir: text
+
+
+section inits:
+
+initial_state init1 := 
+ iknows(start).
+ iknows(a).
+ iknows(b).
+ iknows(g).
+ iknows(cm_ch).
+ iknows(h).
+ iknows(kib).
+ iknows(kai).
+ iknows(kcr).
+ iknows(kci).
+ iknows(kir).
+ iknows(kri).
+ iknows(hs2).
+ iknows(hs3).
+ iknows(i).
+ state_initiator(a,b,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_104,set_105,set_106,set_107,3).
+ state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_127,set_128,set_129,set_130,4).
+ state_initiator(a,b,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_141,set_142,set_143,set_144,6).
+ state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_146,set_147,set_148,set_149,7).
+ state_responder(b,i,kib,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_155,set_156,set_157,set_158,10).
+ state_initiator(a,i,kai,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_160,set_161,set_162,set_163,12)
+
+
+section rules:
+
+step step_0 (Ini,Rsp,Psk,G,P,H,Dummy_Probe_i1,Probe_i2,Probe_r1,Probe_r2,Dummy_Sid,Dummy_Ni,Nr,Dummy_X,GY,Th,Kir,Kri,Dummy_Set_43,Set_47,Set_49,Set_50,SID,Probe_i1,Sid,Ni,X) :=
+ state_initiator(Ini,Rsp,Psk,G,P,H,0,Dummy_Probe_i1,Probe_i2,Probe_r1,Probe_r2,Dummy_Sid,Dummy_Ni,Nr,Dummy_X,GY,Th,Kir,Kri,Dummy_Set_43,Set_47,Set_49,Set_50,SID).
+ iknows(start)
+=[exists X,Ni,Sid,Probe_i1]=>
+ state_initiator(Ini,Rsp,Psk,G,P,H,1,Probe_i1,Probe_i2,Probe_r1,Probe_r2,Sid,Ni,Nr,X,GY,Th,Kir,Kri,Dummy_Set_43,Set_47,Set_49,Set_50,SID).
+ iknows(Probe_i1).
+ iknows(pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,exp(G,X))))))).
+ contains(Ini,Dummy_Set_43)
+
+step step_1 (Ini,Rsp,Psk,G,P,H,Probe_i1,Dummy_Probe_i2,Probe_r1,Probe_r2,Sid,Ni,Dummy_Nr,X,Dummy_GY,Dummy_Th,Dummy_Kir,Dummy_Kri,Set_43,Dummy_Set_47,Dummy_Set_49,Dummy_Set_50,SID,Probe_i2,Nr,GY) :=
+ state_initiator(Ini,Rsp,Psk,G,P,H,1,Probe_i1,Dummy_Probe_i2,Probe_r1,Probe_r2,Sid,Ni,Dummy_Nr,X,Dummy_GY,Dummy_Th,Dummy_Kir,Dummy_Kri,Set_43,Dummy_Set_47,Dummy_Set_49,Dummy_Set_50,SID).
+ iknows(pair(Sid,pair(Rsp,pair(Ini,pair(Nr,pair(GY,apply(H,pair(apply(H,pair(kcr,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P)))),pair(hs2,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))))))))))))
+=[exists Probe_i2]=>
+ state_initiator(Ini,Rsp,Psk,G,P,H,2,Probe_i1,Probe_i2,Probe_r1,Probe_r2,Sid,Ni,Nr,X,GY,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),apply(H,pair(kir,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P)))),apply(H,pair(kri,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P)))),Set_43,Dummy_Set_47,Dummy_Set_49,Dummy_Set_50,SID).
+ iknows(Probe_i2).
+ iknows(pair(Sid,apply(H,pair(apply(H,pair(kci,pair(exp(GY,X),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY))))))))))),P)))),pair(hs3,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(exp(G,X),pair(Sid,pair(Rsp,pair(Ini,pair(Nr,GY)))))))))))))))).
+ contains(Ini,Dummy_Set_47).
+ contains(Ini,Dummy_Set_49).
+ contains(Rsp,Dummy_Set_49).
+ contains(Ini,Dummy_Set_50).
+ contains(Rsp,Dummy_Set_50)
+
+step step_2 (Rsp,Ini,Psk,G,P,H,Probe_i1,Probe_i2,Dummy_Probe_r1,Probe_r2,Dummy_Sid,Dummy_Ni,Dummy_Nr,Dummy_Y,Dummy_GX,Dummy_Th,Kir,Kri,Dummy_Set_73,Set_74,Set_75,Set_76,SID,Probe_r1,Sid,Ni,Nr,Y,GX) :=
+ state_responder(Rsp,Ini,Psk,G,P,H,0,Probe_i1,Probe_i2,Dummy_Probe_r1,Probe_r2,Dummy_Sid,Dummy_Ni,Dummy_Nr,Dummy_Y,Dummy_GX,Dummy_Th,Kir,Kri,Dummy_Set_73,Set_74,Set_75,Set_76,SID).
+ iknows(pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,GX))))))
+=[exists Y,Nr,Probe_r1]=>
+ state_responder(Rsp,Ini,Psk,G,P,H,1,Probe_i1,Probe_i2,Probe_r1,Probe_r2,Sid,Ni,Nr,Y,GX,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(GX,pair(Sid,pair(Rsp,pair(Ini,pair(Nr,exp(G,Y)))))))))))),Kir,Kri,Dummy_Set_73,Set_74,Set_75,Set_76,SID).
+ iknows(Probe_r1).
+ iknows(pair(Sid,pair(Rsp,pair(Ini,pair(Nr,pair(exp(G,Y),apply(H,pair(apply(H,pair(kcr,pair(exp(GX,Y),pair(apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(GX,pair(Sid,pair(Rsp,pair(Ini,pair(Nr,exp(G,Y)))))))))))),P)))),pair(hs2,apply(H,pair(Sid,pair(Ini,pair(Rsp,pair(P,pair(Ni,pair(GX,pair(Sid,pair(Rsp,pair(Ini,pair(Nr,exp(G,Y))))))))))))))))))))).
+ contains(Rsp,Dummy_Set_73)
+
+step step_3 (Rsp,Ini,Psk,G,P,H,Probe_i1,Probe_i2,Probe_r1,Dummy_Probe_r2,Sid,Ni,Nr,Y,GX,Th,Dummy_Kir,Dummy_Kri,Set_73,Dummy_Set_74,Dummy_Set_75,Dummy_Set_76,SID,Probe_r2) :=
+ state_responder(Rsp,Ini,Psk,G,P,H,1,Probe_i1,Probe_i2,Probe_r1,Dummy_Probe_r2,Sid,Ni,Nr,Y,GX,Th,Dummy_Kir,Dummy_Kri,Set_73,Dummy_Set_74,Dummy_Set_75,Dummy_Set_76,SID).
+ iknows(pair(Sid,apply(H,pair(apply(H,pair(kci,pair(exp(GX,Y),pair(Th,P)))),pair(hs3,Th)))))
+=[exists Probe_r2]=>
+ state_responder(Rsp,Ini,Psk,G,P,H,2,Probe_i1,Probe_i2,Probe_r1,Probe_r2,Sid,Ni,Nr,Y,GX,Th,apply(H,pair(kir,pair(exp(GX,Y),pair(Th,P)))),apply(H,pair(kri,pair(exp(GX,Y),pair(Th,P)))),Set_73,Dummy_Set_74,Dummy_Set_75,Dummy_Set_76,SID).
+ iknows(Probe_r2).
+ secret(Probe_r2,probe_r2,Dummy_Set_74).
+ contains(Rsp,Dummy_Set_74).
+ contains(Ini,Dummy_Set_75).
+ contains(Rsp,Dummy_Set_75).
+ contains(Ini,Dummy_Set_76).
+ contains(Rsp,Dummy_Set_76)
+
+
+section properties:
+
+property secrecy_of_probe_r2 (MGoal,ASGoal) :=
+ [] ((secret(MGoal,probe_r2,ASGoal) /\ iknows(MGoal))
+     => contains(i,ASGoal))
+
+
+section attack_states:
+
+attack_state secrecy_of_probe_r2 (MGoal,ASGoal) :=
+ iknows(MGoal).
+ secret(MGoal,probe_r2,ASGoal) &
+ not(contains(i,ASGoal))
+

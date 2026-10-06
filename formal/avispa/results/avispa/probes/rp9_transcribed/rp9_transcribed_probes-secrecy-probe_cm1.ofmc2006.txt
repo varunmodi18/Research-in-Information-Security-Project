@@ -1,0 +1,45 @@
+# command: ofmc(2006/02/13) probes/rp9_transcribed/rp9_transcribed_probes-secrecy-probe_cm1.if
+# date: 2026-10-06T10:11:15Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  UNSAFE
+DETAILS
+  ATTACK_FOUND
+PROTOCOL
+  results/avispa/probes/rp9_transcribed/rp9_transcribed_probes-secrecy-probe_cm1.if
+GOAL
+  secrecy_of_probe_cm1
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 0.01s
+  visitedNodes: 1 nodes
+  depth: 1 plies
+ATTACK TRACE
+i -> (ch,3): start
+(ch,3) -> i: Probe_ch1(1),{dummy_nonce}_s
+i -> (cm,3): {dummy_nonce}_s
+(cm,3) -> i: Probe_cm1(2)
+i -> (i,17): Probe_cm1(2)
+i -> (i,17): Probe_cm1(2)
+
+
+% Reached State:
+% 
+% secret(Probe_cm1(2),probe_cm1,set_181)
+% contains(cm,set_181)
+% contains(dummy_nonce,set_182)
+% contains(ch,set_183)
+% contains(cm,set_183)
+% contains(ch,set_205)
+% state_basestation(bs,cm,i,pubs,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_pk,dummy_pk,dummy_hash,set_272,set_273,set_274,set_275,13)
+% state_clustermember(cm,i,bs,pubs,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_pk,dummy_pk,dummy_hash,set_259,set_260,set_261,set_262,11)
+% state_basestation(bs,i,ch,pubs,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_pk,dummy_pk,dummy_hash,set_254,set_255,set_256,set_257,8)
+% state_clusterhead(ch,i,bs,pubs,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_pk,dummy_pk,dummy_hash,set_245,set_246,set_247,set_248,set_249,set_250,set_251,set_252,8)
+% state_basestation(bs,cm,ch,pubs,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_pk,dummy_pk,dummy_hash,set_229,set_230,set_231,set_232,3)
+% state_clusterhead(ch,cm,bs,pubs,s,3,dummy_nonce,dummy_nonce,Probe_ch1(1),dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_pk,dummy_pk,dummy_hash,set_205,set_206,set_207,set_208,set_209,set_210,set_211,set_212,3)
+% state_clustermember(cm,ch,bs,pubs,s,2,Probe_cm1(2),dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_pk,dummy_pk,dummy_hash,set_181,set_182,set_183,set_184,3)
+# exit: 0

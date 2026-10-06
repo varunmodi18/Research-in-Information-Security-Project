@@ -1,0 +1,5 @@
+# command: hlpsl2if(64-bit SPAN 1.6) maka_e_nopsk_control.hlpsl
+# date: 2026-10-06T10:11:01Z
+%% Translation of maka_e_nopsk_control.hlpsl
+%% IF output in results/avispa/if/maka_e_nopsk_control.if
+# exit: 0

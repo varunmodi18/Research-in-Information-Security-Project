@@ -1,0 +1,21 @@
+# command: ofmc(2006/02/13) if/maka_e.if -untyped
+# date: 2026-10-06T10:11:17Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  SAFE
+DETAILS
+  BOUNDED_NUMBER_OF_SESSIONS
+PROTOCOL
+  results/avispa/if/maka_e.if
+GOAL
+  as_specified
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 4.11s
+  visitedNodes: 3918 nodes
+  depth: 12 plies
+# exit: 0

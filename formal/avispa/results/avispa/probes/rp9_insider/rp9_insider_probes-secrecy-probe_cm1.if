@@ -1,0 +1,160 @@
+%% IF specification of results/avispa/probes/rp9_insider/rp9_insider_probes.hlpsl
+
+section signature:
+
+state_basestation: agent * agent * agent * public_key * public_key * public_key * symmetric_key * nat * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * message * message * message * message * message * message * hash_func * set(agent) * set(text) * set(agent) * set(agent) * nat -> fact
+state_clusterhead: agent * agent * agent * public_key * public_key * public_key * symmetric_key * nat * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * message * message * message * message * message * message * hash_func * set(agent) * set(agent) * set(text) * set(agent) * set(agent) * set(text) * set(agent) * set(agent) * nat -> fact
+state_clustermember: agent * agent * agent * public_key * public_key * public_key * symmetric_key * nat * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * text * message * message * message * message * message * message * hash_func * set(agent) * set(text) * set(agent) * set(agent) * nat -> fact
+
+
+section types:
+
+dummy_hash, F: hash_func
+S, s: symmetric_key
+Set_104, Dummy_Set_104, Dummy_Set_58, Set_150, Dummy_Set_150, Set_108, Set_58, Dummy_Set_108: set(text)
+Set_103, Dummy_Set_101, ASGoal, Dummy_Set_153, Dummy_Set_149, Dummy_Set_109, Set_105, Dummy_Set_105, Dummy_Set_151, Dummy_Set_111, Dummy_Set_103, Set_153, Dummy_Set_59, Set_111, Set_56, Set_101, Dummy_Set_61, Set_109, Set_107, Set_59, Set_151, Set_61, Set_149, Dummy_Set_56, Dummy_Set_107: set(agent)
+Pucm, puch, Puch, pucm, Pubs, pucm2, pui, pubs: public_key
+A2Goal, i, A1Goal, cm, cm2, bs, BS, CM, CH, ch: agent
+Pch, A3, Dummy_A1, A4, Pcm, A1, Dummy_A4, A2, Dummy_A3, MGoal, Dummy_A2, Dummy_Pcm, Dummy_Pch, dummy_msg, start: message
+set_188, set_258, set_189, set_272, set_275, set_216, set_235, set_213, set_237, set_247, set_279, set_186, set_211, set_259, set_271, set_264, set_269, set_187, set_262, set_212, set_274, set_281, set_215, set_280, set_261, set_276, set_254, set_250, set_266, set_277, set_217, set_270, set_236, set_273, set_257, set_214, set_249, set_268, set_210, set_256, set_255, set_267, set_234, set_282, set_252, set_248, set_253, set_263: set
+5, 4, 10, Dummy_State, 1, State, 3, SID, 7, 8, SID1, SID2, 2, 9, 12, 6, 0, 13: nat
+em3, probe_ch1, probe_bs2, em1, sec1, probe_cm2, em2, probe_bs1, sec2, sec3, probe_ch4, probe_ch3, probe_cm1, probe_ch2: protocol_id
+Probe_ch3, Probe_ch1, Probe_bs2, Dummy_Rcm, Probe_bs1, Probe_ch4, Probe_cm2, Ncm, G, Idbs, Idch, Probe_ch2, Dummy_Probe_ch3, Dummy_Rch, Pac, Nch, Dummy_Pac, Probe_cm1, Dummy_Probe_ch2, Idcm, Rcm, Rch, Dummy_Probe_cm2, Dummy_Ncm, dummy_nonce, Dummy_Probe_bs2, Dummy_Nch, Dummy_Probe_ch1, Dummy_Probe_cm1, Dummy_Probe_bs1, Dummy_Probe_ch4: text
+
+
+section inits:
+
+initial_state init1 := 
+ iknows(start).
+ iknows(cm).
+ iknows(cm2).
+ iknows(ch).
+ iknows(bs).
+ iknows(pucm).
+ iknows(pucm2).
+ iknows(puch).
+ iknows(pubs).
+ iknows(pui).
+ iknows(inv(pui)).
+ iknows(s).
+ iknows(i).
+ state_clustermember(cm,ch,bs,pubs,puch,pucm,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_186,set_187,set_188,set_189,3).
+ state_clusterhead(ch,cm,bs,pubs,puch,pucm,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_210,set_211,set_212,set_213,set_214,set_215,set_216,set_217,4).
+ state_basestation(bs,cm,ch,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_234,set_235,set_236,set_237,5).
+ state_clustermember(cm2,ch,bs,pubs,puch,pucm2,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_247,set_248,set_249,set_250,7).
+ state_clusterhead(ch,cm2,bs,pubs,puch,pucm2,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_252,set_253,set_254,set_255,set_256,set_257,set_258,set_259,8).
+ state_basestation(bs,cm2,ch,pubs,puch,pucm2,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_261,set_262,set_263,set_264,9).
+ state_clusterhead(ch,i,bs,pubs,puch,pui,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_270,set_271,set_272,set_273,set_274,set_275,set_276,set_277,12).
+ state_basestation(bs,i,ch,pubs,puch,pui,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_279,set_280,set_281,set_282,13)
+
+
+section rules:
+
+step step_0 (CM,CH,BS,Pubs,Puch,Pucm,S,Dummy_Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_56,Dummy_Set_58,Dummy_Set_59,Set_61,SID,Probe_cm1,Pcm) :=
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,0,Dummy_Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_56,Dummy_Set_58,Dummy_Set_59,Set_61,SID).
+ iknows(scrypt(S,Pcm))
+=[exists Probe_cm1]=>
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,2,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Dummy_Set_56,Dummy_Set_58,Dummy_Set_59,Set_61,SID).
+ iknows(Probe_cm1).
+ secret(Probe_cm1,probe_cm1,Dummy_Set_56).
+ contains(CM,Dummy_Set_56).
+ contains(Idch,Dummy_Set_58).
+ contains(Idcm,Dummy_Set_58).
+ contains(G,Dummy_Set_58).
+ contains(CH,Dummy_Set_59).
+ contains(CM,Dummy_Set_59)
+
+step step_1 (CM,CH,BS,Pubs,Puch,Pucm,S,Probe_cm1,Dummy_Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Dummy_Ncm,Rch,Dummy_Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,Dummy_A3,Dummy_A4,F,Set_56,Set_58,Set_59,Dummy_Set_61,SID,Probe_cm2,Nch,Ncm,Rcm,A1,A2) :=
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,2,Probe_cm1,Dummy_Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Dummy_Ncm,Rch,Dummy_Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,Dummy_A3,Dummy_A4,F,Set_56,Set_58,Set_59,Dummy_Set_61,SID).
+ iknows(crypt(Pucm,pair(A1,pair(A2,Nch))))
+=[exists Ncm,Rcm,Probe_cm2]=>
+ state_clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,4,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,apply(F,pair(Rcm,G)),apply(F,pair(Rcm,Pcm)),F,Set_56,Set_58,Set_59,Dummy_Set_61,SID).
+ iknows(Probe_cm2).
+ iknows(crypt(Puch,pair(apply(F,pair(Rcm,G)),pair(apply(F,pair(Rcm,Pcm)),Ncm)))).
+ contains(CM,Dummy_Set_61)
+
+step step_2 (CH,CM,BS,Pubs,Puch,Pucm,S,Probe_cm1,Probe_cm2,Dummy_Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Dummy_Set_101,Set_103,Set_104,Set_105,Set_107,Set_108,Set_109,Set_111,SID,Probe_ch1) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,1,Probe_cm1,Probe_cm2,Dummy_Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Dummy_Set_101,Set_103,Set_104,Set_105,Set_107,Set_108,Set_109,Set_111,SID).
+ iknows(start)
+=[exists Probe_ch1]=>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,3,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Dummy_Set_101,Set_103,Set_104,Set_105,Set_107,Set_108,Set_109,Set_111,SID).
+ iknows(Probe_ch1).
+ iknows(scrypt(S,Pac)).
+ contains(CH,Dummy_Set_101)
+
+step step_3 (CH,CM,BS,Pubs,Puch,Pucm,S,Probe_cm1,Probe_cm2,Probe_ch1,Dummy_Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Set_101,Dummy_Set_103,Dummy_Set_104,Dummy_Set_105,Set_107,Set_108,Set_109,Set_111,SID,Probe_ch2,Pch,Pcm) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,3,Probe_cm1,Probe_cm2,Probe_ch1,Dummy_Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Set_101,Dummy_Set_103,Dummy_Set_104,Dummy_Set_105,Set_107,Set_108,Set_109,Set_111,SID).
+ iknows(scrypt(S,pair(Pch,Pcm)))
+=[exists Probe_ch2]=>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,5,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_101,Dummy_Set_103,Dummy_Set_104,Dummy_Set_105,Set_107,Set_108,Set_109,Set_111,SID).
+ iknows(Probe_ch2).
+ iknows(scrypt(S,Pcm)).
+ contains(CH,Dummy_Set_103).
+ contains(Idbs,Dummy_Set_104).
+ contains(Idch,Dummy_Set_104).
+ contains(Idcm,Dummy_Set_104).
+ contains(G,Dummy_Set_104).
+ contains(CH,Dummy_Set_105).
+ contains(BS,Dummy_Set_105)
+
+step step_4 (CH,CM,BS,Pubs,Puch,Pucm,S,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Dummy_Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Dummy_Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_101,Set_103,Set_104,Set_105,Dummy_Set_107,Dummy_Set_108,Dummy_Set_109,Set_111,SID,Probe_ch3,Nch,Rch) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,5,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Dummy_Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Dummy_Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_101,Set_103,Set_104,Set_105,Dummy_Set_107,Dummy_Set_108,Dummy_Set_109,Set_111,SID).
+ iknows(start)
+=[exists Nch,Rch,Probe_ch3]=>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,7,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,apply(F,pair(Rch,G)),apply(F,pair(Rch,Pch)),A3,A4,F,Set_101,Set_103,Set_104,Set_105,Dummy_Set_107,Dummy_Set_108,Dummy_Set_109,Set_111,SID).
+ iknows(Probe_ch3).
+ iknows(crypt(Pucm,pair(apply(F,pair(Rch,G)),pair(apply(F,pair(Rch,Pch)),Nch)))).
+ contains(CH,Dummy_Set_107).
+ contains(Idch,Dummy_Set_108).
+ contains(Idcm,Dummy_Set_108).
+ contains(G,Dummy_Set_108).
+ contains(CH,Dummy_Set_109).
+ contains(CM,Dummy_Set_109)
+
+step step_5 (CH,CM,BS,Pubs,Puch,Pucm,S,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Dummy_Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Dummy_Ncm,Rch,Rcm,Pch,Pcm,A1,A2,Dummy_A3,Dummy_A4,F,Set_101,Set_103,Set_104,Set_105,Set_107,Set_108,Set_109,Dummy_Set_111,SID,Probe_ch4,Ncm,A3,A4) :=
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,7,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Dummy_Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Dummy_Ncm,Rch,Rcm,Pch,Pcm,A1,A2,Dummy_A3,Dummy_A4,F,Set_101,Set_103,Set_104,Set_105,Set_107,Set_108,Set_109,Dummy_Set_111,SID).
+ iknows(crypt(Puch,pair(A3,pair(A4,Ncm))))
+=[exists Probe_ch4]=>
+ state_clusterhead(CH,CM,BS,Pubs,Puch,Pucm,S,9,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_101,Set_103,Set_104,Set_105,Set_107,Set_108,Set_109,Dummy_Set_111,SID).
+ iknows(Probe_ch4).
+ iknows(crypt(Pubs,pair(A1,pair(A2,Nch)))).
+ contains(CH,Dummy_Set_111)
+
+step step_6 (BS,CM,CH,Pubs,Puch,Pucm,S,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Dummy_Probe_bs1,Probe_bs2,Dummy_Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_149,Dummy_Set_150,Dummy_Set_151,Set_153,SID,Probe_bs1,Pac) :=
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,6,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Dummy_Probe_bs1,Probe_bs2,Dummy_Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Dummy_Pch,Dummy_Pcm,A1,A2,A3,A4,F,Dummy_Set_149,Dummy_Set_150,Dummy_Set_151,Set_153,SID).
+ iknows(scrypt(S,Pac))
+=[exists Probe_bs1]=>
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,8,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,apply(F,pair(xor(Idbs,Idch),G)),apply(F,pair(xor(Idch,Idcm),G)),A1,A2,A3,A4,F,Dummy_Set_149,Dummy_Set_150,Dummy_Set_151,Set_153,SID).
+ iknows(Probe_bs1).
+ iknows(scrypt(S,pair(apply(F,pair(xor(Idbs,Idch),G)),apply(F,pair(xor(Idch,Idcm),G))))).
+ contains(BS,Dummy_Set_149).
+ contains(Idbs,Dummy_Set_150).
+ contains(Idch,Dummy_Set_150).
+ contains(Idcm,Dummy_Set_150).
+ contains(G,Dummy_Set_150).
+ contains(CH,Dummy_Set_151).
+ contains(BS,Dummy_Set_151)
+
+step step_7 (BS,CM,CH,Pubs,Puch,Pucm,S,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Dummy_Probe_bs2,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_149,Set_150,Set_151,Dummy_Set_153,SID,Probe_bs2,Nch,A1,A2) :=
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,8,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Dummy_Probe_bs2,Pac,Idcm,Idch,Idbs,G,Dummy_Nch,Ncm,Rch,Rcm,Pch,Pcm,Dummy_A1,Dummy_A2,A3,A4,F,Set_149,Set_150,Set_151,Dummy_Set_153,SID).
+ iknows(crypt(Pubs,pair(A1,pair(A2,Nch))))
+=[exists Probe_bs2]=>
+ state_basestation(BS,CM,CH,Pubs,Puch,Pucm,S,10,Probe_cm1,Probe_cm2,Probe_ch1,Probe_ch2,Probe_ch3,Probe_ch4,Probe_bs1,Probe_bs2,Pac,Idcm,Idch,Idbs,G,Nch,Ncm,Rch,Rcm,Pch,Pcm,A1,A2,A3,A4,F,Set_149,Set_150,Set_151,Dummy_Set_153,SID).
+ iknows(Probe_bs2).
+ contains(BS,Dummy_Set_153)
+
+
+section properties:
+
+property secrecy_of_probe_cm1 (MGoal,ASGoal) :=
+ [] ((secret(MGoal,probe_cm1,ASGoal) /\ iknows(MGoal))
+     => contains(i,ASGoal))
+
+
+section attack_states:
+
+attack_state secrecy_of_probe_cm1 (MGoal,ASGoal) :=
+ iknows(MGoal).
+ secret(MGoal,probe_cm1,ASGoal) &
+ not(contains(i,ASGoal))
+

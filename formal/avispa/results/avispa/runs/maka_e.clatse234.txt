@@ -1,0 +1,27 @@
+# command: cl-atse(2.3-4) if/maka_e.if
+# date: 2026-10-06T10:11:06Z
+
+SUMMARY
+  SAFE
+
+DETAILS
+  BOUNDED_NUMBER_OF_SESSIONS
+  TYPED_MODEL
+
+PROTOCOL
+  results/avispa/if/maka_e.if
+
+GOAL
+  As specified
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 7885 states
+  Reachable  : 4809 states
+  Translation: 0.01 seconds
+  Computation: 0.35 seconds
+
+# exit: 0

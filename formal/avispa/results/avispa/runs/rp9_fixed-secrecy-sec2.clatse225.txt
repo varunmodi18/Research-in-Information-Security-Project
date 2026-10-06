@@ -1,0 +1,27 @@
+# command: cl-atse(2.2-5) split/rp9_fixed-secrecy-sec2.if
+# date: 2026-10-06T10:11:08Z
+
+SUMMARY
+  SAFE
+
+DETAILS
+  BOUNDED_NUMBER_OF_SESSIONS
+  TYPED_MODEL
+
+PROTOCOL
+  results/avispa/split/rp9_fixed-secrecy-sec2.if
+
+GOAL
+  As Specified
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 0 states
+  Reachable  : 0 states
+  Translation: 0.02 seconds
+  Computation: 0.00 seconds
+
+# exit: 0

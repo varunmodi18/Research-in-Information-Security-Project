@@ -1,0 +1,4 @@
+# command: cl-atse(2.2-5) split/rp9_executable-auth-em3.if
+# date: 2026-10-06T10:11:03Z
+Fatal error: exception Failure("Atom number unknown (Output.str_term_light)")
+# exit: 2

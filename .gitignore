@@ -36,3 +36,6 @@ web/e2e/shots/
 /MAKA_BUILD_REPORT.md
 /FOLLOWUP_REPORT.md
 /report_assets/
+
+# OFMC 2024 writes an empty attack-trace SVG next to its input
+attracktrace.svg

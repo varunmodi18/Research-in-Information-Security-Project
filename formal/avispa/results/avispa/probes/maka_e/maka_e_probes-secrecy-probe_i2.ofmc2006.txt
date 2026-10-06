@@ -1,0 +1,45 @@
+# command: ofmc(2006/02/13) probes/maka_e/maka_e_probes-secrecy-probe_i2.if
+# date: 2026-10-06T10:11:21Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  UNSAFE
+DETAILS
+  ATTACK_FOUND
+PROTOCOL
+  results/avispa/probes/maka_e/maka_e_probes-secrecy-probe_i2.if
+GOAL
+  secrecy_of_probe_i2
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 0.01s
+  visitedNodes: 3 nodes
+  depth: 1 plies
+ATTACK TRACE
+i -> (a,12): start
+(a,12) -> i: Probe_i1(1),Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1))
+i -> (a,12): Sid(1).i.a.x268.g.h(h(kcr.kai.exp(g,X(1)).h(Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1)).Sid(1).i.a.x268.g).cm_ch).hs2.h(Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1)).Sid(1).i.a.x268.g))
+(a,12) -> i: Probe_i2(2),Sid(1).h(h(kci.kai.exp(g,X(1)).h(Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1)).Sid(1).i.a.x268.g).cm_ch).hs3.h(Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1)).Sid(1).i.a.x268.g))
+i -> (i,17): Probe_i2(2)
+i -> (i,17): Probe_i2(2)
+
+
+% Reached State:
+% 
+% secret(Probe_i2(2),probe_i2,set_161)
+% contains(a,set_161)
+% contains(a,set_162)
+% contains(i,set_162)
+% contains(a,set_163)
+% contains(i,set_163)
+% contains(a,set_160)
+% state_initiator(a,i,kai,g,cm_ch,h,2,Probe_i1(1),Probe_i2(2),dummy_nonce,dummy_nonce,Sid(1),Ni(1),x268,X(1),g,h(Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1)).Sid(1).i.a.x268.g),h(kir.kai.exp(g,X(1)).h(Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1)).Sid(1).i.a.x268.g).cm_ch),h(kri.kai.exp(g,X(1)).h(Sid(1).a.i.cm_ch.Ni(1).exp(g,X(1)).Sid(1).i.a.x268.g).cm_ch),set_160,set_161,set_162,set_163,12)
+% state_responder(b,i,kib,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_155,set_156,set_157,set_158,10)
+% state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_146,set_147,set_148,set_149,6)
+% state_initiator(a,b,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_141,set_142,set_143,set_144,6)
+% state_responder(b,a,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_127,set_128,set_129,set_130,3)
+% state_initiator(a,b,kab,g,cm_ch,h,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,set_104,set_105,set_106,set_107,3)
+# exit: 0

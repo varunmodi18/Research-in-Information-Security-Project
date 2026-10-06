@@ -252,3 +252,48 @@ def test_hs1_on_unknown_frame_type_is_decode_error() -> None:
     net.scheduler.bus.inject(Frame("CM-0101", "CH-01", "X", b"\x02\x7f"), net.scheduler.step_no)
     net.run()
     assert [e.type for e in net.scheduler.events[t0:]] == ["DECODE_ERROR"]
+
+
+# -- follow-up Part C2: CL-AtSe's untyped attack on n_r (formal/avispa/results/avispa/runs/
+#    maka_e.clatse225-untyped.txt) shifts a field boundary: the intruder appends Sid.R.I.X to X in
+#    HS1, and the initiator then reads N_R as X.Sid.R.I.N_R. In the symbolic model both transcripts
+#    flatten to the same term. On the wire every field is length-prefixed and N_R, X have fixed
+#    lengths, so neither shifted message is accepted and the transcripts would differ anyway.
+
+def _shift_x(payload: bytes) -> bytes:
+    h = m.decode_hs1(payload)
+    return m.encode_hs1(h.sid, h.id_i, h.id_r, h.purpose, h.n_i,
+                        h.x_raw + codec.LP(h.sid, m.enc_id(h.id_r), m.enc_id(h.id_i), h.x_raw))
+
+
+def test_untyped_boundary_shift_in_hs1_is_rejected() -> None:
+    net = en.build("toy", "paper", seed=SEED)
+    net.scheduler.bus.add_interceptor(adversary.Modify(_first_cm_ch("HS1"), _shift_x, limit=1))
+    net.onboard()
+    assert [e.device for e in events(net, "BAD_POINT")] == ["CH-01"]  # X has a fixed width
+    assert net.device("CM-0101").status == "active"  # the honest retry succeeds
+
+
+def test_untyped_boundary_shift_in_hs2_is_rejected() -> None:
+    net = en.build("toy", "paper", seed=SEED)
+    rec = adversary.Record(_first_cm_ch("HS1"))
+    net.scheduler.bus.add_interceptor(rec)
+
+    def absorb(payload: bytes) -> bytes:  # N_R' = X.Sid.R.I.N_R, the initiator's reading in the trace
+        h2 = m.decode_hs2(payload)
+        x = m.decode_hs1(rec.frames[0].payload).x_raw
+        n_r = x + codec.LP(h2.sid, m.enc_id(h2.id_r), m.enc_id(h2.id_i)) + h2.n_r
+        return m.hs2_body(h2.sid, h2.id_r, h2.id_i, n_r, h2.y_raw) + h2.tag
+
+    net.scheduler.bus.add_interceptor(adversary.Modify(_first_cm_ch("HS2"), absorb, limit=1))
+    net.onboard()
+    cm_events = [e.type for e in net.scheduler.events if e.device == "CM-0101"]
+    assert "DECODE_ERROR" in cm_events, cm_events
+    assert net.device("CM-0101").status == "active"
+
+
+def test_lp_encoding_distinguishes_shifted_boundaries() -> None:
+    """The symbolic attack needs (a, b.c) and (a.b, c) to hash alike; LP-encoded they differ."""
+    a, b, c = b"\x01" * 32, b"\x02" * 16, b"\x03" * 32
+    assert a + b + c == (a + b) + c
+    assert codec.LP(a, b + c) != codec.LP(a + b, c)

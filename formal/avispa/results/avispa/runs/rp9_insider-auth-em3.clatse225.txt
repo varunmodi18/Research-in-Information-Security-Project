@@ -1,0 +1,73 @@
+# command: cl-atse(2.2-5) split/rp9_insider-auth-em3.if
+# date: 2026-10-06T10:41:02Z
+
+SUMMARY
+  UNSAFE
+
+DETAILS
+  ATTACK_FOUND
+  TYPED_MODEL
+
+PROTOCOL
+  results/avispa/split/rp9_insider-auth-em3.if
+
+GOAL
+  Authentication attack on (ch,cm2,em3,Ncm(24))
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 12 states
+  Reachable  : 12 states
+  Translation: 0.02 seconds
+  Computation: 0.00 seconds
+
+
+ATTACK TRACE
+ i -> (ch,12):  start
+ (ch,12) -> i:  {dummy_nonce}_s
+
+ i -> (ch,12):  {Pch(34).Pcm(34)}_s
+ (ch,12) -> i:  {Pcm(34)}_s
+                & Add dummy_nonce to set_196;  Add dummy_nonce to set_196;
+                & Add dummy_nonce to set_196;  Add dummy_nonce to set_196;
+                & Add ch to set_197;  Add bs to set_197;
+
+ i -> (ch,12):  start
+ (ch,12) -> i:  {{n35(Rch).dummy_nonce}_dummy_hash.{n35(Rch).Pch(34)}_dummy_hash.n35(Nch)}_pui
+                & Add dummy_nonce to set_198;  Add dummy_nonce to set_198;
+                & Add dummy_nonce to set_198;  Add ch to set_199;
+                & Add i to set_199;
+
+ i -> (cm,3):  {Pcm(1)}_s
+ (cm,3) -> i:  ()
+               & Add dummy_nonce to set_146;  Add dummy_nonce to set_146;
+               & Add dummy_nonce to set_146;  Add ch to set_147;
+               & Add cm to set_147;
+
+ i -> (cm,3):  {A1(2).A2(2).Nch(2)}_pucm
+ (cm,3) -> i:  {{n2(Rcm).dummy_nonce}_dummy_hash.{n2(Rcm).Pcm(1)}_dummy_hash.n2(Ncm)}_puch
+               & Witness(cm,ch,em3,n2(Ncm));
+
+ i -> (ch,8):  start
+ (ch,8) -> i:  {dummy_nonce}_s
+
+ i -> (ch,8):  {Pch(22).Pcm(22)}_s
+ (ch,8) -> i:  {Pcm(22)}_s
+               & Add dummy_nonce to set_186;  Add dummy_nonce to set_186;
+               & Add dummy_nonce to set_186;  Add dummy_nonce to set_186;
+               & Add ch to set_187;  Add bs to set_187;
+
+ i -> (ch,8):  start
+ (ch,8) -> i:  {{n23(Rch).dummy_nonce}_dummy_hash.{n23(Rch).Pch(22)}_dummy_hash.n23(Nch)}_pucm2
+               & Add dummy_nonce to set_188;  Add dummy_nonce to set_188;
+               & Add dummy_nonce to set_188;  Add ch to set_189;
+               & Add cm2 to set_189;
+
+ i -> (ch,8):  {A3(24).A4(24).Ncm(24)}_puch
+ (ch,8) -> i:  {{n23(Rch).dummy_nonce}_dummy_hash.{n23(Rch).Pch(22)}_dummy_hash.n23(Nch)}_pubs
+               & Request(ch,cm2,em3,Ncm(24));
+
+# exit: 0

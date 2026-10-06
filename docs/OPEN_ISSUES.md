@@ -7,10 +7,35 @@ evidence (IMPLEMENTATION_PLAN.md §5 rules, §6.6, §7.3). Newest at the bottom 
 
 - **OI-01 (Docker): closed, out of scope by owner decision.** Docker is dropped from the project;
   E2E against `web/e2e/serve.sh` is the accepted acceptance path (`docs/PLAN_ERRATA.md` E-07).
-- **OI-02 (formal): not accepted as it stood.** The owner requires real AVISPA runs on the HLPSL
-  files (OFMC and CL-AtSe back-ends) in addition to the OFMC 2024 runs on the AnB models.
+- **OI-02 (formal): not accepted as it stood.** The owner required real AVISPA runs on the HLPSL
+  files (OFMC and CL-AtSe back-ends) in addition to the OFMC 2024 runs on the AnB models. Done in
+  follow-up Part C; OI-02 is closed below.
 
 ## Closed
+
+### OI-02 · Formal analysis with the AVISPA tools (M7-T1..T3, V-FORMAL-01..03): closed 2026-10-06
+
+- **What the plan asks:** OFMC and CL-AtSe results for the RP9 transcription, the fixed RP9 model and
+  MAKA-E, all as HLPSL.
+- **What happened in M7:** the AVISPA tools could not be obtained. The HLPSL files had only a lint,
+  and the protocols were checked as AnB models with OFMC 2024.
+- **Resolution (follow-up Part C):**
+  - The AVISPA tools were obtained without root, from the SPAN 1.6 packages, and calibrated on
+    SPAN's own test suite (`formal/avispa/TOOLING.md`).
+  - Every HLPSL model was run through OFMC (version of 2006/02/13), CL-AtSe 2.2-5 and CL-AtSe
+    2.3-4, with all goals together and one goal at a time, plus per-transition executability probes.
+    MAKA-E was also run untyped. The raw outputs are in `formal/avispa/results/avispa/`.
+  - Results and what they do and do not show: `formal/avispa/README.md`, the Evaluation page (two
+    separate tables) and `docs/SECURITY_ARGUMENT.md`.
+  - Register OB-09 (corrected) and OB-11/OB-12 (new); errata E-08.
+- **Recorded, not hidden:**
+  - Runs that hit the 30-minute limit are recorded as TIMEOUT, and CL-AtSe crashes as ERROR, with
+    their raw output.
+  - CL-AtSe's untyped attack on MAKA-E's `n_r` is a field-boundary ambiguity. The implementation
+    excludes it, and a test shows this.
+  - OFMC 2024's 2-session result on the forward-secrecy AnB model is an attack on a session completed
+    after the compromise. AnB cannot express the needed restriction, so forward secrecy is not
+    established symbolically beyond 1 session.
 
 ### OI-01 · Docker acceptance (M3-T7, M5-T7, M8-T4): closed by owner decision
 
@@ -25,22 +50,7 @@ evidence (IMPLEMENTATION_PLAN.md §5 rules, §6.6, §7.3). Newest at the bottom 
 
 ## Acceptance steps not run
 
-### OI-02 · Formal analysis: HLPSL models and CL-AtSe results not obtained (M7-T1..T3)
-
-- **What the plan asks:** OFMC and CL-AtSe results for the RP9 transcription, the fixed RP9 model and
-  MAKA-E, all as HLPSL (V-FORMAL-01..03).
-- **What happened:** the AVISPA `hlpsl2if` translator and CL-AtSe could not be obtained for this host
-  (`formal/avispa/NOT_RUN.md` lists the attempts). OFMC 2024 runs, but only on AnB models.
-- **What was run instead:** the HLPSL files are committed and pass a structural lint
-  (`formal/avispa/syntax_check.py`). The protocols were re-modelled in AnB and checked with OFMC:
-  - MAKA-E: no attack at 1–3 sessions; the no-PSK negative control is attacked.
-  - RP9: attacked, by an insider at 1 session, and by a cross-session replay with outsiders only at
-    2 sessions.
-
-  Results are in `formal/avispa/results/` and on the Evaluation page. Everywhere else the HLPSL and
-  CL-AtSe results are marked "not obtained".
-- **To close:** on a machine with the AVISPA package, run `formal/avispa/run_all.sh`. It runs the
-  HLPSL models when `hlpsl2if` is on `PATH`.
+None open. OI-02 is closed below.
 
 ## M7 evaluation checkpoint (M7-T7)
 

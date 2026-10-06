@@ -1,0 +1,9 @@
+# command: hlpsl2if(32-bit SPAN 1.6, original) rp9_fixed.hlpsl
+# date: 2026-10-06T10:11:01Z
+%% Translation of rp9_fixed.hlpsl
+%% HLPSL spec: warning(7): unknown type of constant xor in transition 1 of role basestation
+%% HLPSL spec: warning(7): unknown type of constant xor in transition 1 of role basestation
+%% IF output in ./rp9_fixed.if
+
+%% Number of warnings: 2
+# exit: 0

@@ -1,0 +1,32 @@
+# NEGATIVE CONTROL for maka_e_ake_fs.AnB: identical, but without the ephemeral Diffie-Hellman
+# exchange (keys from the PSK and the public nonces only, via a public constant `nodh`). Once the PSK
+# leaks, the intruder can recompute the keys of recorded sessions: OFMC MUST report a secrecy attack.
+# If it did not, the forward-secrecy model would not be sensitive.
+
+Protocol: MAKAE_AKE_ForwardSecrecy_NoDH_Control
+
+Types: Agent I,R;
+       Number Sid,NI,NR;
+       Number g,nodh,cmch,kcr,kci,kir,kri,hs2,hs3;
+       Function psk,h
+
+Knowledge: I: I,R,psk(I,R),h,g,nodh,cmch,kcr,kci,kir,kri,hs2,hs3;
+           R: I,R,psk(I,R),h,g,nodh,cmch,kcr,kci,kir,kri,hs2,hs3
+where I!=R
+
+Actions:
+
+I->R: Sid,I,R,cmch,NI
+R->I: Sid,R,I,NR,
+      h(h(kcr,psk(I,R),nodh,h(Sid,I,R,cmch,NI,Sid,R,I,NR),cmch),hs2,
+        h(Sid,I,R,cmch,NI,Sid,R,I,NR))
+I->R: Sid,
+      h(h(kci,psk(I,R),nodh,h(Sid,I,R,cmch,NI,Sid,R,I,NR),cmch),hs3,
+        h(Sid,I,R,cmch,NI,Sid,R,I,NR))
+# long-term compromise AFTER the session: the PSK is published
+R->I: psk(I,R)
+
+Goals:
+
+h(kir,psk(I,R),nodh,h(Sid,I,R,cmch,NI,Sid,R,I,NR),cmch) secret between I,R
+h(kri,psk(I,R),nodh,h(Sid,I,R,cmch,NI,Sid,R,I,NR),cmch) secret between I,R

@@ -1,0 +1,6 @@
+# command: hlpsl2if(32-bit SPAN 1.6, original) rp9_transcribed.hlpsl
+# date: 2026-10-06T10:11:01Z
+%% Translation of rp9_transcribed.hlpsl
+%% Syntax error: Line 26, Col 19 (offset 1367-1375, string "hash_func")
+%%   Syn.Err(10): missing or invalid type in variables declaration
+# exit: 255

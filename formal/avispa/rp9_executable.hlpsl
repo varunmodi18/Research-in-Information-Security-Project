@@ -1,0 +1,131 @@
+%% RP9 Figs. 4-8 made EXECUTABLE (follow-up Part C2.2). This goes beyond what any tool rejects: it
+%% also fixes the defects that keep RP9's authentication phase from ever running, so that its goals
+%% are actually exercised. Every change is marked "FIX Dn". Nothing else -- in particular not the
+%% protocol's security design -- is changed, so attacks RP9 has can still appear.
+%%
+%%  D1 request(...) moved to the right of =|>          D2 SND(...) used as a guard -> an action,
+%%  D3 request(CH,BS,..) arguments put verifier first      with a RCV(start) trigger for the next step
+%%  D4 Puch, Pucm bound as role parameters               D5 Ncm' bound where it is received
+%%  D6 Pac' bound at the BS                              D7 kept: secrecy_of sec3 stays vacuous
+%%  D8 F: hash_func -> function (original translator)   D9 Pch, Pcm, A1..A4 typed `message`: they hold
+%%                                                         F(...) values, and as `text` the typed model
+%%                                                         can never match them (CH t2 never fires)
+%% Executability: the per-transition probes in results/avispa/ show every transition of every role
+%% can run in this model (in rp9_transcribed.hlpsl only cm1, ch1 and bs1 can).
+
+role clustermember(CM,CH,BS:agent,
+                   Pubs,Puch,Pucm:public_key,              %% FIX D4: keys are parameters
+                   S:symmetric_key,
+                   SND,RCV:channel(dy))
+played_by CM
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Rch,Rcm:text,
+                Pch,Pcm,A1,A2,A3,A4:message,              %% FIX D9: they hold F(...) values
+                F: function                              %% FIX D8: hash_func -> function
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 0
+        transition
+                1. State=0 /\ RCV({Pcm'}_S)  =|>
+                   State':=2 /\ secret({Idch,Idcm,G},sec2,{CH,CM})
+                2. State=2 /\ RCV({A1'.A2'.Nch'}_Pucm) =|>
+                   State':=4 /\ request(CM,CH,em2,Nch')      %% FIX D1: request moved right
+                   /\ Rcm':=new()
+                   /\ Ncm':=new() /\ A3':=F(Rcm'.G) /\ A4':=F(Rcm'.Pcm)
+                   /\ SND({A3'.A4'.Ncm'}_Puch) /\ witness(CM,CH,em3,Ncm')
+end role
+
+role clusterhead(CM,CH,BS:agent,
+                 Pubs,Puch,Pucm:public_key,                %% FIX D4
+                 S:symmetric_key,
+                 SND,RCV:channel(dy))
+played_by CH
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Rch,Rcm:text,
+                Pch,Pcm,A1,A2,A3,A4:message,              %% FIX D9: they hold F(...) values
+                F: function                              %% FIX D8: hash_func -> function
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 1
+        transition
+                1. State=1 /\ RCV(start) =|>
+                   State':=3 /\ SND({Pac}_S) /\ secret(Pac,sec1,CH)
+                2. State=3 /\ RCV({Pch'.Pcm'}_S)  =|>
+                   State':=5 /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
+                   /\ SND({Pcm'}_S)                          %% FIX D2: the forward is an action
+                3. State=5 /\ RCV(start) =|>                  %% FIX D2: next step needs a trigger
+                   State':=7 /\ secret({Idch,Idcm,G},sec2,{CH,CM}) /\ Rch':=new()
+                   /\ Nch':=new() /\ A1':=F(Rch'.G) /\ A2':=F(Rch'.Pch)
+                   /\ SND({A1'.A2'.Nch'}_Pucm) /\ witness(CH,CM,em2,Nch')
+                4. State=7 /\ RCV({A3'.A4'.Ncm'}_Puch) =|>  %% FIX D5: bind Ncm'
+                   State':=9 /\ request(CH,CM,em3,Ncm')      %% FIX D1: request moved right
+                   /\ SND({A1.A2.Nch}_Pubs) /\ witness(CH,BS,em1,Nch)   %% D5 consequence: own Nch
+end role
+
+role basestation(CM,CH,BS:agent,
+                 Pubs,Puch,Pucm:public_key,                %% FIX D4
+                 S:symmetric_key,
+                 SND,RCV:channel(dy))
+played_by BS
+def=
+        local
+                State:nat,
+                Pac,Idcm,Idch,Idbs,G,Nch,Ncm:text,
+                Rch,Rcm:text,
+                Pch,Pcm,A1,A2,A3,A4:message,              %% FIX D9: they hold F(...) values
+                F: function                              %% FIX D8: hash_func -> function
+        const   em1,em2,em3,sec1,sec2,sec3:protocol_id
+        init
+                State := 6
+        transition
+                1. State=6 /\ RCV({Pac'}_S) =|>              %% FIX D6: bind Pac'
+                   State':=8 /\ secret(Pac',sec1,CH) /\ Pch':= F(xor(Idbs,Idch).G)
+                   /\ Pcm':= F(xor(Idch,Idcm).G) /\ secret({Idbs,Idch,Idcm,G},sec2,{CH,BS})
+                   /\ SND({Pch'.Pcm'}_S)
+                2. State=8 /\ RCV({A1'.A2'.Nch'}_Pubs) =|>
+                   State':=10 /\ request(BS,CH,em1,Nch')     %% FIX D3: verifier first
+end role
+
+role session(CM,CH,BS:agent,
+             Pubs,Puch,Pucm:public_key,                    %% FIX D4
+             S:symmetric_key)
+def=
+        local
+                SndCM,RcvCM,SndCH,RcvCH,SndBS,RcvBS:channel(dy)
+        composition
+                clustermember(CM,CH,BS,Pubs,Puch,Pucm,S,SndCM,RcvCM)
+             /\ clusterhead(CM,CH,BS,Pubs,Puch,Pucm,S,SndCH,RcvCH)
+             /\ basestation(CM,CH,BS,Pubs,Puch,Pucm,S,SndBS,RcvBS)
+end role
+
+role environment()
+def=
+        const
+                cm,ch,bs:agent,
+                pubs,puch,pucm:public_key,
+                s:symmetric_key,
+                em1,em2,em3,sec1,sec2,sec3:protocol_id
+
+        intruder_knowledge = {cm,ch,bs,pucm,puch,pubs}
+        composition
+                session(cm,ch,bs,pubs,puch,pucm,s)
+             /\ session(i,ch,bs,pubs,puch,pucm,s)
+             /\ session(cm,i,bs,pubs,puch,pucm,s)
+end role
+
+goal
+        secrecy_of sec1
+        secrecy_of sec2
+        secrecy_of sec3                                    %% D7 kept: vacuous, reported as such
+        authentication_on em1
+        authentication_on em2
+        authentication_on em3
+end goal
+
+environment()

@@ -1,0 +1,27 @@
+# command: cl-atse(2.2-5) split/maka_e-auth-n_r.if
+# date: 2026-10-06T10:11:11Z
+
+SUMMARY
+  SAFE
+
+DETAILS
+  BOUNDED_NUMBER_OF_SESSIONS
+  TYPED_MODEL
+
+PROTOCOL
+  results/avispa/split/maka_e-auth-n_r.if
+
+GOAL
+  As Specified
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 139 states
+  Reachable  : 119 states
+  Translation: 0.01 seconds
+  Computation: 0.01 seconds
+
+# exit: 0

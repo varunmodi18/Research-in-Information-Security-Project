@@ -1,0 +1,42 @@
+# command: cl-atse(2.2-5) split/rp9_executable-auth-em1.if
+# date: 2026-10-06T10:11:02Z
+
+SUMMARY
+  UNSAFE
+
+DETAILS
+  ATTACK_FOUND
+  TYPED_MODEL
+
+PROTOCOL
+  results/avispa/split/rp9_executable-auth-em1.if
+
+GOAL
+  Authentication attack on (bs,ch,em1,Nch(14))
+
+BACKEND
+  CL-AtSe
+
+STATISTICS
+
+  Analysed   : 372 states
+  Reachable  : 92 states
+  Translation: 0.01 seconds
+  Computation: 0.00 seconds
+
+
+ATTACK TRACE
+ i -> (ch,8):  start
+ (ch,8) -> i:  {dummy_nonce}_s
+
+ i -> (bs,5):  {dummy_nonce}_s
+ (bs,5) -> i:  {{xor().dummy_nonce}_dummy_hash.{xor().dummy_nonce}_dummy_hash}_s
+               & Add dummy_nonce to set_173;  Add dummy_nonce to set_173;
+               & Add dummy_nonce to set_173;  Add dummy_nonce to set_173;
+               & Add ch to set_174;  Add bs to set_174;
+
+ i -> (bs,5):  {A1(14).A2(14).Nch(14)}_pubs
+ (bs,5) -> i:  ()
+               & Request(bs,ch,em1,Nch(14));
+
+# exit: 0

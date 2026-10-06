@@ -1,0 +1,21 @@
+# command: ofmc(2006/02/13) probes/rp9_fixed/rp9_fixed_probes-secrecy-probe_cm2.if
+# date: 2026-10-06T10:11:15Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  SAFE
+DETAILS
+  BOUNDED_NUMBER_OF_SESSIONS
+PROTOCOL
+  results/avispa/probes/rp9_fixed/rp9_fixed_probes-secrecy-probe_cm2.if
+GOAL
+  as_specified
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 1.36s
+  visitedNodes: 1301 nodes
+  depth: 7 plies
+# exit: 0

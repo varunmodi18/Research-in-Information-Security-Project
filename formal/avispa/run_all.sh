@@ -7,7 +7,7 @@ set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OFMC="${OFMC:-$(command -v ofmc || true)}"
 if [ -z "$OFMC" ] || [ ! -x "$OFMC" ]; then
-  echo "NOT RUN -- OFMC not found (set OFMC=/path/to/ofmc). See formal/avispa/NOT_RUN.md." >&2
+  echo "NOT RUN -- OFMC not found (set OFMC=/path/to/ofmc). See formal/avispa/TOOLING.md." >&2
   exit 2
 fi
 mkdir -p "$HERE/results"
@@ -26,3 +26,9 @@ run "$HERE/anb/rp9_auth.AnB" 1
 run "$HERE/anb/rp9_auth_honest_ch.AnB" 1
 run "$HERE/anb/rp9_auth_outsider.AnB" 1
 run "$HERE/anb/rp9_auth_outsider.AnB" 2
+run "$HERE/anb/maka_e_ake_fs.AnB" 1
+run "$HERE/anb/maka_e_ake_fs.AnB" 2
+run "$HERE/anb/maka_e_ake_fs_nodh_control.AnB" 1
+run "$HERE/anb/maka_e_ake_fs_nodh_control.AnB" 2
+rm -f "$HERE/attracktrace.svg" "$HERE/anb/attracktrace.svg"  # OFMC 2024 writes an (empty) attack-trace SVG
+python3 "$HERE/summarize_avispa.py"

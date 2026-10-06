@@ -1,58 +1,162 @@
 {
-  "tool": "OFMC 2024 (AnB)",
-  "date": "2026-10-04",
-  "hlpsl": "not obtained (hlpsl2if unavailable; see NOT_RUN.md)",
-  "cl_atse": "not obtained",
-  "results": {
-    "maka_e_ake": [
-      {
-        "sessions": 1,
-        "summary": "NO_ATTACK_FOUND",
-        "goal": "as specified"
-      },
-      {
-        "sessions": 2,
-        "summary": "NO_ATTACK_FOUND",
-        "goal": "as specified"
-      },
-      {
-        "sessions": 3,
-        "summary": "NO_ATTACK_FOUND",
-        "goal": "as specified"
-      }
-    ],
-    "maka_e_ake_nopsk_control": [
-      {
-        "sessions": 1,
-        "summary": "ATTACK_FOUND",
-        "goal": "weak_auth"
-      }
-    ],
-    "rp9_auth": [
-      {
-        "sessions": 1,
-        "summary": "ATTACK_FOUND",
-        "goal": "weak_auth"
-      }
-    ],
-    "rp9_auth_honest_ch": [
-      {
-        "sessions": 1,
-        "summary": "ATTACK_FOUND",
-        "goal": "weak_auth"
-      }
-    ],
-    "rp9_auth_outsider": [
-      {
-        "sessions": 1,
-        "summary": "NO_ATTACK_FOUND",
-        "goal": "as specified"
-      },
-      {
-        "sessions": 2,
-        "summary": "ATTACK_FOUND",
-        "goal": "strong_auth"
-      }
-    ]
-  }
+ "tool": "OFMC 2024 (AnB)",
+ "date": "2026-10-06",
+ "results": {
+  "maka_e_ake": [
+   {
+    "sessions": 1,
+    "summary": "NO_ATTACK_FOUND",
+    "goal": "as specified",
+    "statistics": {
+     "time": "247 ms",
+     "visited_nodes": 11,
+     "depth_plies": 5
+    },
+    "date": "2026-10-06T05:13:56Z",
+    "file": "results/maka_e_ake.sessions1.txt"
+   },
+   {
+    "sessions": 2,
+    "summary": "NO_ATTACK_FOUND",
+    "goal": "as specified",
+    "statistics": {
+     "time": "781 ms",
+     "visited_nodes": 439,
+     "depth_plies": 9
+    },
+    "date": "2026-10-06T05:13:56Z",
+    "file": "results/maka_e_ake.sessions2.txt"
+   },
+   {
+    "sessions": 3,
+    "summary": "NO_ATTACK_FOUND",
+    "goal": "as specified",
+    "statistics": {
+     "time": "149833 ms"
+    },
+    "date": "2026-10-06T05:13:56Z",
+    "file": "results/maka_e_ake.sessions3.txt"
+   }
+  ],
+  "maka_e_ake_fs": [
+   {
+    "sessions": 1,
+    "summary": "NO_ATTACK_FOUND",
+    "goal": "as specified",
+    "statistics": {
+     "time": "388 ms",
+     "visited_nodes": 15,
+     "depth_plies": 6
+    },
+    "date": "2026-10-06T05:14:15Z",
+    "file": "results/maka_e_ake_fs.sessions1.txt"
+   },
+   {
+    "sessions": 2,
+    "summary": "ATTACK_FOUND",
+    "goal": "secrets",
+    "statistics": {
+     "time": "914 ms",
+     "visited_nodes": 356,
+     "depth_plies": 6
+    },
+    "date": "2026-10-06T05:14:15Z",
+    "file": "results/maka_e_ake_fs.sessions2.txt"
+   }
+  ],
+  "maka_e_ake_fs_nodh_control": [
+   {
+    "sessions": 1,
+    "summary": "ATTACK_FOUND",
+    "goal": "secrets",
+    "statistics": {
+     "time": "79 ms",
+     "visited_nodes": 10,
+     "depth_plies": 4
+    },
+    "date": "2026-10-06T05:14:16Z",
+    "file": "results/maka_e_ake_fs_nodh_control.sessions1.txt"
+   },
+   {
+    "sessions": 2,
+    "summary": "ATTACK_FOUND",
+    "goal": "secrets",
+    "statistics": {
+     "time": "119 ms",
+     "visited_nodes": 54,
+     "depth_plies": 4
+    },
+    "date": "2026-10-06T05:14:16Z",
+    "file": "results/maka_e_ake_fs_nodh_control.sessions2.txt"
+   }
+  ],
+  "maka_e_ake_nopsk_control": [
+   {
+    "sessions": 1,
+    "summary": "ATTACK_FOUND",
+    "goal": "weak_auth",
+    "statistics": {
+     "time": "207 ms",
+     "visited_nodes": 3,
+     "depth_plies": 2
+    },
+    "date": "2026-10-06T05:14:14Z",
+    "file": "results/maka_e_ake_nopsk_control.sessions1.txt"
+   }
+  ],
+  "rp9_auth": [
+   {
+    "sessions": 1,
+    "summary": "ATTACK_FOUND",
+    "goal": "weak_auth",
+    "statistics": {
+     "time": "105 ms",
+     "visited_nodes": 1,
+     "depth_plies": 1
+    },
+    "date": "2026-10-06T05:14:14Z",
+    "file": "results/rp9_auth.sessions1.txt"
+   }
+  ],
+  "rp9_auth_honest_ch": [
+   {
+    "sessions": 1,
+    "summary": "ATTACK_FOUND",
+    "goal": "weak_auth",
+    "statistics": {
+     "time": "106 ms",
+     "visited_nodes": 1,
+     "depth_plies": 1
+    },
+    "date": "2026-10-06T05:14:15Z",
+    "file": "results/rp9_auth_honest_ch.sessions1.txt"
+   }
+  ],
+  "rp9_auth_outsider": [
+   {
+    "sessions": 1,
+    "summary": "NO_ATTACK_FOUND",
+    "goal": "as specified",
+    "statistics": {
+     "time": "98 ms",
+     "visited_nodes": 5,
+     "depth_plies": 5
+    },
+    "date": "2026-10-06T05:14:15Z",
+    "file": "results/rp9_auth_outsider.sessions1.txt"
+   },
+   {
+    "sessions": 2,
+    "summary": "ATTACK_FOUND",
+    "goal": "strong_auth",
+    "statistics": {
+     "time": "110 ms",
+     "visited_nodes": 8,
+     "depth_plies": 3
+    },
+    "date": "2026-10-06T05:14:15Z",
+    "file": "results/rp9_auth_outsider.sessions2.txt"
+   }
+  ]
+ }
 }

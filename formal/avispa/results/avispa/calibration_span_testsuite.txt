@@ -1,0 +1,37 @@
+# SPAN 1.6 test suite (34 models), default options, 120 s per run; '-' = no IF produced
+# date: 2026-10-06T10:14:23Z
+model                      | 32:ofmc06 32:cl225  | mx:ofmc06 mx:cl225  | 64:ofmc12 64:cl234 
+AAAMobileIP                | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+CHAPv2                     | SAFE      SAFE      | SAFE      SAFE      | UNSAFE    SAFE     
+CRAM-MD5                   | SAFE      SAFE      | -         -         | -         -        
+DHCP-delayed-auth          | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+EKE2                       | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+EKE                        | UNSAFE    UNSAFE    | UNSAFE    UNSAFE    | UNSAFE    UNSAFE   
+h.530-fix                  | SAFE      ERR/TO    | SAFE      ERR/TO    | SAFE      SAFE     
+h.530                      | UNSAFE    ERR/TO    | -         -         | -         -        
+IKEv2-CHILD                | SAFE      SAFE      | SAFE      SAFE      | UNSAFE    SAFE     
+IKEv2-DS                   | UNSAFE    UNSAFE    | UNSAFE    UNSAFE    | SAFE      UNSAFE   
+IKEv2-DSx                  | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+IKEv2-MAC                  | SAFE      SAFE      | -         -         | -         -        
+IKEv2-MACx                 | SAFE      SAFE      | -         -         | -         -        
+ISO1                       | UNSAFE    UNSAFE    | UNSAFE    UNSAFE    | SAFE      UNSAFE   
+ISO2                       | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+ISO3                       | UNSAFE    UNSAFE    | UNSAFE    UNSAFE    | SAFE      UNSAFE   
+ISO4                       | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+Kerb-basic                 | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+Kerb-Cross-Realm           | SAFE      SAFE      | -         -         | -         -        
+Kerb-Forwardable           | SAFE      SAFE      | -         -         | -         -        
+Kerb-PKINIT                | SAFE      SAFE      | -         -         | -         -        
+Kerb-preauth               | SAFE      SAFE      | -         -         | -         -        
+Kerb-Ticket-Cache          | SAFE      SAFE      | -         -         | -         -        
+lipkey-spkm-known-initiator | SAFE      SAFE      | -         -         | -         -        
+lipkey-spkm-unknown-initiator | SAFE      SAFE      | -         -         | -         -        
+LPD-IMSR                   | SAFE      SAFE      | -         -         | -         -        
+LPD-MSR                    | UNSAFE    UNSAFE    | -         -         | -         -        
+PBK-fix                    | UNSAFE    UNSAFE    | UNSAFE    UNSAFE    | UNSAFE    UNSAFE   
+PBK-fix-weak-auth          | SAFE      SAFE      | SAFE      SAFE      | UNSAFE    SAFE     
+PBK                        | UNSAFE    UNSAFE    | UNSAFE    UNSAFE    | UNSAFE    UNSAFE   
+SPEKE                      | SAFE      SAFE      | -         -         | -         -        
+SRP                        | SAFE      SAFE      | SAFE      SAFE      | SAFE      SAFE     
+TLS                        | SAFE      SAFE      | -         -         | -         -        
+UMTS_AKA                   | SAFE      SAFE      | -         -         | -         -        

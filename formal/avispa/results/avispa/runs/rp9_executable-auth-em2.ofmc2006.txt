@@ -1,0 +1,42 @@
+# command: ofmc(2006/02/13) split/rp9_executable-auth-em2.if
+# date: 2026-10-06T10:11:02Z
+% OFMC
+% Version of 2006/02/13
+SUMMARY
+  UNSAFE
+DETAILS
+  ATTACK_FOUND
+PROTOCOL
+  results/avispa/split/rp9_executable-auth-em2.if
+GOAL
+  authentication_on_em2
+BACKEND
+  OFMC
+COMMENTS
+STATISTICS
+  parseTime: 0.00s
+  searchTime: 0.01s
+  visitedNodes: 3 nodes
+  depth: 2 plies
+ATTACK TRACE
+i -> (ch,3): start
+(ch,3) -> i: {dummy_nonce}_s
+i -> (cm,3): {dummy_nonce}_s
+i -> (cm,3): {x303.x304.x305}_pucm
+(cm,3) -> i: {dummy_hash(Rcm(3).dummy_nonce).dummy_hash(Rcm(3).dummy_nonce).Ncm(3)}_puch
+
+
+% Reached State:
+% 
+% request(cm,ch,em2,x305,3)
+% contains(dummy_nonce,set_143)
+% contains(ch,set_144)
+% contains(cm,set_144)
+% state_basestation(bs,cm,i,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_197,set_198,13)
+% state_clustermember(cm,i,bs,pubs,puch,pucm,s,0,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_190,set_191,11)
+% state_basestation(bs,i,ch,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_187,set_188,8)
+% state_clusterhead(ch,i,bs,pubs,puch,pucm,s,1,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_182,set_183,set_184,set_185,8)
+% state_basestation(bs,cm,ch,pubs,puch,pucm,s,6,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_173,set_174,3)
+% state_clustermember(cm,ch,bs,pubs,puch,pucm,s,4,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,x305,Ncm(3),dummy_nonce,Rcm(3),dummy_msg,dummy_nonce,x303,x304,dummy_hash(Rcm(3).dummy_nonce),dummy_hash(Rcm(3).dummy_nonce),dummy_hash,set_143,set_144,3)
+% state_clusterhead(ch,cm,bs,pubs,puch,pucm,s,3,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_nonce,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_msg,dummy_hash,set_161,set_162,set_163,set_164,3)
+# exit: 0

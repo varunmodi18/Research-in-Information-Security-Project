@@ -43,7 +43,9 @@ interface Reference {
   table5: { scheme: string; formula: string; published_ms: number; recomputed_ms: number; flag: string }[];
   table6: { features: string[]; rows: Record<string, string[]> };
   formal: { tool?: string; date?: string; hlpsl?: string; cl_atse?: string;
-    results: Record<string, { sessions: number; summary: string; goal: string }[]> };
+    results: Record<string, { sessions: number; summary: string; goal: string;
+      statistics?: Record<string, string | number>; file?: string }[]> };
+  formal_avispa: { obtained: boolean; paper_fig9?: Record<string, string | number>; rows: AvispaRow[] };
   security_levels: Record<string, string>;
   limitations: string[];
   latest_comparison: Comparison | null;
@@ -60,10 +62,38 @@ const GRID = "#e4e3df";
 const FORMAL_MODELS: Record<string, string> = {
   maka_e_ake: "MAKA-E key exchange",
   maka_e_ake_nopsk_control: "MAKA-E without PSK (negative control)",
+  maka_e_ake_fs: "MAKA-E, PSK leaked after the session (forward secrecy)",
+  maka_e_ake_fs_nodh_control: "MAKA-E without DH, PSK leaked (negative control)",
   rp9_auth: "RP9 authentication, dishonest CH",
   rp9_auth_honest_ch: "RP9 authentication, insider CM (P-01)",
   rp9_auth_outsider: "RP9 authentication, outsider only",
 };
+// What a row's result means where the verdict alone would mislead (follow-up Part C3/C4).
+const FORMAL_NOTES: Record<string, string> = {
+  "rp9_auth_outsider/2": "Without a receiver-side nonce record, replay succeeds; RP9's replay protection rests entirely on that record, which RP9 does not specify.",
+  "maka_e_ake_fs/2": "The leaked keys belong to a responder session the intruder opened and completed after the PSK leaked (impersonation after compromise), not to a session completed before it. AnB cannot restrict the leak to after all sessions; see formal/avispa/README.md.",
+};
+
+interface AvispaRow {
+  model: string; label: string; note: string; sessions: string; backend: string; verdict: string; violated: string;
+  message: string; statistics: Record<string, string | number>; file: string;
+  per_goal: { goal: string; verdict: string }[]; executable_transitions: string; translated_by_original: boolean;
+}
+
+const VERDICT_CLASS: Record<string, string> = { SAFE: "text-emerald-700", NO_ATTACK_FOUND: "text-emerald-700",
+  UNSAFE: "text-red-700", ATTACK_FOUND: "text-red-700" };
+
+function stats(s?: Record<string, string | number>): string {
+  if (!s) return "—";
+  const parts: string[] = [];
+  if (s.visited_nodes !== undefined) parts.push(`${s.visited_nodes} nodes`);
+  if (s.depth_plies !== undefined) parts.push(`depth ${s.depth_plies}`);
+  if (s.analysed_states !== undefined) parts.push(`${s.analysed_states} analysed`);
+  if (s.reachable_states !== undefined) parts.push(`${s.reachable_states} reachable`);
+  if (s.search_time !== undefined) parts.push(String(s.search_time));
+  if (s.time !== undefined) parts.push(String(s.time));
+  return parts.length ? parts.join(", ") : "—";
+}
 
 function Section({ title, children, id }: { title: string; children: React.ReactNode; id: string }) {
   return (
@@ -363,21 +393,64 @@ export function EvaluationPage() {
             </Section>
 
             <Section title="Formal analysis" id="ev-formal">
-              <p className="mb-2 text-sm text-slate-600">
-                {ref.data.formal.tool ?? "Symbolic tools"} {ref.data.formal.date ? `(${ref.data.formal.date})` : ""}, bounded sessions, perfect cryptography.
-                HLPSL: {ref.data.formal.hlpsl ?? "not obtained"}. CL-AtSe: {ref.data.formal.cl_atse ?? "not obtained"}.
+              <p className="mb-3 text-sm text-slate-600">
+                Symbolic (Dolev-Yao) analysis: perfect cryptography, a bounded number of sessions. &quot;No attack&quot; means
+                none within these bounds in this abstract model. What each result does and does not show:
+                formal/avispa/README.md.
               </p>
-              {Object.keys(ref.data.formal.results).length === 0 ? <p className="text-sm font-semibold">Formal results: not obtained.</p> : (
+              <h3 className="mb-1 text-sm font-semibold">AVISPA (HLPSL): OFMC, CL-AtSe</h3>
+              {!ref.data.formal_avispa.obtained ? <p className="text-sm font-semibold">AVISPA results: not obtained.</p> : (
+                <>
+                  <p className="mb-2 text-xs text-slate-600">
+                    hlpsl2if (SPAN 1.6), OFMC version of 2006/02/13, CL-AtSe 2.2-5 and 2.3-4; typed model unless marked untyped.
+                    RP9 Fig. 9 reports OFMC: SAFE, {String(ref.data.formal_avispa.paper_fig9?.visited_nodes ?? 1501)} visited
+                    nodes, depth {String(ref.data.formal_avispa.paper_fig9?.depth_plies ?? 7)} plies.
+                  </p>
+                  <div className="overflow-x-auto">
+                  <table className="tbl text-sm" data-testid="formal-avispa">
+                    <thead><tr><th>model</th><th>back-end</th><th>sessions</th><th>verdict (all goals)</th><th>per goal</th>
+                      <th>statistics</th><th>transitions that can run</th><th>raw output</th></tr></thead>
+                    <tbody>{ref.data.formal_avispa.rows.map((r, i, all) => (
+                      <tr key={`${r.model}-${r.backend}`} data-testid={`avispa-${r.model}`}>
+                        <td>{r.label} <span className="font-mono text-xs text-slate-400">{r.model}</span>
+                          {r.note && (i === 0 || all[i - 1].model !== r.model) && <span className="block text-xs text-slate-600">{r.note}</span>}</td>
+                        <td className="text-xs">{r.backend}</td>
+                        <td className="text-xs">{r.sessions}</td>
+                        <td className={`font-semibold ${VERDICT_CLASS[r.verdict] ?? "text-amber-700"}`}>
+                          {r.verdict}{r.violated ? <span className="block text-xs font-normal">{r.violated}</span> : null}
+                          {r.message ? <span className="block text-xs font-normal">{r.message}</span> : null}</td>
+                        <td className="text-xs">{r.per_goal.map((g) => `${g.goal}: ${g.verdict}`).join(", ") || "—"}</td>
+                        <td className="font-mono text-xs">{stats(r.statistics)}</td>
+                        <td className="text-right font-mono text-xs">{r.executable_transitions || "—"}</td>
+                        <td className="font-mono text-xs">{r.file}</td></tr>
+                    ))}</tbody>
+                  </table>
+                  </div>
+                </>
+              )}
+              <h3 className="mb-1 mt-4 text-sm font-semibold">OFMC 2024 (AnB models)</h3>
+              <p className="mb-2 text-xs text-slate-600">
+                {ref.data.formal.tool ?? "OFMC 2024"} {ref.data.formal.date ? `(${ref.data.formal.date})` : ""}; models in formal/avispa/anb/.
+              </p>
+              {Object.keys(ref.data.formal.results).length === 0 ? <p className="text-sm font-semibold">OFMC 2024 results: not obtained.</p> : (
+                <div className="overflow-x-auto">
                 <table className="tbl text-sm" data-testid="formal-results">
-                  <thead><tr><th>model</th><th>sessions</th><th>result</th><th>goal violated</th></tr></thead>
+                  <thead><tr><th>model</th><th>back-end</th><th>sessions</th><th>verdict</th><th>goal violated</th>
+                    <th>statistics</th><th>raw output</th></tr></thead>
                   <tbody>{Object.entries(ref.data.formal.results).flatMap(([m, rs]) => rs.map((r) => (
-                    <tr key={`${m}-${r.sessions}`}><td>{FORMAL_MODELS[m] ?? m} <span className="font-mono text-xs text-slate-400">{m}</span></td>
+                    <tr key={`${m}-${r.sessions}`} data-testid={`anb-${m}-${r.sessions}`}>
+                      <td>{FORMAL_MODELS[m] ?? m} <span className="font-mono text-xs text-slate-400">{m}</span>
+                        {FORMAL_NOTES[`${m}/${r.sessions}`] ? <span className="block text-xs text-slate-600">{FORMAL_NOTES[`${m}/${r.sessions}`]}</span> : null}</td>
+                      <td className="text-xs">OFMC 2024</td>
                       <td className="text-right font-mono">{r.sessions}</td>
-                      <td className={r.summary === "ATTACK_FOUND" ? "font-semibold text-red-700" : "font-semibold text-emerald-700"}>
-                        {r.summary === "ATTACK_FOUND" ? "⚠ attack found" : "✓ no attack found"}</td>
-                      <td className="text-xs">{r.summary === "ATTACK_FOUND" ? r.goal : "—"}</td></tr>
+                      <td className={`font-semibold ${VERDICT_CLASS[r.summary] ?? "text-amber-700"}`}>
+                        {r.summary === "ATTACK_FOUND" ? "⚠ attack found" : r.summary === "NO_ATTACK_FOUND" ? "✓ no attack found" : r.summary}</td>
+                      <td className="text-xs">{r.summary === "ATTACK_FOUND" ? r.goal : "—"}</td>
+                      <td className="font-mono text-xs">{stats(r.statistics)}</td>
+                      <td className="font-mono text-xs">{r.file ? `formal/avispa/${r.file}` : "—"}</td></tr>
                   )))}</tbody>
                 </table>
+                </div>
               )}
             </Section>
 
