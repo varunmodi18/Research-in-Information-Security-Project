@@ -25,3 +25,14 @@ web/test-results/
 web/playwright-report/
 artifacts/eval/*_quick*
 web/e2e/shots/
+# Owner's working documents and copyrighted papers: never committed
+/IMPLEMENTATION_PLAN.md
+/PLAN.md
+/REPORT.*
+/PRESENTATION.md
+/ResearchPaper9.*
+/ICDMS_Paper.*
+/MAKA_IMPLEMENTATION_REPORT.md
+/MAKA_BUILD_REPORT.md
+/FOLLOWUP_REPORT.md
+/report_assets/
