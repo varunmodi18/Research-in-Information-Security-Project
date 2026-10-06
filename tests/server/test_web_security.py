@@ -12,35 +12,41 @@ from maka_server import models
 from .conftest import Api
 
 NID = 1
-# (method, path, minimum role) for every §4.5 endpoint; None = any authenticated user.
+# (method, path, minimum role, exact status for an allowed role) for every §4.5 endpoint, against a
+# database holding network 1 (lab, original, paper) and no job or evaluation run. Bodies are `{}`, so
+# endpoints that need a body answer 422; a role below the minimum always gets 403 FORBIDDEN, checked
+# before the resource is looked up. /api/auth/login is public and has its own tests.
 ENDPOINTS = [
-    ("GET", "/api/auth/me", "viewer"),
-    ("POST", "/api/auth/logout", "viewer"),
-    ("GET", "/api/networks", "viewer"),
-    ("POST", "/api/networks", "operator"),
-    ("GET", f"/api/networks/{NID}", "viewer"),
-    ("DELETE", f"/api/networks/{NID}", "admin"),
-    ("POST", f"/api/networks/{NID}/jobs", "operator"),
-    ("GET", "/api/jobs/1", "viewer"),
-    ("POST", "/api/jobs/1/cancel", "operator"),
-    ("GET", f"/api/networks/{NID}/devices/BS-01", "viewer"),
-    ("GET", f"/api/networks/{NID}/frames", "viewer"),
-    ("GET", f"/api/networks/{NID}/readings", "operator"),
-    ("GET", "/api/events", "viewer"),
-    ("GET", "/api/events/export", "viewer"),
-    ("GET", "/api/lab/scenarios", "operator"),
-    ("GET", "/api/evaluation/runs/1", "viewer"),
-    ("GET", "/api/admin/users", "admin"),
-    ("POST", "/api/admin/users", "admin"),
-    ("PATCH", "/api/admin/users/1", "admin"),
-    ("POST", "/api/admin/reset-demo", "admin"),
-    ("GET", "/api/admin/audit", "admin"),
+    ("GET", "/api/auth/me", "viewer", 200),
+    ("POST", "/api/auth/logout", "viewer", 204),
+    ("GET", "/api/networks", "viewer", 200),
+    ("POST", "/api/networks", "operator", 422),
+    ("GET", f"/api/networks/{NID}", "viewer", 200),
+    ("DELETE", f"/api/networks/{NID}", "admin", 422),
+    ("POST", f"/api/networks/{NID}/jobs", "operator", 422),
+    ("GET", "/api/jobs/1", "viewer", 404),
+    ("POST", "/api/jobs/1/cancel", "operator", 404),
+    ("GET", f"/api/networks/{NID}/devices/BS-01", "viewer", 200),
+    ("GET", f"/api/networks/{NID}/frames", "viewer", 200),
+    ("GET", f"/api/networks/{NID}/readings", "operator", 200),
+    ("GET", f"/api/networks/{NID}/stream?once=true", "viewer", 200),
+    ("GET", "/api/events", "viewer", 200),
+    ("GET", "/api/events/export", "viewer", 200),
+    ("GET", "/api/lab/scenarios", "operator", 200),
+    ("GET", "/api/evaluation/reference", "viewer", 200),
+    ("GET", "/api/evaluation/runs", "viewer", 200),
+    ("GET", "/api/evaluation/runs/1", "viewer", 404),
+    ("GET", "/api/admin/users", "admin", 200),
+    ("POST", "/api/admin/users", "admin", 422),
+    ("PATCH", "/api/admin/users/1", "admin", 200),
+    ("POST", "/api/admin/reset-demo", "admin", 422),
+    ("GET", "/api/admin/audit", "admin", 200),
 ]
 RANK = {"viewer": 0, "operator": 1, "admin": 2}
 
 
-@pytest.mark.parametrize(("method", "path", "_role"), ENDPOINTS)
-def test_v_web_01_unauthenticated_is_401(api: Api, method: str, path: str, _role: str) -> None:
+@pytest.mark.parametrize(("method", "path", "_role", "_status"), ENDPOINTS)
+def test_v_web_01_unauthenticated_is_401(api: Api, method: str, path: str, _role: str, _status: int) -> None:
     r = api.client.request(method, path)
     assert r.status_code == 401, (method, path, r.status_code)
     assert r.headers["content-type"].startswith("application/problem+json")
@@ -49,16 +55,18 @@ def test_v_web_01_unauthenticated_is_401(api: Api, method: str, path: str, _role
 
 @pytest.mark.parametrize("who", ["viewer", "operator", "admin"])
 def test_v_web_02_role_matrix(api: Api, who: str) -> None:
+    api.login("operator")
+    assert api.create_network(kind="lab", mode="original", params="toy", template="paper")["id"] == NID
+    api.send("POST", "/api/auth/logout")
     api.login(who)
-    for method, path, minimum in ENDPOINTS:
+    for method, path, minimum, status in ENDPOINTS:
         if path == "/api/auth/logout":
-            continue
+            continue  # would end the session the matrix runs in; covered by test_logout_ends_the_session
         r = api.send(method, path, json={})
-        allowed = RANK[who] >= RANK[minimum]
-        if allowed:
-            assert r.status_code != 403, (who, method, path, r.text)
+        if RANK[who] >= RANK[minimum]:
+            assert r.status_code == status, (who, method, path, r.status_code, r.text[:200])
         else:
-            assert r.status_code == 403 and r.json()["code"] == "FORBIDDEN", (who, method, path, r.text)
+            assert r.status_code == 403 and r.json()["code"] == "FORBIDDEN", (who, method, path, r.text[:200])
 
 
 def test_v_web_03_csrf(api: Api) -> None:

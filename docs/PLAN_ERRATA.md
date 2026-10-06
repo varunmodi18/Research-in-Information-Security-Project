@@ -194,3 +194,23 @@ intruder capability was weakened; every change is marked in the files.
      nothing left to protect.
    - Its sessions are destroyed at its peers, and every later handshake from it is refused
      (`UNAUTHORISED_PEER`).
+
+## E-10 · §4.3, §4.4 and §4.6.5: two defects found by the new tests (follow-up Part E, 2026-10-06)
+
+1. **The server read keystores.** §4.4 says nothing in `maka_server` reads a secret from a keystore.
+   `services/networks.py::mirror_keystores` did: after provisioning it read every entry (including
+   the BS's `k` and each device's `Pr`) with `Keystore.get` to hand it to the encrypted adapter.
+   - Fixed: `Keystore.attach(adapter, replay=True)` makes the keystore push the entries it already
+     holds through the adapter's `save` hook, the same path every later write takes.
+   - `tests/server/test_keystore_guard.py` checks the rule statically (AST over `src/maka_server`)
+     and at run time (no `Keystore.get`/`snapshot` called from a `maka_server` module during
+     onboarding, readings, revocation, rekey and a Lab run). Each check has a positive control.
+2. **A forged `CLUSTER_OPEN` could move a designated member's relay.** E-05 made `CLUSTER_OPEN` an
+   unauthenticated hint whose worst effect is one extra handshake (R-13). But the member also
+   stored the hint's sender as its relay CH, so all its later CM–BS handshakes (rekeys) went
+   through the forger's CH and failed.
+   - Fixed: once a member is designated, only a `DESIGNATION` (sealed under the CM–BS session)
+     changes its relay. A hint's sender is used only for the one handshake it triggers.
+   - Before any designation, the hint still tells a new member where to send its first handshake,
+     as E-05 intended.
+   - Test: `tests/enhanced/test_review_e3.py::test_forged_cluster_open_from_another_ch_changes_nothing`.

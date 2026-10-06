@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -69,16 +70,64 @@ def test_v_rec_01_worker_failure_mid_onboarding(operator_api: Api, app, lab_pape
     assert operator_api.run_job(nid, "onboard")["state"] == "succeeded"
 
 
-def test_v_rec_02_restart_aborts_running_jobs(settings: Settings) -> None:
+def test_v_rec_02_restart_mid_job_on_a_maka_e_network(settings: Settings) -> None:
+    """V-REC-02 with a real MAKA-E network and a real restart (follow-up E6).
+
+    App 1 onboards a product network and stores readings. A rekey job is then caught mid-run: the
+    worker has marked it `running` and blocks on the network's runtime lock, as it would if the
+    process died there. App 2 starts on the same database and KEK (the restart). It must abort the
+    job and rebuild the network under §4.8: every session ABORTED, no session key anywhere,
+    long-term keys restored from the encrypted keystore, earlier readings kept. Onboarding again
+    then works, and the PSKs are those of before the restart.
+    """
+    from fastapi.testclient import TestClient
+
+    from maka_server.services.users import create_user
+
+    from .conftest import PASSWORDS
+
     app1 = create_app(settings)
-    ctx = app1.state.ctx
-    with ctx.db.session() as db:
-        db.add(models.Job(network_id=None, type="onboard", args_json={}, idempotency_key="left-running",
-                          state="running"))
-    aborted = create_app(settings).state.ctx.jobs.recover_on_startup()
-    with ctx.db.session() as db:
-        job = db.scalar(select(models.Job).where(models.Job.idempotency_key == "left-running"))
-        assert job is not None and job.id in aborted and job.state == "aborted"
+    for role, pw in PASSWORDS.items():
+        create_user(app1.state.ctx, role, pw, role)
+    with TestClient(app1) as c1:
+        api1 = Api(c1)
+        assert api1.login("operator").status_code == 200
+        nid = api1.create_network(kind="product", mode="enhanced", params="toy", template="small")["id"]
+        assert api1.run_job(nid, "onboard")["state"] == "succeeded"
+        api1.run_job(nid, "send_readings", {"count": 1})
+        rt1 = app1.state.ctx.registry.get(nid)
+        psk_before = rt1.scheduler.devices["CM-0101"].keystore.get("psk:CH-01")
+        rt1.lock.acquire()  # the rekey job will block mid-run, holding its `running` row
+        stuck = api1.job(nid, "rekey", {"device": "CM-0101"}).json()["job_id"]
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline and api1.get(f"/api/jobs/{stuck}").json()["state"] != "running":
+            time.sleep(0.05)
+        assert api1.get(f"/api/jobs/{stuck}").json()["state"] == "running"
+
+        app2 = create_app(settings)  # the restart: same database, same KEK
+        with TestClient(app2) as c2:
+            api2 = Api(c2)
+            assert api2.login("operator").status_code == 200
+            job = api2.get(f"/api/jobs/{stuck}").json()
+            assert job["state"] == "aborted" and "restart" in job["error"]
+            detail = api2.get(f"/api/networks/{nid}").json()
+            assert detail["status"] == "idle"
+            assert {d["ident"]: d["status"] for d in detail["devices"]} == {
+                "BS-01": "active", "CH-01": "registered", "CM-0101": "registered", "CM-0102": "registered",
+                "CM-0103": "registered"}
+            sessions = api2.get(f"/api/networks/{nid}/devices/CM-0101").json()["sessions"]
+            assert sessions and {s["state"] for s in sessions} == {"ABORTED"}
+            rt2 = app2.state.ctx.registry.get(nid)
+            assert rt2 is not rt1
+            for dev in rt2.scheduler.devices.values():
+                assert not [n for n in dev.keystore.names() if n.startswith(("sess:", "eph:", "hs:"))]
+                assert dev.keystore.has("pr") or dev.keystore.has("k")
+            assert len(api2.get(f"/api/networks/{nid}/readings").json()["items"]) == 3
+            assert api2.run_job(nid, "onboard")["state"] == "succeeded"
+            assert rt2.scheduler.devices["CM-0101"].keystore.get("psk:CH-01") == psk_before
+            api2.run_job(nid, "send_readings", {"count": 1})
+            assert len(api2.get(f"/api/networks/{nid}/readings").json()["items"]) == 6
+        rt1.lock.release()  # let app 1's stale worker finish before its client shuts down
 
 
 def test_v_rec_03_serialised_jobs_and_idempotency(operator_api: Api, lab_paper: dict[str, Any]) -> None:

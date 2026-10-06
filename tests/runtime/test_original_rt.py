@@ -1,4 +1,5 @@
-"""M2-T4..T6: original (RP9) mode on the runtime -- V-ORIG-01..07, V-RT-04, V-ARCH-01, and
+"""M2-T4..T6: original (RP9) mode on the runtime -- V-ORIG-01..07, V-RT-04 (V-ARCH-01 is in
+test_architecture.py), and
 the Lab-capability checks L1-L3 for the M2-T6 checkpoint."""
 
 from __future__ import annotations
@@ -10,10 +11,9 @@ from maka.original_rt import messages as m
 from maka.original_rt import network as onet
 from maka.protocol.p3_node_registration import xor_to_scalar
 from maka.runtime import adversary
-from maka.runtime.bus import PRODUCT, Bus, Frame
-from maka.runtime.device import ACTIVE, FAILED, Device
+from maka.runtime.bus import PRODUCT, Frame
+from maka.runtime.device import ACTIVE, FAILED
 from maka.runtime.errors import ModeNotAllowed
-from maka.runtime.scheduler import Scheduler
 
 SEED = 20260927
 
@@ -106,7 +106,7 @@ def test_v_orig_07_parity_with_rp9_tables_2_and_3() -> None:
     assert bits == {"key generation": 640, "registration": 1760 + 160, "authentication": 2400}
 
 
-# -- V-RT-04 / V-ARCH-01 ---------------------------------------------------------------------
+# -- V-RT-04 ------------------------------------------------------------------------------
 
 def _frame_log(net: onet.OriginalNetwork) -> list[tuple[int, str, str, str, bytes]]:
     return [(r.step, r.frame.src, r.to, r.frame.label, r.frame.payload)
@@ -118,36 +118,6 @@ def test_v_rt_04_seeded_runs_are_identical() -> None:
     other = onet.build("toy", "small", seed=SEED + 1)
     other.onboard()
     assert _frame_log(other) != _frame_log(_onboarded("small"))
-
-
-FORBIDDEN = (Device, Scheduler, Bus, onet.OriginalNetwork)
-
-
-def _references(obj: object, owner: Device, depth: int, seen: set[int], path: str) -> list[str]:
-    if depth > 4 or id(obj) in seen:
-        return []
-    seen.add(id(obj))
-    if obj is not owner and isinstance(obj, FORBIDDEN):
-        return [path]
-    if isinstance(obj, (str, bytes, bytearray, int, float, bool, type(None))):
-        return []
-    children: list[tuple[str, object]] = []
-    if isinstance(obj, dict):
-        children = [(f"{path}[{k!r}]", v) for k, v in obj.items()] + [(f"{path}.key", k) for k in obj]
-    elif isinstance(obj, (list, tuple, set, frozenset)):
-        children = [(f"{path}[{i}]", v) for i, v in enumerate(obj)]
-    elif hasattr(obj, "__dict__"):
-        children = [(f"{path}.{k}", v) for k, v in vars(obj).items()]
-    out = []
-    for p, child in children:
-        out += _references(child, owner, depth + 1, seen, p)
-    return out
-
-
-def test_v_arch_01_devices_hold_no_cross_references() -> None:
-    net = _onboarded("net")
-    for dev in net.scheduler.devices.values():
-        assert _references(dev, dev, 0, set(), dev.identity) == [], dev.identity
 
 
 def test_original_mode_refuses_product_networks() -> None:

@@ -166,8 +166,25 @@ def test_v_adv_11_fake_bs_fails_at_ch() -> None:
     assert net.scheduler.log[-1].reason == "BAD_TAG" and net.scheduler.log[-1].to == "CH-01"
 
 
-def test_v_adv_12_forward_secrecy() -> None:
-    net = en.build("toy", "paper", seed=SEED)
+class _ScalarRecorder:
+    """Wraps a device's randomness and remembers the scalars it draws (positive control only)."""
+
+    def __init__(self, inner):  # type: ignore[no-untyped-def]
+        self.inner, self.scalars = inner, []
+
+    def __getattr__(self, name):  # type: ignore[no-untyped-def]
+        return getattr(self.inner, name)
+
+    def randint(self, lo: int, hi: int) -> int:
+        v = self.inner.randint(lo, hi)
+        self.scalars.append(v)
+        return v  # type: ignore[no-any-return]
+
+
+def _recorded_session_then_theft(params: str):  # type: ignore[no-untyped-def]
+    net = en.build(params, "paper", seed=SEED)
+    cm = net.device("CM-0101")
+    cm.rng = _ScalarRecorder(cm.rng)  # type: ignore[assignment]
     rec = adversary.Record(lambda f: is_cm_ch("HS1", f) or is_cm_ch("HS2", f))
     net.scheduler.bus.add_interceptor(rec)
     net.onboard()
@@ -175,15 +192,45 @@ def test_v_adv_12_forward_secrecy() -> None:
     assert rec.frames[0].label == "HS1" and rec.frames[1].label == "HS2"
     net.rekey("CM-0101", "CH-01")  # the recorded session ends (superseded, keys destroyed)
     net.run()
-    stolen = net.device("CM-0101").keystore.snapshot()  # Pr and every PSK, after the fact
+    stolen = adversary.capture(net.scheduler, "CM-0101")  # Pr and every PSK, after the fact
+    return net, cm, hs1, hs2, stolen
+
+
+@pytest.mark.parametrize("params", ["toy", pytest.param("demo", marks=pytest.mark.slow)])
+def test_v_adv_12_recorded_session_keys_not_derivable_after_long_term_key_theft(params: str) -> None:
+    """V-ADV-12, forward secrecy against later theft of the long-term keys.
+
+    The adversary records one CM-CH handshake (HS1, HS2). After that session has ended, it takes
+    everything CM-0101's keystore still holds: Pr_CM and every cached PSK. It then tries to rebuild
+    the recorded session's key schedule. Recomputing tag_R from (PSK, Z, th) and comparing it with
+    the recorded tag_R is an exact oracle for the right Z: a match means the session keys k_IR, k_RI
+    are derivable too.
+    - The candidates are what the stolen material and the transcript offer: X, Y, X+Y, Pr, Pr+X and
+      a PSK-derived multiple of Y.
+    - The test asserts that none matches and that no ephemeral (eph:/hs:) is left in the keystore.
+    - It shows these candidates fail. That Z = x*Y stays out of reach without x or y is the Gap-CDH
+      assumption (SECURITY_ARGUMENT P3), not something a test can show.
+    - The positive control below runs the same oracle with the true Z.
+    """
+    _, cm, hs1, hs2, stolen = _recorded_session_then_theft(params)
     psk = stolen["psk:CH-01"]
-    cm = net.device("CM-0101")
     x_pt = codec.dec_point(cm.curve, m.decode_hs1(hs1).x_raw)
     y_pt = codec.dec_point(cm.curve, m.decode_hs2(hs2).y_raw)
     pr = codec.load_point(cm.curve, stolen["pr"])
-    candidates = [x_pt, y_pt, x_pt + y_pt, pr, pr + x_pt, codec.dec_scalar(cm.curve, psk[:3].rjust(3, b"\x00")) * y_pt]
+    candidates = [x_pt, y_pt, x_pt + y_pt, pr, pr + x_pt, (int.from_bytes(psk, "big") % cm.curve.r_group or 1) * y_pt]
     assert not attacker.try_derive_session(cm.curve, hs1, hs2, psk, candidates)
     assert not [n for n in stolen if n.startswith(("eph:", "hs:"))]
+
+
+def test_v_adv_12_positive_control_true_z_is_detected() -> None:
+    """With the CM's ephemeral x (recovered here from its randomness, which an attacker cannot do),
+    Z = x*Y passes the same oracle, and a wrong PSK with the right Z does not."""
+    _, cm, hs1, hs2, stolen = _recorded_session_then_theft("toy")
+    x_pt = codec.dec_point(cm.curve, m.decode_hs1(hs1).x_raw)
+    y_pt = codec.dec_point(cm.curve, m.decode_hs2(hs2).y_raw)
+    x = next(v for v in cm.rng.scalars if v * cm.g == x_pt)
+    assert attacker.try_derive_session(cm.curve, hs1, hs2, stolen["psk:CH-01"], [x * y_pt])
+    assert not attacker.try_derive_session(cm.curve, hs1, hs2, b"\x00" * 32, [x * y_pt])
 
 
 def test_v_adv_14_cross_mode_and_cross_purpose() -> None:

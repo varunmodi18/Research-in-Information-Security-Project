@@ -128,3 +128,53 @@ def test_unauthenticated_cm_cannot_send() -> None:
     net = en.build("toy", "paper", seed=SEED)
     r = net.send_reading("CM-0101", "too early")
     assert r.reason == "UNAUTHENTICATED_PEER" and not r.emitted
+
+
+# -- V-UNIT-08 over real encryptions (follow-up E8) ---------------------------------------------------
+
+def _record_encryptions(monkeypatch: pytest.MonkeyPatch) -> list[tuple[bytes, bytes]]:
+    """Spies on maka.aead.encrypt: (key, nonce) of every AEAD encryption actually performed."""
+    from maka import aead
+
+    calls: list[tuple[bytes, bytes]] = []
+    original = aead.encrypt
+
+    def spy(key: bytes, plaintext: bytes, *, ad: bytes, nonce: bytes | None = None) -> bytes:
+        out = original(key, plaintext, ad=ad, nonce=nonce)
+        calls.append((bytes(key), out[:aead.NONCE_BYTES]))
+        return out
+
+    monkeypatch.setattr(aead, "encrypt", spy)
+    return calls
+
+
+def test_v_unit_08_nonce_unique_per_key_over_real_session_encryptions(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every sealed message the devices send (readings, batches, grants, designations, revocation
+    notices), across rekeys: no (key, nonce) pair is ever used twice, and each nonce is 0^32||seq."""
+    calls = _record_encryptions(monkeypatch)
+    net = onboarded("small")
+    for i in range(60):
+        for cm in net.cms():
+            net.send_reading(cm.identity, f"r{i}")
+        net.run()
+        if i % 20 == 19:
+            net.rekey("CH-01")  # cluster rekey: every session of the cluster is replaced
+            net.run()
+    net.revoke("CM-0103")
+    net.run()
+    assert len(calls) >= 3 * 60 + 60  # every reading and at least one batch per round
+    assert len(set(calls)) == len(calls)
+    assert all(nonce[:4] == bytes(4) and int.from_bytes(nonce[4:], "big") >= 1 for _, nonce in calls)
+    assert len({k for k, _ in calls}) >= 2 * 4  # many keys: sessions were really replaced
+    assert {r["seq"] for r in net.readings() if r["device"] == "CM-0101"} == set(range(1, 21))
+
+
+def test_v_unit_08_positive_control_detects_a_rewound_counter(monkeypatch: pytest.MonkeyPatch) -> None:
+    calls = _record_encryptions(monkeypatch)
+    net = onboarded("paper")
+    net.send_reading("CM-0101", "a")
+    net.run()
+    net.device("CM-0101").current_session("BS-01", m.CM_BS).send_seq = 0  # a bug that rewinds seq
+    net.send_reading("CM-0101", "b")
+    net.run()
+    assert len(set(calls)) < len(calls)

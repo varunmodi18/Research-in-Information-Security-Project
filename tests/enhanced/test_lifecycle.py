@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import pytest
 
-from maka import codec
 from maka.enhanced import messages as m
 from maka.enhanced import network as en
 from maka.enhanced.device import SEQ_LIMIT
@@ -199,8 +198,24 @@ def test_v_cap_02_capture_of_one_cm() -> None:
     inject(net, "CH-01", "CM-0101", attacker.forge_hs2(cm.curve, cm.g, r, rec.frames[-1].payload, stolen["psk:CH-01"]))
     net.step(1)
     assert any(e.type == "KEY_CONFIRMED" and e.device == "CM-0101" for e in net.scheduler.events[t0:])
-    # ... but not to CM-0102, whose PSK with the CH the attacker lacks (V-ADV-10)
-    assert codec.enc_point(ch.g)  # keep the curve objects referenced for readers
+    # ... but not to CM-0102, whose PSK with the CH the attacker lacks (V-ADV-10): every PSK taken
+    # from CM-0101 is tried as CH-01's answer to CM-0102's handshake
+    net.scheduler.bus.clear_interceptors()
+    victim = adversary.Record(lambda f: f.label == "HS1" and f.src == "CM-0102" and f.dst == "CH-01")
+    net.scheduler.bus.add_interceptor(victim)
+    net.scheduler.bus.add_interceptor(adversary.Drop(lambda f: f.label == "HS1" and f.src == "CM-0102"))
+    psks = {n: v for n, v in stolen.items() if n.startswith("psk:")}
+    assert set(psks) == {"psk:CH-01", "psk:BS-01"}
+    for name, psk in psks.items():
+        net.rekey("CM-0102", "CH-01")
+        net.step(1)
+        forged = attacker.forge_hs2(cm.curve, cm.g, r, victim.frames[-1].payload, psk)
+        t1 = mark(net)
+        inject(net, "CH-01", "CM-0102", forged)
+        delivered = [res for res in net.step(3) if res.frame is not None and res.frame.payload == forged]
+        assert len(delivered) == 1 and delivered[0].reason == "BAD_TAG", name
+        assert not [e for e in net.scheduler.events[t1:] if e.type == "KEY_CONFIRMED" and e.device == "CM-0102"]
+    assert ch.current_session("CM-0102", m.CM_CH) is not None  # its genuine session is untouched
 
 
 def test_d2_ch_revoked_members_await_redesignation_then_drop_the_old_ch() -> None:

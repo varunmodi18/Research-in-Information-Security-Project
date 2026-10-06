@@ -31,6 +31,17 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
   - D7: the revoked device is not told, as intended.
   - Per-reading CM→CH overhead goes from 116 to 114 bytes (threshold 120). The test vector gains a
     data-path section; its AKE part is unchanged.
+- **Part E**: tests (E-10):
+  - V-ARCH-01 covers both modes and forbids `EnhancedNetwork` references (with positive controls).
+  - A keystore guard, which found and fixed server-side keystore reads.
+  - New tests: forged `CLUSTER_OPEN` (which found and fixed a relay redirect), bad hop MAC,
+    `MEMBERSHIP_MISMATCH`, 50 forged `SESSION_UNKNOWN`, and the 5×8 topology.
+  - V-ADV-12: positive control and a `demo` variant.
+  - V-CAP-02 asserts the CM-0102 claim.
+  - V-REC-02: a real restart of a MAKA-E network.
+  - V-WEB-02: exact statuses, all endpoints.
+  - V-UNIT-08: uniqueness over real encryptions.
+  - R-13 cites the hint tests.
 
 ## v1.0.0 — 2026-10-04
 

@@ -39,8 +39,14 @@ class Keystore:
         self._entries: dict[str, _Entry] = {}
         self._adapter = adapter
 
-    def attach(self, adapter: KeystoreAdapter | None) -> None:
+    def attach(self, adapter: KeystoreAdapter | None, *, replay: bool = False) -> None:
+        """Sets the persistence adapter. With replay=True the keystore pushes the entries it already
+        holds (e.g. written during provisioning) to the adapter, so the server never has to read a
+        keystore to persist it (follow-up E2)."""
         self._adapter = adapter
+        if replay and adapter is not None:
+            for name, entry in self._entries.items():
+                adapter.save(self.device_id, name, entry.cls, bytes(entry.value))
 
     def put(self, name: str, value: bytes | bytearray, cls: SecretClass) -> None:
         if not isinstance(value, (bytes, bytearray)):

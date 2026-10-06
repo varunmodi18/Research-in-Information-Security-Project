@@ -234,7 +234,10 @@ class CMMembership(EnhancedDevice):
             raise Rejected("DECODE_ERROR", peer=link, error=str(exc)) from exc
         if not self.check("CLUSTER_OPEN names its sender", id_ch == link):
             raise Rejected("DECODE_ERROR", peer=link, error="CLUSTER_OPEN sender mismatch")
-        self.relay_ch = link
+        if self.designated is None:
+            self.relay_ch = link  # before any designation, the open is how a member finds its relay
+        # Once designated, only an authenticated DESIGNATION moves the relay: a forged open is used
+        # for the one handshake it triggers and cannot redirect later ones (follow-up E3, R-13).
         if self.current_session(self.cfg.id_bs, m.CM_BS) is None or self.designated != link:
             return self.start_ake(self.cfg.id_bs, m.CM_BS, link, fresh_budget=True)
         if self.current_session(link, m.CM_CH) is None:

@@ -90,11 +90,10 @@ def topology_from_rows(row: models.Network, devices: list[models.Device]) -> dic
 
 
 def mirror_keystores(keystores: list[Keystore], adapter: EncryptedKeystoreAdapter) -> None:
-    """Attaches the encrypted adapter and records the entries provisioning already wrote."""
+    """Attaches the encrypted adapter; each keystore pushes the entries provisioning already wrote.
+    The server never reads a keystore (follow-up E2, tests/server/test_keystore_guard.py)."""
     for ks in keystores:
-        ks.attach(adapter)
-        for name in ks.names():
-            adapter.save(ks.device_id, name, ks.cls_of(name), ks.get(name))
+        ks.attach(adapter, replay=True)
 
 
 def build_original(row: models.Network, devices: list[models.Device], adapter: EncryptedKeystoreAdapter,
