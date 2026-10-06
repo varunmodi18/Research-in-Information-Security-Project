@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { api, idempotencyKey, qs } from "./client";
 import type {
   DeviceDetail,
@@ -83,12 +84,26 @@ export function useReadings(id: number, enabled = true) {
 }
 
 export function useJob(jobId: number | null) {
-  return useQuery({
+  const qc = useQueryClient();
+  const query = useQuery({
     queryKey: keys.job(jobId ?? -1),
     queryFn: () => api.get<Job>(`/jobs/${jobId}`),
     enabled: jobId !== null,
     refetchInterval: (q) => (q.state.data && TERMINAL_JOB_STATES.includes(q.state.data.state) ? false : 500),
   });
+  // When a job finishes, refresh everything it may have changed. The live stream normally does this,
+  // but it can connect after a short job has already run (or be down), so do not rely on it alone.
+  const state = query.data?.state;
+  const nid = query.data?.network_id;
+  useEffect(() => {
+    if (!state || !TERMINAL_JOB_STATES.includes(state)) return;
+    qc.invalidateQueries({ queryKey: ["networks"] });
+    qc.invalidateQueries({ queryKey: ["events"] });
+    if (nid != null) {
+      for (const k of ["network", "frames", "readings", "device"]) qc.invalidateQueries({ queryKey: [k, nid] });
+    }
+  }, [state, nid, qc]);
+  return query;
 }
 
 export function useCreateNetwork() {

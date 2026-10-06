@@ -60,6 +60,22 @@ test("V-E2E-03 J2 step through a handshake", async ({ page }) => {
   await expect(page.getByTestId("sessions-table")).toContainText("ESTABLISHED");
 });
 
+// J2 with the live stream down: completed step jobs must still refresh the timeline (CI race found
+// 2026-10-06: the SSE connection opened after the steps had run, so the frames were never refetched).
+test("J2 with the live stream down: steps still refresh the timeline (disconnected state)", async ({ page }) => {
+  await page.route("**/api/networks/*/stream*", (route) => route.abort());
+  await login(page, "operator");
+  const name = uniqueName("nostream");
+  await createNetwork(page, { name, kind: "product", template: "paper", params: "toy" });
+  await page.getByRole("link", { name: "Timeline" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Reconnecting" })).toBeVisible();
+  await page.getByRole("button", { name: "Start onboarding (step mode)" }).click();
+  await page.getByTestId("btn-step").click();
+  await expect(page.getByTestId("frame-HS1")).toBeVisible();
+  await page.getByTestId("btn-step").click();
+  await expect(page.getByTestId("frame-HS2")).toBeVisible();
+});
+
 // V-E2E-04 / J3: revoke a device.
 test("V-E2E-04 J3 revoke", async ({ page }) => {
   await login(page, "operator");
