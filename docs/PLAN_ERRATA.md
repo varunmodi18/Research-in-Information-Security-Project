@@ -242,14 +242,14 @@ intruder capability was weakened; every change is marked in the files.
    reviewer) checked RP9 Tables 5 and 6 against renders of the PDF pages: all 11 rows and all 99
    cells match. The Evaluation page states this (`eval/comparison.py::TRANSCRIPTION_CHECK`), and a
    test ties the counts to the committed tables. (Corrected by E-12: this entry first said the
-   project owner did the check. V-EVAL-05's human confirmation is still open.)
+   project owner did the check. The owner signed it off on 2026-10-07, see E-12.)
 
 ## E-12 · cleanup after review of the follow-up (2026-10-07)
 
 1. **Who checked Tables 5–6.** The check recorded by E-11 item 7 was done by the plan's author (an
    AI reviewer) against renders of the PDF pages, not by the project owner. The record now says so.
-   It has a separate `owner_signoff` field, empty until the owner sets a date. Until then V-EVAL-05's
-   human confirmation is open, and the Evaluation page says so.
+   It has a separate `owner_signoff` field, empty until the owner sets a date. The owner signed off on
+   2026-10-07, which completes V-EVAL-05's human confirmation; the Evaluation page shows the date.
 2. **A revoked device falls silent in the simulation.** When the driver marks a device revoked, the
    scheduler cancels all its timers, and the device forgets its pending retries and closes the
    handshakes it had in flight.

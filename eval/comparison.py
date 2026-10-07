@@ -7,7 +7,8 @@ where ER-02 and the third-decimal mismatches show up. Transcription from the PDF
 confirmed once by a human (IMPLEMENTATION_PLAN.md §8, V-EVAL-05). On 2026-10-06 the plan's author
 (an AI reviewer) checked all 11 rows of Table 5 and all 99 cells of Table 6 against renders of the
 PDF pages and found them to match. That is not the human confirmation V-EVAL-05 asks for: it is
-complete only when the project owner signs off (TRANSCRIPTION_CHECK["owner_signoff"]).
+complete only when the project owner signs off (TRANSCRIPTION_CHECK["owner_signoff"]): signed off
+2026-10-07.
 """
 
 from __future__ import annotations
@@ -20,7 +21,7 @@ from maka import trace
 # date (YYYY-MM-DD) the project owner confirms the check; None until then.
 TRANSCRIPTION_CHECK: dict[str, object] = {
     "date": "2026-10-06", "by": "the plan's author (an AI reviewer)", "source": "renders of the RP9 PDF pages",
-    "table5_rows": 11, "table6_cells": 99, "result": "all match", "owner_signoff": None}
+    "table5_rows": 11, "table6_cells": 99, "result": "all match", "owner_signoff": "2026-10-07"}
 
 # (scheme, formula as printed, published ms, flag). Order and values as printed in RP9 Table 5.
 TABLE5 = [
