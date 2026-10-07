@@ -208,3 +208,47 @@ test("states: timeline loading, empty, failure, disconnected", async ({ page }) 
   await page.reload();
   await expect(page.getByRole("status").filter({ hasText: "Reconnecting…" })).toBeVisible({ timeout: 30_000 });
 });
+
+// -- cleanup after review (items 3, 5, 9) -----------------------------------------------------------
+
+test("cleanup 3: a member that is itself revoked is not listed as awaiting re-designation", async ({ page }) => {
+  test.setTimeout(120_000);
+  await login(page, "operator");
+  const { nid } = await onboardedProduct(page);
+  await revoke(page, nid, "CM-0103");
+  await expect(page.getByTestId("toast").filter({ hasText: "CM-0103 revoked" })).toBeVisible({ timeout: 30_000 });
+  await revoke(page, nid, "CH-01");
+  await expect(page.getByTestId("toast").filter({ hasText: "CH-01 revoked" })).toBeVisible({ timeout: 30_000 });
+  await page.goto(`/networks/${nid}`);
+  const banner = page.getByTestId("designation-banner");
+  await expect(banner).toContainText("CM-0101, CM-0102");
+  await expect(banner).not.toContainText("CM-0103");
+  await expect(page.getByTestId("node-CM-0101")).toContainText("CH revoked");
+  await expect(page.getByTestId("node-CM-0103")).not.toContainText("CH revoked");
+  await expect(page.getByTestId("node-CM-0103")).not.toHaveAttribute("data-designation", "ch_revoked_awaiting_redesignation");
+});
+
+test("cleanup 5 and 9: device page at 1366 px: named status epoch, one-line peer and sent/recv", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await login(page, "operator");
+  const { nid } = await onboardedProduct(page);
+  await revoke(page, nid, "CM-0102");
+  await expect(page.getByTestId("toast").filter({ hasText: "CM-0102 revoked" })).toBeVisible({ timeout: 30_000 });
+  await page.reload();
+  const label = page.getByTestId("device-epoch-label");
+  await expect(label).toHaveText("Status changed in registry epoch");
+  expect(await label.getAttribute("title")).toContain("Not the same as the Epoch column of the sessions table");
+  await expect(page.getByTestId("session-state").first()).toContainText("closed by peer (device revoked)");
+  // number of distinct line boxes the cell's text occupies
+  const lines = (testId: string) => page.getByTestId(testId).evaluateAll((cells) => cells.map((c) => {
+    const r = c.ownerDocument.createRange();
+    r.selectNodeContents(c);
+    const rects = r.getClientRects();
+    const tops = new Set<number>();
+    for (let i = 0; i < rects.length; i++) tops.add(Math.round(rects[i].top));
+    return tops.size;
+  }));
+  expect(await lines("session-peer")).toEqual([1, 1]);
+  expect(await lines("session-sent-recv")).toEqual([1, 1]);
+});

@@ -80,11 +80,12 @@ export function DevicePage() {
       )}
       <div className="mx-6 mb-8 grid gap-4 lg:grid-cols-[22rem_1fr]">
         <section className="card p-4" aria-label="Identity">
-          <dl className="grid grid-cols-[8rem_1fr] gap-y-1.5 text-sm">
+          <dl className="grid grid-cols-[9.5rem_1fr] gap-x-2 gap-y-1.5 text-sm">
             <dt className="text-slate-500">Status</dt><dd><StatusBadge status={d.status} /></dd>
             <dt className="text-slate-500">Role</dt><dd>{d.role}</dd>
             <dt className="text-slate-500">Cluster</dt><dd>{d.cluster ?? "—"}</dd>
-            <dt className="text-slate-500">Epoch</dt><dd title="Registry epoch of this device's last registry change (registration, designation or revocation)">{d.epoch}</dd>
+            <dt className="text-slate-500" title="The registry epoch at which this device's registry entry last changed (registration, designation or revocation). Not the same as the Epoch column of the sessions table, which is the registry epoch in which each session was established." data-testid="device-epoch-label">Status changed in registry epoch</dt>
+            <dd title="The registry epoch at which this device's registry entry last changed (registration, designation or revocation). Not the same as the Epoch column of the sessions table, which is the registry epoch in which each session was established.">{d.epoch} <span className="cursor-help text-xs text-slate-400" aria-hidden="true">ⓘ</span></dd>
             <dt className="text-slate-500">Pu fingerprint</dt><dd className="font-mono" title="First 8 hex of SHA-256 of the public key H(ID)">{d.pu_fingerprint}</dd>
             {d.role === "CM" && enhanced && <>
               <dt className="text-slate-500">Designated CH</dt><dd className="font-mono">{d.designated ?? "—"}</dd>
@@ -133,24 +134,24 @@ export function DevicePage() {
             <table className="w-full" data-testid="sessions-table">
               <thead>
                 <tr>
-                  <th className="th">Peer</th><th className="th">Purpose</th><th className="th">State</th>
-                  <th className="th">Established</th><th className="th" title="Registry epoch when the session was established">Epoch</th><th className="th">Sent / recv</th><th className="th">Session id</th>
+                  <th className="th whitespace-nowrap">Peer</th><th className="th">Purpose</th><th className="th">State</th>
+                  <th className="th">Established</th><th className="th" title="Registry epoch in which the session was established (not the device's status-change epoch shown on the left)">Epoch</th><th className="th whitespace-nowrap">Sent / recv</th><th className="th">Session id</th>
                 </tr>
               </thead>
               <tbody>
                 {device.data.sessions.map((s) => (
                   <tr key={s.sid_hex + s.state + s.a}>
-                    <td className="td font-mono">{s.a === d.ident ? s.b : s.a}</td>
+                    <td className="td whitespace-nowrap font-mono" data-testid="session-peer">{s.a === d.ident ? s.b : s.a}</td>
                     <td className="td">{s.purpose}</td>
-                    <td className="td" data-testid="session-state"
+                    <td className="td min-w-[9rem]" data-testid="session-state"
                       title={stateLabel(s.state, s.a === d.ident) === CLOSED_BY_PEER
                         ? `This side: ${sides(s.state, s.a === d.ident).own}. Peer: CLOSED (destroyed when ${d.ident} was revoked).` : undefined}>
                       {stateLabel(s.state, s.a === d.ident) === CLOSED_BY_PEER ? "⊘ " : s.state === "ESTABLISHED" ? "✓ "
                         : s.state.startsWith("ABORTED") || s.state.includes("FAILED") ? "✕ " : ""}{stateLabel(s.state, s.a === d.ident)}</td>
                     <td className="td">{s.established_step ?? "—"}</td>
                     <td className="td">{s.epoch}</td>
-                    <td className="td">{s.sent} / {s.recv}</td>
-                    <td className="td font-mono text-xs" title="public session identifier">{s.sid_hex ? s.sid_hex.slice(0, 12) + "…" : "—"}</td>
+                    <td className="td whitespace-nowrap" data-testid="session-sent-recv">{s.sent} / {s.recv}</td>
+                    <td className="td whitespace-nowrap font-mono text-xs" title="public session identifier">{s.sid_hex ? s.sid_hex.slice(0, 12) + "…" : "—"}</td>
                   </tr>
                 ))}
               </tbody>

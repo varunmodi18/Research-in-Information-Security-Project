@@ -3,6 +3,7 @@ tests/test_formal.py and V-EVAL-04 in tests/test_security.py."""
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -49,8 +50,9 @@ def test_v_eval_02_table3_row4_counts_frames(monkeypatch: pytest.MonkeyPatch) ->
 def test_v_eval_05_table5_transcription_is_internally_consistent() -> None:
     """Each published time must follow from its printed formula and RP9's constants, except the
     flagged rows, which must fail in exactly the documented way. A transcription error in
-    either the formula or the value breaks this. The PDF check itself is human (§8): the owner
-    checked all 11 rows and 99 cells against the PDF on 2026-10-06 (comparison.TRANSCRIPTION_CHECK)."""
+    either the formula or the value breaks this. The PDF check (§8) was done on 2026-10-06 by the
+    plan's author, an AI reviewer, against the PDF page renders; the owner's sign-off is a separate
+    field (comparison.TRANSCRIPTION_CHECK)."""
     assert len(comparison.TABLE5) == 11
     for name, formula, published, flag in comparison.TABLE5:
         recomputed = comparison.recompute(formula)
@@ -67,6 +69,9 @@ def test_v_eval_05_table5_transcription_is_internally_consistent() -> None:
 def test_v_eval_05_human_check_covers_exactly_the_tables_as_committed() -> None:
     check = comparison.TRANSCRIPTION_CHECK
     assert (check["date"], check["result"]) == ("2026-10-06", "all match")
+    assert "AI reviewer" in str(check["by"]) and str(check["source"]) == "renders of the RP9 PDF pages"
+    signoff = check["owner_signoff"]  # empty until the owner sets a date
+    assert signoff is None or re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(signoff))
     assert check["table5_rows"] == len(comparison.TABLE5) == 11
     assert check["table6_cells"] == sum(len(c) for c in comparison.TABLE6.values()) == 11 * 9
 

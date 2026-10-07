@@ -13,7 +13,7 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 - **Part C**: the real AVISPA tools, obtained without root and calibrated (`formal/avispa/TOOLING.md`).
   - Every HLPSL model was run with OFMC and CL-AtSe, with executability probes.
   - RP9's Fig. 9 is reproduced exactly (SAFE, 1501 nodes, depth 7), and is vacuous (OB-11). The
-    executable RP9 model is attacked (OB-12).
+    our minimally repaired version of RP9's model (fixes D1–D6, D8, D9) is UNSAFE (OB-12).
   - MAKA-E: SAFE (typed), with its negative control attacked. An untyped boundary-shift attack is
     excluded by the encoding, and a test shows this.
   - A forward-secrecy AnB model was added.
@@ -52,6 +52,16 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
   - A one-line error for a missing KEK.
   - Tables 5–6 are recorded as checked against the PDF.
   - Playwright covers all of this, plus the loading, empty, failure and disconnected states.
+- **Cleanup after review** (E-12):
+  - The Tables 5–6 check is attributed to the plan's author (an AI reviewer), with an empty owner
+    sign-off field.
+  - Revoked devices fall silent in the simulation.
+  - Revoked members are not shown as awaiting re-designation.
+  - A formal summary table, with the detailed tables collapsed and a per-goal grid.
+  - Wording for the repaired RP9 model and the forward-secrecy result.
+  - The device page's status epoch is named and explained, and its session table no longer wraps
+    the peer or Sent/recv cells.
+  - Refreshed demo screenshots.
 
 ## v1.0.0 — 2026-10-04
 

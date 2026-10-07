@@ -36,8 +36,8 @@ FORMAL_DIR = REPO_ROOT / "formal" / "avispa"
 AVISPA_MODELS = {
     "rp9_transcribed": "RP9 Figs. 4-8 as printed",
     "rp9_fixed": "RP9, fixing only what a tool rejects (D1, D8)",
-    "rp9_executable": "RP9 made executable (D1-D6, D8, D9)",
-    "rp9_insider": "RP9 executable, intruder is a legitimate CM",
+    "rp9_executable": "Our minimally repaired version of RP9's model (fixes D1-D6, D8, D9)",
+    "rp9_insider": "Our minimally repaired version of RP9's model, with the intruder as a legitimate CM",
     "maka_e": "MAKA-E key exchange",
     "maka_e_nopsk_control": "MAKA-E without PSK (negative control)",
 }
@@ -46,14 +46,52 @@ AVISPA_NOTES = {
     "rp9_transcribed": "OFMC reproduces Fig. 9 exactly (SAFE, 1501 nodes, depth 7), but only 3 of 8 transitions can "
                        "ever run, so no authentication goal is exercised: the SAFE is vacuous (OB-11).",
     "rp9_fixed": "Still vacuous: the same 3 of 8 transitions run (D2-D7, D9 are not fixed here).",
-    "rp9_executable": "Attacked because RP9's HLPSL has no A2 = (ID_BS xor ID_CH)*A1 check (F(r.G) is opaque): a "
-                      "property of the model, not by itself evidence of P-01 (OB-12).",
-    "rp9_insider": "An insider holding S. P-01 itself is shown by OFMC 2024 on the AnB model, which models the "
-                   "scalar multiplication.",
+    "rp9_executable": "Our minimally repaired version of RP9's model (fixes D1-D6, D8, D9) is UNSAFE because the "
+                      "model has no A2 = (ID_BS xor ID_CH)*A1 check (F(r.G) is opaque): a property of the model, "
+                      "not by itself evidence of P-01 (OB-12).",
+    "rp9_insider": "An insider holding S, in our minimally repaired version of RP9's model. P-01 itself is shown by "
+                   "OFMC 2024 on the AnB model, which models the scalar multiplication.",
     "maka_e": "Every transition can run. The untyped CL-AtSe attack is a field-boundary ambiguity the "
               "length-prefixed encoding excludes (tested).",
     "maka_e_nopsk_control": "Negative control: must be, and is, attacked.",
 }
+# The OFMC 2024 (AnB) models, for the summary table.
+ANB_MODELS = {
+    "maka_e_ake": "MAKA-E key exchange (AnB)",
+    "maka_e_ake_nopsk_control": "MAKA-E without PSK (negative control, AnB)",
+    "maka_e_ake_fs": "MAKA-E, PSK leaked after the session (forward secrecy, AnB)",
+    "maka_e_ake_fs_nodh_control": "MAKA-E without DH, PSK leaked (negative control, AnB)",
+    "rp9_auth": "RP9 authentication, dishonest CH or CM (AnB, scalar multiplication modelled)",
+    "rp9_auth_honest_ch": "RP9 authentication, insider CM (P-01; AnB)",
+    "rp9_auth_outsider": "RP9 authentication, outsiders only (AnB)",
+}
+FS_SENTENCE = ("No attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which "
+               "the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.")
+# One plain-language sentence per model for the summary table (follow-up cleanup, item 4).
+SUMMARY_SENTENCES = {
+    "rp9_transcribed": "RP9's model as printed: OFMC gives Fig. 9's SAFE exactly, but only 3 of its 8 steps can ever "
+                       "run, so nothing about authentication is actually checked.",
+    "rp9_fixed": "Fixing only what the tools reject changes nothing: still SAFE, still only 3 of 8 steps can run.",
+    "rp9_executable": "In our minimally repaired version of RP9's model (fixes D1-D6, D8, D9) every step runs and the "
+                      "authentication goals are attacked, because the model leaves out the check RP9's "
+                      "authentication relies on.",
+    "rp9_insider": "In our minimally repaired version, a legitimate member learns the cluster secret sec1 and defeats "
+                   "authentication; RP9's specific insider forgery needs the AnB model.",
+    "maka_e": "No attack on authentication or key secrecy in 4 sessions with the intruder in either role, and every "
+              "step runs. Untyped, CL-AtSe finds a field-boundary trick that the real encoding rejects.",
+    "maka_e_nopsk_control": "Without the PSK the same exchange is attacked by every tool, so the model can see the "
+                            "attacks it is meant to exclude.",
+    "maka_e_ake": "No attack in 1, 2 or 3 sessions.",
+    "maka_e_ake_nopsk_control": "Without the PSK the exchange is attacked: the check is sensitive.",
+    "maka_e_ake_fs": FS_SENTENCE,
+    "maka_e_ake_fs_nodh_control": "Without Diffie-Hellman, the keys of a completed session leak once the PSK leaks: "
+                                  "the model detects that loss.",
+    "rp9_auth": "With the intruder as a dishonest CH or CM, RP9's authentication is attacked in 1 session.",
+    "rp9_auth_honest_ch": "An insider member impersonates the CH to another member (P-01).",
+    "rp9_auth_outsider": "Outsiders only: no attack in 1 session. In 2, without a receiver-side nonce record, replay "
+                         "succeeds; RP9's replay protection rests entirely on that record, which RP9 does not specify.",
+}
+OFMC, CL225, CL234 = "OFMC (2006/02/13)", "CL-AtSe 2.2-5", "CL-AtSe 2.3-4"
 ALLOWED_TOPOLOGIES = ("paper", "small", "net")
 ALLOWED_PARAMS = ("toy", "demo", "secure")
 
@@ -148,7 +186,8 @@ def reference() -> dict[str, Any]:
     return {
         "table2": table2, "table3": table3, "table4": table4, "table5": table5, "table6": table6,
         "cost_constants_ms": cost_model.ALL, "transcription_check": comparison.TRANSCRIPTION_CHECK,
-        "formal": formal, "formal_avispa": avispa_rows(), "security_levels": SECURITY_LEVELS, "limitations": LIMITATIONS,
+        "formal": formal, "formal_avispa": avispa_rows(), "formal_summary": formal_summary(formal),
+        "security_levels": SECURITY_LEVELS, "limitations": LIMITATIONS,
         "latest_comparison": latest,
     }
 
@@ -162,6 +201,7 @@ def avispa_rows() -> dict[str, Any]:
         return {"obtained": False, "rows": []}
     summary = json.loads(path.read_text())
     rows = []
+    goals: list[dict[str, str]] = []
     for model, label in AVISPA_MODELS.items():
         data = summary["models"].get(model)
         if data is None:
@@ -169,13 +209,63 @@ def avispa_rows() -> dict[str, Any]:
         probes = data["executability_ofmc2006"]
         executes = sum(v == "executes" for v in probes.values())
         for run in (r for r in data["runs"] if r["goal"] == "all goals"):
-            per_goal = [{"goal": r["goal"], "verdict": r["verdict"]} for r in data["runs"]
-                        if r["goal"] != "all goals" and r["backend"] == run["backend"]]
             rows.append({"model": model, "label": label, "note": AVISPA_NOTES.get(model, ""),
                          "sessions": data["sessions"], "backend": run["backend"],
                          "verdict": run["verdict"], "violated": run.get("violated", ""),
                          "message": run.get("message", ""), "statistics": run.get("statistics", {}),
-                         "file": "formal/avispa/" + run["file"], "per_goal": per_goal,
+                         "file": "formal/avispa/" + run["file"],
                          "executable_transitions": f"{executes}/{len(probes)}" if probes else "",
                          "translated_by_original": data["translation"].get("32", {}).get("accepted", False)})
-    return {"obtained": True, "tool_chain": summary["tool_chain"], "paper_fig9": summary["paper_fig9"], "rows": rows}
+        for goal in sorted({str(r["goal"]) for r in data["runs"] if r["goal"] != "all goals"}):
+            cell = {str(r["backend"]): str(r["verdict"]) for r in data["runs"] if r["goal"] == goal}
+            goals.append({"model": model, "label": label, "goal": goal, "ofmc": cell.get(OFMC, "—"),
+                          "clatse": cell.get(CL225, "—")})
+    return {"obtained": True, "tool_chain": summary["tool_chain"], "paper_fig9": summary["paper_fig9"], "rows": rows,
+            "goals": goals}
+
+
+def _verdicts(data: dict[str, Any], backend: str) -> str:
+    """'SAFE', or 'SAFE (untyped: UNSAFE)' when an untyped run exists, for the all-goals runs."""
+    runs = {str(r["backend"]): str(r["verdict"]) for r in data["runs"] if r["goal"] == "all goals"}
+    v = runs.get(backend, "—")
+    untyped = runs.get(f"{backend}, untyped")
+    return f"{v} (untyped: {untyped})" if untyped else v
+
+
+def _transitions(probes: dict[str, str]) -> str:
+    """'7/8 (1 probe timed out)': a probe without a verdict is not a step that never runs."""
+    runs = sum(v == "executes" for v in probes.values())
+    open_ = sum(v not in ("executes", "never executes") for v in probes.values())
+    return f"{runs}/{len(probes)}" + (f" ({open_} probe{'s' if open_ > 1 else ''} timed out)" if open_ else "")
+
+
+def formal_summary(anb: dict[str, Any]) -> list[dict[str, str]]:
+    """One row per model for the summary above the detailed formal tables, from the same
+    SUMMARY.json files (tests/test_formal.py checks it against them)."""
+    path = FORMAL_DIR / "results" / "avispa" / "SUMMARY.json"
+    rows: list[dict[str, str]] = []
+    if path.exists():
+        models = json.loads(path.read_text())["models"]
+        for model, label in AVISPA_MODELS.items():
+            data = models.get(model)
+            if data is None:
+                continue
+            probes = data["executability_ofmc2006"]
+            cl = _verdicts(data, CL225)
+            other = {str(r["verdict"]) for r in data["runs"] if r["goal"] == "all goals" and r["backend"] == CL234}
+            if other and other != {cl.split(" ")[0]}:
+                cl += f"; 2.3-4: {other.pop()}"
+            rows.append({"model": model, "kind": "AVISPA (HLPSL)", "represents": label, "ofmc": _verdicts(data, OFMC),
+                         "clatse": cl,
+                         "transitions": _transitions(probes),
+                         "sentence": SUMMARY_SENTENCES[model]})
+    for model, label in ANB_MODELS.items():
+        runs = anb.get("results", {}).get(model, [])
+        if not runs:
+            continue
+        ofmc = "; ".join(f"{r['sessions']} session{'s' if r['sessions'] > 1 else ''}: "
+                         f"{'attack' if r['summary'] == 'ATTACK_FOUND' else 'no attack'}" for r in runs)
+        rows.append({"model": model, "kind": "OFMC 2024 (AnB)", "represents": label, "ofmc": ofmc,
+                     "clatse": "not run (AnB is read by OFMC only)", "transitions": "—",
+                     "sentence": SUMMARY_SENTENCES[model]})
+    return rows

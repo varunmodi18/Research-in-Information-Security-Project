@@ -86,7 +86,7 @@ def devices_out(devices: list[Any]) -> list[DeviceOut]:
     out = []
     for d in devices:
         row = DeviceOut.model_validate(d)
-        if row.designated is not None:
+        if row.designated is not None and row.status != "revoked":  # a revoked member awaits nothing
             row.designation_state = CH_REVOKED_AWAITING if status.get(row.designated) == "revoked" else "ok"
         out.append(row)
     return out

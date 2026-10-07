@@ -169,6 +169,18 @@ class EnhancedDevice(Device):
         self.keystore.destroy(f"psk:{peer}")
         return n
 
+    def fall_silent(self) -> None:
+        """Driver-side, when the device is marked revoked: forget pending retries and close the
+        handshakes it still had in flight, so it does nothing more on its own. (Its timers are
+        cancelled by the scheduler.) It still answers frames and commands it is explicitly given."""
+        self.retries.clear()
+        self.retry_via.clear()
+        self._gave_up.clear()
+        for s in self.sessions.values():
+            if s.state in st.PENDING:
+                self._destroy_session_material(s)
+                s.state = st.CLOSED
+
     def abort_all_sessions(self) -> None:
         """§4.8 recovery rule: every session ABORTED, no session key retained."""
         for s in self.sessions.values():

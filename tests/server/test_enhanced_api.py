@@ -95,6 +95,16 @@ def test_d2_console_shows_ch_revoked_awaiting_redesignation(operator_api: Api) -
     assert devices["CM-0101"]["undelivered"] == 1
 
 
+def test_d2_a_revoked_member_is_not_listed_as_awaiting(operator_api: Api) -> None:
+    nid = _product(operator_api)["id"]
+    operator_api.run_job(nid, "onboard")
+    operator_api.run_job(nid, "revoke", {"device": "CM-0103"})
+    operator_api.run_job(nid, "revoke", {"device": "CH-01"})
+    devices = {d["ident"]: d for d in operator_api.get(f"/api/networks/{nid}").json()["devices"]}
+    assert devices["CM-0101"]["designation_state"] == "ch_revoked_awaiting_redesignation"
+    assert devices["CM-0103"]["status"] == "revoked" and devices["CM-0103"]["designation_state"] is None
+
+
 def test_reset_network(operator_api: Api) -> None:
     net = _product(operator_api, "paper")
     nid = net["id"]

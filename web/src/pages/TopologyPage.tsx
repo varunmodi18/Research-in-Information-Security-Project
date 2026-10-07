@@ -34,7 +34,7 @@ function DeviceNode({ data }: NodeProps<Node<DeviceNodeData>>) {
       <div className="mt-1">
         <StatusBadge status={d.status} />
       </div>
-      {d.designation_state === AWAITING && (
+      {d.designation_state === AWAITING && d.status !== "revoked" && (
         <div className="mt-1 rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-900" title={AWAITING_LABEL}>
           ⚠ CH revoked
         </div>
@@ -244,7 +244,7 @@ export function TopologyPage() {
                 <dl className="mt-2 grid grid-cols-[7rem_1fr] gap-y-1 text-sm">
                   <dt className="text-slate-500">Status</dt><dd><StatusBadge status={sel.status} /></dd>
                   <dt className="text-slate-500">Cluster</dt><dd>{sel.cluster ?? "—"}</dd>
-                  <dt className="text-slate-500">Epoch</dt><dd>{sel.epoch}</dd>
+                  <dt className="text-slate-500" title="The registry epoch at which this device's registry entry last changed (registration, designation or revocation). Not the same as the Epoch column of the sessions table, which is the registry epoch in which each session was established.">Status epoch</dt><dd title="The registry epoch at which this device's registry entry last changed (registration, designation or revocation). Not the same as the Epoch column of the sessions table, which is the registry epoch in which each session was established.">{sel.epoch}</dd>
                   <dt className="text-slate-500">Pu fingerprint</dt><dd className="font-mono">{sel.pu_fingerprint}</dd>
                   {sel.role === "CM" && <>
                     <dt className="text-slate-500">Designated CH</dt>

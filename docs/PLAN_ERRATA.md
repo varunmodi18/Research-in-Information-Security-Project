@@ -238,7 +238,35 @@ intruder capability was weakened; every change is marked in the files.
 6. **F7 · configuration errors.** A missing or malformed `MAKA_KEK` (or any invalid `MAKA_*` value)
    ends the CLI with one line on stderr and exit status 2. Before this fix it printed a Python
    traceback from inside uvicorn's application factory.
-7. **F8 · V-EVAL-05's human check is recorded.** The project owner checked RP9 Tables 5 and 6
-   against the PDF on 2026-10-06: all 11 rows and all 99 cells match. The Evaluation page states
-   this (`eval/comparison.py::TRANSCRIPTION_CHECK`), and a test ties the counts to the committed
-   tables.
+7. **F8 · the Tables 5–6 transcription check is recorded.** On 2026-10-06 the plan's author (an AI
+   reviewer) checked RP9 Tables 5 and 6 against renders of the PDF pages: all 11 rows and all 99
+   cells match. The Evaluation page states this (`eval/comparison.py::TRANSCRIPTION_CHECK`), and a
+   test ties the counts to the committed tables. (Corrected by E-12: this entry first said the
+   project owner did the check. V-EVAL-05's human confirmation is still open.)
+
+## E-12 · cleanup after review of the follow-up (2026-10-07)
+
+1. **Who checked Tables 5–6.** The check recorded by E-11 item 7 was done by the plan's author (an
+   AI reviewer) against renders of the PDF pages, not by the project owner. The record now says so.
+   It has a separate `owner_signoff` field, empty until the owner sets a date. Until then V-EVAL-05's
+   human confirmation is open, and the Evaluation page says so.
+2. **A revoked device falls silent in the simulation.** When the driver marks a device revoked, the
+   scheduler cancels all its timers, and the device forgets its pending retries and closes the
+   handshakes it had in flight.
+   - Before this, a revoked CH's periodic grant refresh (E-09 item 3) re-handshaked with the BS
+     forever, filling the event log.
+   - The device still answers frames and commands it is given explicitly. Its rejoin attempts stay
+     covered by Lab L8 and V-LIFE-01/03, which drive it.
+3. **A member that is itself revoked** is not "awaiting re-designation" (E-09 item 6), and its
+   readings are not counted as lost to the CH's revocation.
+4. **Formal analysis section.** The page now has a summary table, one row per model, above the
+   detailed AVISPA and OFMC 2024 tables, which are collapsed by default. The per-goal verdicts are
+   in their own grid.
+5. **Wording.** `rp9_executable`'s UNSAFE is always attributed to "our minimally repaired version
+   of RP9's model (fixes D1–D6, D8, D9)". The forward-secrecy result is stated as: no attack at 1
+   session; the 2-session trace is impersonation after long-term key compromise, which the AnB
+   language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.
+6. **Device page.** "Epoch" becomes "Status changed in registry epoch", with a tooltip contrasting it
+   with the session epoch. At 1366 px the peer and Sent/recv cells stay on one line; the State
+   column takes the wrap.
+7. `docs/demo_assets/` is refreshed from the latest demo run.

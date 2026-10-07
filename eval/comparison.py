@@ -4,9 +4,10 @@ Revised by IMPLEMENTATION_PLAN.md M1-T9 (I-13): all 11 Table 5 rows and the full
 transcribed from RP9. Table 5 shows each row's published time next to a time recomputed from
 its printed formula with RP9's own constants (eval/cost_model.py); the recomputed column is
 where ER-02 and the third-decimal mismatches show up. Transcription from the PDF must be
-confirmed once by a human (IMPLEMENTATION_PLAN.md §8, V-EVAL-05): done by the project owner on
-2026-10-06, who checked all 11 rows of Table 5 and all 99 cells of Table 6 against the PDF and
-found them to match (TRANSCRIPTION_CHECK).
+confirmed once by a human (IMPLEMENTATION_PLAN.md §8, V-EVAL-05). On 2026-10-06 the plan's author
+(an AI reviewer) checked all 11 rows of Table 5 and all 99 cells of Table 6 against renders of the
+PDF pages and found them to match. That is not the human confirmation V-EVAL-05 asks for: it is
+complete only when the project owner signs off (TRANSCRIPTION_CHECK["owner_signoff"]).
 """
 
 from __future__ import annotations
@@ -14,10 +15,12 @@ from __future__ import annotations
 from eval import cost_model
 from maka import trace
 
-# The human check V-EVAL-05 asks for (follow-up F8). tests/test_eval_honesty.py ties the counts to
-# the tables below, so editing a table without re-checking it against the PDF fails a test.
-TRANSCRIPTION_CHECK = {"date": "2026-10-06", "by": "the project owner", "source": "the RP9 PDF",
-                       "table5_rows": 11, "table6_cells": 99, "result": "all match"}
+# The transcription check (follow-up F8). tests/test_eval_honesty.py ties the counts to the tables
+# below, so editing a table without re-checking it against the PDF fails a test. owner_signoff is the
+# date (YYYY-MM-DD) the project owner confirms the check; None until then.
+TRANSCRIPTION_CHECK: dict[str, object] = {
+    "date": "2026-10-06", "by": "the plan's author (an AI reviewer)", "source": "renders of the RP9 PDF pages",
+    "table5_rows": 11, "table6_cells": 99, "result": "all match", "owner_signoff": None}
 
 # (scheme, formula as printed, published ms, flag). Order and values as printed in RP9 Table 5.
 TABLE5 = [

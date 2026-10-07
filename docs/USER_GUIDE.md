@@ -81,7 +81,10 @@ seed (lab only). Creating a network provisions every device.
 - Status history, role and cluster.
 - The sessions table: peer, purpose (CM-BS, CM-CH, CH-BS), state, public session id, epoch and
   counters. No key values or key fingerprints are ever shown.
-  - **Epoch** is the registry epoch in which the session was established.
+  - **Epoch** (sessions table) is the registry epoch in which the session was established.
+  - **Status changed in registry epoch** (left panel) is the registry epoch at which this device's
+    own registry entry last changed (registration, designation or revocation). Hover for the
+    difference.
   - On a revoked device, sessions read **⊘ closed by peer (device revoked)**. Its peers destroyed
     their side when it was revoked. The device itself is not told, so its own side still reads
     ESTABLISHED (hover for both sides).
@@ -95,7 +98,8 @@ seed (lab only). Creating a network provisions every device.
 | **⊘ Revoke…** | Type the device id to confirm. The BS removes the device from its registry, the CH drops it, and its sessions and PSKs are destroyed |
 | **Reprovision** | Issues a revoked device a new identity |
 
-Revoking a **cluster head** leaves its members marked **⚠ CH revoked, awaiting re-designation**
+Revoking a **cluster head** leaves its members (except any that are themselves revoked) marked
+**⚠ CH revoked, awaiting re-designation**
 (topology, device page and a banner). The members are not told of the revocation. They keep their
 sessions with the revoked CH, and every reading they send is lost; the banner counts the lost
 readings. Reprovision the CH (or designate a replacement). The new CH relays a new designation to
@@ -173,8 +177,12 @@ device rejoining.
   - The §6.6 thresholds, each marked pass or fail.
 - **RP9 table reproductions**: Tables 2–6 recomputed from this implementation, with the published
   numbers alongside and errata flagged (ER-02, AM-04).
-- **Formal analysis**: OFMC results for MAKA-E and RP9, including the negative control. The HLPSL and
-  CL-AtSe results were not obtained; the page says so.
+- **Formal analysis**: a summary table first, one row per model. Each row gives what the model
+  represents, the OFMC and CL-AtSe verdicts, how many protocol steps can ever run, and one sentence
+  in plain words. Below it, collapsed, are the detailed AVISPA (HLPSL) results with a per-goal grid,
+  and the detailed OFMC 2024 (AnB) results. Each detailed row links to its raw output file.
+- Under Table 6, the transcription check: who checked Tables 5 and 6 against the PDF and when, and
+  whether the owner has signed it off.
 - **Parameter security levels**.
 
 ### Admin (admin)

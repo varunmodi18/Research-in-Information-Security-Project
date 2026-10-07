@@ -94,13 +94,10 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
   - AVISPA (OFMC 2006, CL-AtSe) finds no attack on `secrecy_of k_ir, k_ri` in the 4-session HLPSL
     model; OFMC 2024 none in the AnB model at 1–3 sessions.
   - Forward secrecy, symbolically (`anb/maka_e_ake_fs.AnB`, the PSK published after the session):
-    no attack at 1 session. At 2 sessions OFMC 2024 reports an attack, and the trace does not show
-    a forward-secrecy failure: the leaked keys belong to a responder session that the intruder
-    itself opened (with `X = g`) and completed *after* the PSK leaked, i.e. impersonation after
-    compromise, which no PSK protocol prevents. AnB cannot restrict the leak to "after every
-    session has completed", so this model does not establish forward secrecy at 2 sessions either
-    way. The no-DH control is attacked at 1 and 2 sessions, so the model does detect loss of
-    keys from completed sessions when DH is absent.
+    no attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session. (In the 2-session trace the leaked keys belong to a responder session the intruder
+    itself opened, with `X = g`, and completed after the PSK leaked.) The no-DH control is attacked
+    at 1 and 2 sessions, so the model does detect loss of keys from completed sessions when DH is
+    absent.
   - V-ADV-12: with the PSKs and `Pr` taken after the session ended, the adversary module's key
     derivations fail and no ephemeral remains in the keystore.
   - Lab L5 enhanced: recorded data from ended sessions stays confidential.

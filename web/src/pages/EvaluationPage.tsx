@@ -42,11 +42,13 @@ interface Reference {
   table4: { phase: string; rp9: number; derived: number; note: string }[];
   table5: { scheme: string; formula: string; published_ms: number; recomputed_ms: number; flag: string }[];
   table6: { features: string[]; rows: Record<string, string[]> };
-  transcription_check?: { date: string; by: string; source: string; table5_rows: number; table6_cells: number; result: string };
+  transcription_check?: { date: string; by: string; source: string; table5_rows: number; table6_cells: number; result: string;
+    owner_signoff: string | null };
   formal: { tool?: string; date?: string; hlpsl?: string; cl_atse?: string;
     results: Record<string, { sessions: number; summary: string; goal: string;
       statistics?: Record<string, string | number>; file?: string }[]> };
-  formal_avispa: { obtained: boolean; paper_fig9?: Record<string, string | number>; rows: AvispaRow[] };
+  formal_avispa: { obtained: boolean; paper_fig9?: Record<string, string | number>; rows: AvispaRow[]; goals: GoalRow[] };
+  formal_summary: SummaryRow[];
   security_levels: Record<string, string>;
   limitations: string[];
   latest_comparison: Comparison | null;
@@ -72,13 +74,21 @@ const FORMAL_MODELS: Record<string, string> = {
 // What a row's result means where the verdict alone would mislead (follow-up Part C3/C4).
 const FORMAL_NOTES: Record<string, string> = {
   "rp9_auth_outsider/2": "Without a receiver-side nonce record, replay succeeds; RP9's replay protection rests entirely on that record, which RP9 does not specify.",
-  "maka_e_ake_fs/2": "The leaked keys belong to a responder session the intruder opened and completed after the PSK leaked (impersonation after compromise), not to a session completed before it. AnB cannot restrict the leak to after all sessions; see formal/avispa/README.md.",
+  "maka_e_ake_fs/2": "No attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.",
 };
 
 interface AvispaRow {
   model: string; label: string; note: string; sessions: string; backend: string; verdict: string; violated: string;
   message: string; statistics: Record<string, string | number>; file: string;
-  per_goal: { goal: string; verdict: string }[]; executable_transitions: string; translated_by_original: boolean;
+  executable_transitions: string; translated_by_original: boolean;
+}
+interface GoalRow { model: string; label: string; goal: string; ofmc: string; clatse: string }
+interface SummaryRow { model: string; kind: string; represents: string; ofmc: string; clatse: string; transitions: string; sentence: string }
+
+function verdictClass(v: string): string {
+  if (/^(SAFE|no attack)/.test(v) || /: no attack$/.test(v)) return "text-emerald-700";
+  if (/UNSAFE|attack/.test(v)) return "text-red-700";
+  return "text-amber-700";
 }
 
 const VERDICT_CLASS: Record<string, string> = { SAFE: "text-emerald-700", NO_ATTACK_FOUND: "text-emerald-700",
@@ -392,9 +402,12 @@ export function EvaluationPage() {
                 </table>
                 {ref.data.transcription_check && (
                   <p className="mt-2 text-xs text-slate-600" data-testid="transcription-check">
-                    ✓ Tables 5 and 6 were checked against {ref.data.transcription_check.source} by {ref.data.transcription_check.by} on{" "}
+                    Tables 5 and 6 were checked against {ref.data.transcription_check.source} by {ref.data.transcription_check.by} on{" "}
                     {ref.data.transcription_check.date}: {ref.data.transcription_check.table5_rows} rows of Table 5 and{" "}
-                    {ref.data.transcription_check.table6_cells} cells of Table 6, {ref.data.transcription_check.result} (V-EVAL-05).
+                    {ref.data.transcription_check.table6_cells} cells of Table 6, {ref.data.transcription_check.result}.{" "}
+                    <span data-testid="owner-signoff">{ref.data.transcription_check.owner_signoff
+                      ? `Owner sign-off: ${ref.data.transcription_check.owner_signoff}.`
+                      : "Owner sign-off: not yet given (V-EVAL-05's human confirmation is open)."}</span>
                   </p>
                 )}
               </div>
@@ -406,17 +419,35 @@ export function EvaluationPage() {
                 none within these bounds in this abstract model. What each result does and does not show:
                 formal/avispa/README.md.
               </p>
-              <h3 className="mb-1 text-sm font-semibold">AVISPA (HLPSL): OFMC, CL-AtSe</h3>
+              <h3 className="mb-1 text-sm font-semibold">Summary: one row per model</h3>
+              <div className="overflow-x-auto">
+              <table className="tbl text-sm" data-testid="formal-summary">
+                <thead><tr><th>model</th><th>what it represents</th><th>OFMC</th><th>CL-AtSe</th>
+                  <th title="Executability probes: how many protocol steps can ever fire">transitions that can run</th><th>in plain words</th></tr></thead>
+                <tbody>{ref.data.formal_summary.map((r) => (
+                  <tr key={r.model} data-testid={`summary-${r.model}`}>
+                    <td className="font-mono text-xs">{r.model}<span className="block font-sans text-[11px] text-slate-400">{r.kind}</span></td>
+                    <td className="text-xs">{r.represents}</td>
+                    <td className={`text-xs font-semibold ${verdictClass(r.ofmc)}`}>{r.ofmc}</td>
+                    <td className={`text-xs font-semibold ${r.clatse.startsWith("not run") ? "font-normal text-slate-500" : verdictClass(r.clatse)}`}>{r.clatse}</td>
+                    <td className="whitespace-nowrap text-right font-mono text-xs">{r.transitions}</td>
+                    <td className="min-w-[18rem] text-xs">{r.sentence}</td></tr>
+                ))}</tbody>
+              </table>
+              </div>
+
+              <details className="mt-4" data-testid="formal-details-avispa">
+              <summary className="cursor-pointer text-sm font-semibold">AVISPA (HLPSL): OFMC, CL-AtSe, detailed results</summary>
               {!ref.data.formal_avispa.obtained ? <p className="text-sm font-semibold">AVISPA results: not obtained.</p> : (
                 <>
-                  <p className="mb-2 text-xs text-slate-600">
+                  <p className="my-2 text-xs text-slate-600">
                     hlpsl2if (SPAN 1.6), OFMC version of 2006/02/13, CL-AtSe 2.2-5 and 2.3-4; typed model unless marked untyped.
                     RP9 Fig. 9 reports OFMC: SAFE, {String(ref.data.formal_avispa.paper_fig9?.visited_nodes ?? 1501)} visited
                     nodes, depth {String(ref.data.formal_avispa.paper_fig9?.depth_plies ?? 7)} plies.
                   </p>
                   <div className="overflow-x-auto">
                   <table className="tbl text-sm" data-testid="formal-avispa">
-                    <thead><tr><th>model</th><th>back-end</th><th>sessions</th><th>verdict (all goals)</th><th>per goal</th>
+                    <thead><tr><th>model</th><th>back-end</th><th>sessions</th><th>verdict (all goals)</th>
                       <th>statistics</th><th>transitions that can run</th><th>raw output</th></tr></thead>
                     <tbody>{ref.data.formal_avispa.rows.map((r, i, all) => (
                       <tr key={`${r.model}-${r.backend}`} data-testid={`avispa-${r.model}`}>
@@ -427,17 +458,35 @@ export function EvaluationPage() {
                         <td className={`font-semibold ${VERDICT_CLASS[r.verdict] ?? "text-amber-700"}`}>
                           {r.verdict}{r.violated ? <span className="block text-xs font-normal">{r.violated}</span> : null}
                           {r.message ? <span className="block text-xs font-normal">{r.message}</span> : null}</td>
-                        <td className="text-xs">{r.per_goal.map((g) => `${g.goal}: ${g.verdict}`).join(", ") || "—"}</td>
                         <td className="font-mono text-xs">{stats(r.statistics)}</td>
                         <td className="text-right font-mono text-xs">{r.executable_transitions || "—"}</td>
                         <td className="font-mono text-xs">{r.file}</td></tr>
                     ))}</tbody>
                   </table>
                   </div>
+                  <h4 className="mb-1 mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Each goal checked alone (hlpsl2if --split)</h4>
+                  <div className="overflow-x-auto">
+                  <table className="tbl text-sm" data-testid="formal-goal-grid">
+                    <thead><tr><th>model</th><th>goal</th><th>OFMC (2006/02/13)</th><th>CL-AtSe 2.2-5</th></tr></thead>
+                    <tbody>{ref.data.formal_avispa.goals.map((g, i, all) => (
+                      <tr key={`${g.model}-${g.goal}`}>
+                        {(i === 0 || all[i - 1].model !== g.model) && (
+                          <td rowSpan={all.filter((x) => x.model === g.model).length} className="align-top text-xs">
+                            {g.label} <span className="block font-mono text-slate-400">{g.model}</span></td>
+                        )}
+                        <td className="font-mono text-xs">{g.goal}</td>
+                        <td className={`text-xs font-semibold ${VERDICT_CLASS[g.ofmc] ?? "text-amber-700"}`}>{g.ofmc}</td>
+                        <td className={`text-xs font-semibold ${VERDICT_CLASS[g.clatse] ?? "text-amber-700"}`}>{g.clatse}</td></tr>
+                    ))}</tbody>
+                  </table>
+                  </div>
                 </>
               )}
-              <h3 className="mb-1 mt-4 text-sm font-semibold">OFMC 2024 (AnB models)</h3>
-              <p className="mb-2 text-xs text-slate-600">
+              </details>
+
+              <details className="mt-3" data-testid="formal-details-anb">
+              <summary className="cursor-pointer text-sm font-semibold">OFMC 2024 (AnB models), detailed results</summary>
+              <p className="my-2 text-xs text-slate-600">
                 {ref.data.formal.tool ?? "OFMC 2024"} {ref.data.formal.date ? `(${ref.data.formal.date})` : ""}; models in formal/avispa/anb/.
               </p>
               {Object.keys(ref.data.formal.results).length === 0 ? <p className="text-sm font-semibold">OFMC 2024 results: not obtained.</p> : (
@@ -460,6 +509,7 @@ export function EvaluationPage() {
                 </table>
                 </div>
               )}
+              </details>
             </Section>
 
             <Section title="Parameter security levels" id="ev-levels">

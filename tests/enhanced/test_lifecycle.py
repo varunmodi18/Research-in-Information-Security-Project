@@ -281,3 +281,32 @@ def test_f1_console_shows_the_better_informed_sides_epoch() -> None:
     rows = {(r["a"], r["b"], r["purpose"]): r for r in net.session_infos() if r["state"] == "ESTABLISHED"}
     assert rows[("CM-0101", "CH-01", m.CM_CH)]["epoch"] == 1 and rows[("CM-0101", "BS-01", m.CM_BS)]["epoch"] == 1
     assert rows[("CM-0102", "CH-01", m.CM_CH)]["epoch"] == 0  # established before the revocation
+
+
+@pytest.mark.parametrize("victim", ["CH-01", "CM-0101"])
+def test_revoked_device_falls_silent(victim: str) -> None:
+    """The driver stops a revoked device's timers and pending retries: nothing it does on its own
+    reaches the event log afterwards. Explicitly driven rejoin attempts (Lab L8, V-LIFE-01/03) are
+    unaffected and are tested there."""
+    net = onboarded("net")
+    if victim == "CM-0101":  # leave it mid-handshake, with a retry pending
+        net.scheduler.bus.add_interceptor(adversary.Drop(lambda f: f.label == "HS1" and f.src == victim))
+        net.rekey(victim, "CH-01")
+        net.step(1)
+    net.revoke(victim)
+    t0 = mark(net)
+    net.step(300)
+    assert [e for e in net.scheduler.events[t0:] if e.device == victim] == []
+    assert not [t for t in net.scheduler._live_timers() if t[2] == victim]
+
+
+def test_d2_a_revoked_member_is_not_awaiting_redesignation() -> None:
+    net = onboarded("small")
+    net.revoke("CM-0103")
+    net.run()
+    net.revoke("CH-01")
+    net.run()
+    assert net.designation_state("CM-0101") == en.CH_REVOKED
+    assert net.designation_state("CM-0103") is None
+    net.send_reading("CM-0103", "from a revoked member")
+    assert net.undelivered_readings("CM-0103") == 0  # lost for its own revocation, not the CH's

@@ -134,7 +134,13 @@ class EnhancedNetwork:
     def revoke(self, ident: str) -> StepResult:
         result = self._command(self.bs_id, "revoke", ident)
         if result.verdict != "REJECT":
-            self.device(ident).set_status(dv.REVOKED)  # bookkeeping: the device itself is not told
+            dev = self.device(ident)
+            dev.set_status(dv.REVOKED)  # bookkeeping: the device itself is not told
+            # The simulated device stops acting on its own (timers, retries); otherwise a revoked CH
+            # would re-claim its grant and re-handshake forever, filling the event log. Rejoin
+            # attempts are driven explicitly (Lab L8, V-LIFE-01/03).
+            dev.fall_silent()
+            self.scheduler.cancel_device_timers(ident)
         return result
 
     def provision_device(self, ident: str, role: str, cluster: str, member_config: list[str] | None = None) -> None:
@@ -215,8 +221,8 @@ class EnhancedNetwork:
         it is not told -- until the replacement CH relays a new DESIGNATION. Until then its
         readings cannot reach the BS."""
         ch = self.designation(ident)
-        if ch is None:
-            return None
+        if ch is None or self.device(ident).status == dv.REVOKED:
+            return None  # a revoked member is excluded for its own revocation, not awaiting anything
         reg = self.bs().registry.get(ch)
         return CH_REVOKED if reg is not None and reg.status == REVOKED else "ok"
 

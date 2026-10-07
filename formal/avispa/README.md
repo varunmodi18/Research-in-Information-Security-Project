@@ -21,8 +21,8 @@ Where the tools came from, their checksums and how the chain was calibrated: `TO
 |---|---|
 | `rp9_transcribed.hlpsl` | RP9 Figs. 4–8 **exactly as printed**, transcribed from the PDF at 220 dpi, defects included |
 | `rp9_fixed.hlpsl` | The same, fixing **only what a tool rejects**: FIX D1 and FIX D8 |
-| `rp9_executable.hlpsl` | RP9 made **executable**: FIX D1–D6, D8, D9. Nothing in the protocol's design is changed, so its weaknesses can still show up |
-| `rp9_insider.hlpsl` | `rp9_executable` with the intruder as a legitimate cluster member (it holds the cluster key `S`), beside two honest members |
+| `rp9_executable.hlpsl` | Our minimally repaired version of RP9's model (fixes D1–D6, D8, D9), so that every transition can execute. Nothing in the protocol's design is changed, so its weaknesses can still show up |
+| `rp9_insider.hlpsl` | Our minimally repaired version of RP9's model (fixes D1–D6, D8, D9) with the intruder as a legitimate cluster member (it holds the cluster key `S`), beside two honest members |
 | `maka_e.hlpsl` | MAKA-E v1 key exchange. Four sessions: honest–honest twice in parallel, the intruder as initiator with its own PSK, the intruder as responder with its own PSK. Goals: `authentication_on n_i`, `n_r`; `secrecy_of k_ir`, `k_ri`. Diffie–Hellman via `exp` |
 | `maka_e_nopsk_control.hlpsl` | Negative control: `maka_e` with the PSK removed from every tag and key. It must be attacked |
 | `maka.hlpsl` | The repository's earlier model, kept for history; not a faithful transcription |
@@ -64,31 +64,33 @@ RP9 prints one OFMC result (Fig. 9): **SAFE, 1501 visited nodes, depth 7 plies**
   (D9), and everything after it depends on it. No `request` and no `secret` of the authentication
   phase is ever reached, so every goal holds trivially. `rp9_fixed` is the same: OFMC SAFE 1501/7,
   and CL-AtSe SAFE after analysing 0–1 states.
-- Once the model can execute (`rp9_executable`, all 8 transitions reachable), OFMC reports
-  **attacks on all three authentication goals** `em1`, `em2`, `em3`. CL-AtSe reports attacks on
-  `em1` and `em2`, and crashes on `em3` (`Atom number unknown`); the crash is recorded as ERROR.
+- In our minimally repaired version of RP9's model (fixes D1–D6, D8, D9; `rp9_executable`, all 8
+  transitions reachable), OFMC reports **attacks on all three authentication goals** `em1`, `em2`,
+  `em3`. CL-AtSe reports attacks on `em1` and `em2`, and crashes on `em3` (`Atom number unknown`);
+  the crash is recorded as ERROR.
   - The attack is simple: the intruder builds `{A1.A2.Nch}_Pucm` from values of its choice, and the
     member accepts it.
-  - This is a property of RP9's HLPSL, not by itself evidence of P-01. RP9 models the scalar
+  - This UNSAFE is a verdict on our minimally repaired version of RP9's model, not on RP9's model
+    as printed (which cannot run) and not by itself evidence of P-01. RP9 models the scalar
     multiplication as an opaque `F(r.G)`, so the check its authentication rests on,
-    `A2 = (ID_BS ⊕ ID_CH)·A1`, is not in its own model (register OB-12).
+    `A2 = (ID_BS ⊕ ID_CH)·A1`, is in neither model (register OB-12).
 
 ## What each result shows, and what it does not
 
 - **RP9, AVISPA.**
   - *Shows*: Fig. 9's numbers are what OFMC prints for the printed model. That model's
     authentication phase never runs, so Fig. 9 verifies nothing about it.
-  - *Shows*: made executable, RP9's HLPSL does not authenticate. The check it would need is not
-    expressible in it.
+  - *Shows*: our minimally repaired version of RP9's model (fixes D1–D6, D8, D9) is UNSAFE: it
+    does not authenticate, because the check it would need is not expressible in it.
   - *Does not show*: whether RP9's real protocol (with the scalar-multiplication check) is secure or
     broken; the HLPSL cannot say.
-- **RP9, insider (`rp9_insider`).** The intruder is a legitimate CM holding the cluster key `S` and
-  its own key pair.
+- **RP9, insider (`rp9_insider`).** In our minimally repaired version of RP9's model (fixes D1–D6,
+  D8, D9), the intruder is a legitimate CM holding the cluster key `S` and its own key pair.
   - *Shows*: such an insider learns `sec1` (OFMC and CL-AtSe), which is sent under `S`. For `sec2`
     and `sec3` CL-AtSe finds no attack and OFMC times out (30 min).
   - *Shows*: it defeats the authentication goals `em1`, `em2` (both back-ends) and `em3`
     (CL-AtSe; OFMC times out), as an outsider does in `rp9_executable`.
-  - In `rp9_executable`, CL-AtSe finds no secrecy attack on `sec1`–`sec3`, and OFMC times out on
+  - In `rp9_executable` (the same repaired model, outsiders only), CL-AtSe finds no secrecy attack on `sec1`–`sec3`, and OFMC times out on
     them. Without the cluster key `S`, the outsider does not learn the secrets.
   - *Does not show*: the specific insider forgery P-01 (forging `A2` from `ID_BS ⊕ ID_CH`), for the
     same reason as above. P-01 is shown by OFMC 2024 on `anb/rp9_auth_honest_ch.AnB`, which models
@@ -119,14 +121,10 @@ RP9 prints one OFMC result (Fig. 9): **SAFE, 1501 visited nodes, depth 7 plies**
   - This depends on the encoding, which the HLPSL model does not capture.
 - **MAKA-E forward secrecy, AnB (OFMC 2024).** The PSK is published after the session; the goal is
   secrecy of that session's keys.
-  - **1 session: no attack.**
-  - **2 sessions: OFMC reports an attack.** The trace does not show a forward-secrecy failure. The
-    keys that leak belong to a responder session that the intruder itself opened (with `X = g`) and
-    completed after the PSK had leaked from the other session. That is impersonation after
-    compromise, which no PSK-based protocol prevents. It is not the loss of a session completed
-    before the compromise.
-  - AnB cannot restrict the leak to "after every session has completed", so this model does not
-    establish forward secrecy at 2 sessions either way. The result is recorded as reported.
+  - **Result: no attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.**
+  - Detail of the 2-session trace: the keys that leak belong to a responder session that the
+    intruder itself opened (with `X = g`) and completed after the PSK had leaked from the other
+    session. The result is recorded as OFMC reported it; the model is unchanged.
   - The no-DH control is attacked at 1 and 2 sessions: there the keys of a completed honest session
     do leak.
 

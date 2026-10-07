@@ -33,9 +33,7 @@ evidence (IMPLEMENTATION_PLAN.md §5 rules, §6.6, §7.3). Newest at the bottom 
     their raw output.
   - CL-AtSe's untyped attack on MAKA-E's `n_r` is a field-boundary ambiguity. The implementation
     excludes it, and a test shows this.
-  - OFMC 2024's 2-session result on the forward-secrecy AnB model is an attack on a session completed
-    after the compromise. AnB cannot express the needed restriction, so forward secrecy is not
-    established symbolically beyond 1 session.
+  - Forward secrecy (OFMC 2024, AnB): no attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.
 
 ### OI-01 · Docker acceptance (M3-T7, M5-T7, M8-T4): closed by owner decision
 

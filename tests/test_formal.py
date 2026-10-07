@@ -185,3 +185,22 @@ def test_v_formal_readme_tables_are_the_committed_outputs() -> None:
     block = summarize_avispa.readme_block()
     assert block == summarize_avispa.render(summarize_avispa.summarize(), summarize_avispa.summarize_anb())
     assert "| `maka_e` |" in block and "OFMC 2024 (AnB models)" in block
+
+
+def test_v_formal_summary_table_matches_outputs() -> None:
+    """The Evaluation page's summary row per model agrees with the raw outputs it is built from."""
+    from maka_server.services import evaluation
+
+    anb = json.loads((evaluation.FORMAL_DIR / "results" / "SUMMARY.json").read_text(encoding="utf-8"))
+    rows = {r["model"]: r for r in evaluation.formal_summary(anb)}
+    models = _avispa()["models"]
+    assert set(rows) == set(models) | set(anb["results"])
+    for name, m in models.items():
+        assert rows[name]["ofmc"].split(" ")[0] == _run(m, "all goals", OFMC)["verdict"]
+        assert rows[name]["clatse"].split(" ")[0].rstrip(";") == _run(m, "all goals", CL225)["verdict"]
+        assert rows[name]["transitions"].startswith(f"{len(_executes(m))}/{len(m['executability_ofmc2006'])}")
+    assert rows["rp9_transcribed"]["transitions"] == "3/8" and rows["rp9_insider"]["transitions"] == "7/8 (1 probe timed out)"
+    for name, runs in anb["results"].items():
+        attacked = ["attack" if r["summary"] == "ATTACK_FOUND" else "no attack" for r in runs]
+        assert [part.split(": ")[1] for part in rows[name]["ofmc"].split("; ")] == attacked
+    assert "minimally repaired version of RP9's model" in rows["rp9_executable"]["represents"]

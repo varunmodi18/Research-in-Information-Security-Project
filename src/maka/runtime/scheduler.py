@@ -75,6 +75,13 @@ class Scheduler:
             if dev == device_id and nm == name:
                 self._cancelled.add((dev, nm, seq))
 
+    def cancel_device_timers(self, device_id: str) -> int:
+        """Cancels every pending timer of one device (the driver silencing a revoked device)."""
+        live = [t for t in self._live_timers() if t[2] == device_id]
+        for _at, seq, dev, nm in live:
+            self._cancelled.add((dev, nm, seq))
+        return len(live)
+
     def _live_timers(self) -> list[tuple[int, int, str, str]]:
         return [t for t in self._timers if (t[2], t[3], t[1]) not in self._cancelled]
 

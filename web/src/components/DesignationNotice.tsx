@@ -7,7 +7,8 @@ export const AWAITING = "ch_revoked_awaiting_redesignation";
 export const AWAITING_LABEL = "CH revoked, awaiting re-designation";
 
 export function awaiting(devices: Device[]): Device[] {
-  return devices.filter((d) => d.designation_state === AWAITING);
+  // a member that is itself revoked is excluded for its own revocation; it awaits nothing
+  return devices.filter((d) => d.designation_state === AWAITING && d.status !== "revoked");
 }
 
 export function lostReadings(devices: Device[]): number {
