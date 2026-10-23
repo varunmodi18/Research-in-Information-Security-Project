@@ -106,6 +106,17 @@ export function useJob(jobId: number | null) {
   return query;
 }
 
+/** True while a job is being submitted, or the latest submitted job has not yet reported a final
+ * state (including before its first status arrives). Controls that start jobs stay disabled meanwhile,
+ * so jobs reach the network's queue in the order the operator issued them (CI race on 4d3508b: a
+ * step submitted while "Start onboarding" was in flight could be queued first). */
+export function jobInProgress(submitPending: boolean, jobId: number | null,
+                              job: { data?: Job; isError: boolean }): boolean {
+  if (submitPending) return true;
+  if (jobId === null || job.isError) return false;
+  return !job.data || !TERMINAL_JOB_STATES.includes(job.data.state);
+}
+
 export function useCreateNetwork() {
   const qc = useQueryClient();
   return useMutation({

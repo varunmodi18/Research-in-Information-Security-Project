@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiProblem } from "../api/client";
-import { useDevice, useJob, useNetwork, useSubmitJob } from "../api/hooks";
-import type { JobType } from "../api/types";
+import { jobInProgress, useDevice, useJob, useNetwork, useSubmitJob } from "../api/hooks";
+import { TERMINAL_JOB_STATES, type JobType } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PageHeader } from "../components/Layout";
@@ -51,7 +51,8 @@ export function DevicePage() {
     return state;
   };
   const closedByPeer = device.data.sessions.some((s) => stateLabel(s.state, s.a === d.ident) === CLOSED_BY_PEER);
-  const running = job.data && !["succeeded", "failed", "cancelled", "aborted"].includes(job.data.state);
+  const running = jobInProgress(submit.isPending, jobId, job);
+  const jobActive = !!job.data && !TERMINAL_JOB_STATES.includes(job.data.state);  // the shown job's own state
 
   const run = async (type: JobType, args: Record<string, unknown>, running: string, done: string) => {
     try {
@@ -115,7 +116,7 @@ export function DevicePage() {
           )}
           {job.data && (
             <p className="mt-3 text-xs text-slate-600" role="status">
-              {running ? "⟳" : job.data.state === "succeeded" ? "✓" : "✕"} {job.data.type}: {job.data.state}
+              {jobActive ? "⟳" : job.data.state === "succeeded" ? "✓" : "✕"} {job.data.type}: {job.data.state}
               {job.data.error ? ` — ${job.data.error}` : ""}
             </p>
           )}

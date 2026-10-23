@@ -3,8 +3,8 @@ import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api as http, ApiProblem } from "../api/client";
-import { useJob, useNetwork, useSubmitJob } from "../api/hooks";
-import type { Device, JobType, NetworkDetail } from "../api/types";
+import { jobInProgress, useJob, useNetwork, useSubmitJob } from "../api/hooks";
+import { TERMINAL_JOB_STATES, type Device, type JobType, type NetworkDetail } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PageHeader } from "../components/Layout";
@@ -105,7 +105,8 @@ export function TopologyPage() {
   if (network.isLoading) return <Loading />;
   if (network.error || !network.data) return <ErrorPanel error={network.error} onRetry={() => void network.refetch()} />;
   const net = network.data;
-  const running = job.data && !["succeeded", "failed", "cancelled", "aborted"].includes(job.data.state);
+  const running = jobInProgress(submit.isPending, jobId, job);
+  const jobActive = !!job.data && !TERMINAL_JOB_STATES.includes(job.data.state);  // the shown job's own state
   const sel = net.devices.find((d) => d.ident === selected) ?? null;
 
   const run = async (type: JobType, args?: Record<string, unknown>, track?: [string, string]) => {
@@ -209,7 +210,7 @@ export function TopologyPage() {
       <DesignationBanner devices={net.devices} />
       {job.data && (
         <div className="mx-6 mb-3" data-testid="job-status">
-          {running ? (
+          {jobActive ? (
             <div className="card p-3">
               <div className="flex justify-between text-xs text-slate-600">
                 <span>⟳ {job.data.type}: {job.data.phase || job.data.state}</span>

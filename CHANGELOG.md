@@ -23,6 +23,14 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 - Evaluation page: a collapsible "Behavioural monitoring (experimental)" section reading the committed
   results, with a Playwright test. `docs/RESIDUAL_RISKS.md` R-07 and R-12 cross-reference it.
 
+- **Fixed** (CI run 39935193384 on `4d3508b`, V-E2E-03 J2): the Timeline, Topology and Device pages
+  enabled their job buttons while a job submission was still in flight, or before the new job's first
+  status had arrived. A Step clicked right after "Start onboarding" could therefore reach the
+  network's job queue first and run on an idle network, so HS2 was never delivered. The buttons now
+  stay disabled until the submitted job reports a final state (`jobInProgress` in
+  `web/src/api/hooks.ts`). New E2E test "J2 with a slow job submission" delays the onboarding request
+  and fails without the fix.
+
 ## Unreleased — follow-up after review (2026-10-06)
 
 - **Owner decisions on the formal results** (2026-10-23, E-13):

@@ -76,6 +76,31 @@ test("J2 with the live stream down: steps still refresh the timeline (disconnect
   await expect(page.getByTestId("frame-HS2")).toBeVisible();
 });
 
+// J2 with a slow job submission (CI race found 2026-10-23 on 4d3508b): the Step button was enabled
+// while the "Start onboarding" request was still in flight, so a step could be queued before the
+// onboarding job, run on an idle network, and leave HS2 undelivered. The step controls must stay
+// disabled until the submitted job has reported a final state.
+test("J2 with a slow job submission: step controls wait for the submitted job", async ({ page }) => {
+  await page.route("**/api/networks/*/jobs", async (route) => {
+    if (route.request().method() === "POST" && route.request().postDataJSON()?.type === "onboard") {
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+    await route.continue();
+  });
+  await login(page, "operator");
+  const name = uniqueName("slowsubmit");
+  await createNetwork(page, { name, kind: "product", template: "paper", params: "toy" });
+  await page.getByRole("link", { name: "Timeline" }).click();
+  await page.getByRole("button", { name: "Start onboarding (step mode)" }).click();
+  await expect(page.getByTestId("btn-step")).toBeDisabled();
+  for (let i = 0; i < 2; i++) {
+    await page.getByTestId("btn-step").click();
+    await expect(page.getByTestId("btn-step")).toBeEnabled();
+  }
+  await expect(page.getByTestId("frame-HS1")).toBeVisible();
+  await expect(page.getByTestId("frame-HS2")).toBeVisible();
+});
+
 // V-E2E-04 / J3: revoke a device.
 test("V-E2E-04 J3 revoke", async ({ page }) => {
   await login(page, "operator");

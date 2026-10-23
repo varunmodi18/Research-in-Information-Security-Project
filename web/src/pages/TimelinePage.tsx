@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiProblem } from "../api/client";
-import { useCancelJob, useFrames, useJob, useNetwork, useSubmitJob } from "../api/hooks";
+import { jobInProgress, useCancelJob, useFrames, useJob, useNetwork, useSubmitJob } from "../api/hooks";
 import type { Frame, JobType } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
 import { PageHeader } from "../components/Layout";
@@ -62,7 +62,7 @@ export function TimelinePage() {
     return LEFT + (i < 0 ? devices.length : i) * COL_W + COL_W / 2;
   };
   const sel = all.find((f) => f.id === selected) ?? null;
-  const running = job.data && !["succeeded", "failed", "cancelled", "aborted"].includes(job.data.state);
+  const running = jobInProgress(submit.isPending, jobId, job);
   const width = LEFT + (devices.length + 1) * COL_W;
   const height = TOP + shown.length * ROW_H + 20;
 
@@ -98,7 +98,7 @@ export function TimelinePage() {
             </button>
             <button type="button" className="btn-secondary" disabled={!!running} onClick={() => run("step", { count: 10 })}>Step ×10</button>
             <button type="button" className="btn-secondary" disabled={!!running} onClick={() => run("step", { until: "quiescent" })}>Run to end</button>
-            <button type="button" className="btn-secondary" disabled={!running} onClick={() => jobId && cancel.mutate(jobId)}>
+            <button type="button" className="btn-secondary" disabled={!running || submit.isPending} onClick={() => jobId && cancel.mutate(jobId)}>
               Cancel
             </button>
           </div>
