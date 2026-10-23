@@ -134,8 +134,9 @@ def test_v_formal_03_maka_e() -> None:
     assert {r["goal"] for r in typed} == {"all goals", "auth-n_i", "auth-n_r", "secrecy-k_ir", "secrecy-k_ri"}
     assert {r["verdict"] for r in typed} == {"SAFE"}
     assert _run(m, "all goals", OFMC + ", untyped")["verdict"] == "SAFE"
-    # Recorded finding: in the untyped model CL-AtSe shifts a field boundary and attacks n_r. The
-    # implementation's length-prefixed, fixed-width fields exclude it (tests/enhanced/test_ake.py
+    # Recorded tool output: in the untyped model CL-AtSe reports UNSAFE on n_r by shifting a field
+    # boundary. A field-boundary artefact excluded by the length-prefixed, fixed-width encoding, not
+    # an attack on the implementation (E-13; tests/enhanced/test_ake.py
     # ::test_untyped_boundary_shift_in_hs1/hs2_is_rejected).
     untyped = _run(m, "all goals", CL225 + ", untyped")
     assert untyped["verdict"] == "UNSAFE" and "n_r" in untyped["violated"]
@@ -204,3 +205,34 @@ def test_v_formal_summary_table_matches_outputs() -> None:
         attacked = ["attack" if r["summary"] == "ATTACK_FOUND" else "no attack" for r in runs]
         assert [part.split(": ")[1] for part in rows[name]["ofmc"].split("; ")] == attacked
     assert "minimally repaired version of RP9's model" in rows["rp9_executable"]["represents"]
+
+
+def test_e13_owner_characterisations_are_used_everywhere() -> None:
+    """E-13: the README, SECURITY_ARGUMENT.md and the Evaluation page describe the forward-secrecy,
+    untyped and TIMEOUT results in the owner's words, and none calls them a standing attack."""
+    import re
+
+    from maka_server.services import evaluation
+
+    root = evaluation.REPO_ROOT
+    flat = {name: re.sub(r"\s+", " ", (root / name).read_text(encoding="utf-8")).replace("**", "")
+            for name in ("formal/avispa/README.md", "docs/SECURITY_ARGUMENT.md", "web/src/pages/EvaluationPage.tsx")}
+    tsx = flat["web/src/pages/EvaluationPage.tsx"]
+    assert evaluation.FS_SENTENCE in tsx
+    assert evaluation.SUMMARY_SENTENCES["maka_e_ake_fs"] == evaluation.FS_SENTENCE
+    assert evaluation.UNTYPED_SENTENCE in evaluation.SUMMARY_SENTENCES["maka_e"]
+    assert evaluation.UNTYPED_SENTENCE in evaluation.AVISPA_NOTES["maka_e"]
+    phrases = ("impersonation after compromise, which AnB cannot exclude from the goal",
+               "Forward secrecy is established symbolically for 1 session only; a Tamarin model is future work",
+               "field-boundary artefact excluded by the length-prefixed, fixed-width encoding",
+               "Not an attack on the implementation")
+    for name in ("formal/avispa/README.md", "docs/SECURITY_ARGUMENT.md"):
+        for phrase in phrases:
+            assert phrase.lower() in flat[name].lower(), (name, phrase)
+    timeout = "CL-AtSe answers most of them, and they concern RP9's repaired model, not MAKA-E. They stay recorded as TIMEOUT."
+    assert timeout in flat["formal/avispa/README.md"]
+    assert timeout.replace("'", "&apos;") in tsx
+    sources = [*flat.values(), evaluation.FS_SENTENCE, evaluation.UNTYPED_SENTENCE]
+    for text in sources:
+        assert "standing attack" not in text.lower()
+        assert not re.search(r"untyped CL-AtSe attack|CL-AtSe attacks `?n_r|reports an attack on `?n_r", text)

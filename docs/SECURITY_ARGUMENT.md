@@ -68,10 +68,11 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
     for `authentication_on n_i`, `n_r`, each goal also checked alone. Every transition of both
     roles can execute (probes), so the SAFE is not vacuous. The no-PSK control is UNSAFE under
     every back-end.
-  - In AVISPA's untyped model CL-AtSe attacks `n_r` by shifting a field boundary (the intruder
-    appends fields to `X`; the initiator reads them as part of `N_R`). The implementation's
-    length-prefixed, fixed-width fields reject both shifted messages
-    (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`).
+  - In AVISPA's untyped model CL-AtSe reports UNSAFE on `n_r` (the intruder appends fields to `X`;
+    the initiator reads them as part of `N_R`). This is a field-boundary artefact excluded by the
+    length-prefixed, fixed-width encoding: both shifted messages are rejected
+    (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`). Not an attack on the
+    implementation (`docs/PLAN_ERRATA.md` E-13).
   - OFMC 2024 on the AnB model: no attack at 1–3 sessions; the no-PSK control is attacked
     (`formal/avispa/README.md`).
   - Tests V-ADV-03/04/05/11/14 and Lab L2/L3/L4.
@@ -94,10 +95,12 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
   - AVISPA (OFMC 2006, CL-AtSe) finds no attack on `secrecy_of k_ir, k_ri` in the 4-session HLPSL
     model; OFMC 2024 none in the AnB model at 1–3 sessions.
   - Forward secrecy, symbolically (`anb/maka_e_ake_fs.AnB`, the PSK published after the session):
-    no attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session. (In the 2-session trace the leaked keys belong to a responder session the intruder
-    itself opened, with `X = g`, and completed after the PSK leaked.) The no-DH control is attacked
-    at 1 and 2 sessions, so the model does detect loss of keys from completed sessions when DH is
-    absent.
+    accepted as a modelling limitation (`docs/PLAN_ERRATA.md` E-13). No attack at 1 session; at 2
+    sessions the leaked keys belong to a session the intruder opened after the PSK leaked (with
+    `X = g`), i.e. impersonation after compromise, which AnB cannot exclude from the goal. Forward
+    secrecy is established symbolically for 1 session only; a Tamarin model is future work. The no-DH
+    control is attacked at 1 and 2 sessions, so the model does detect loss of keys from completed
+    sessions when DH is absent.
   - V-ADV-12: with the PSKs and `Pr` taken after the session ended, the adversary module's key
     derivations fail and no ephemeral remains in the keystore.
   - Lab L5 enhanced: recorded data from ended sessions stays confidential.
@@ -193,8 +196,8 @@ The protocol is specified in IMPLEMENTATION_PLAN.md §4.6, with the clarificatio
 2. **Symbolic analysis is bounded and abstract.** AVISPA (OFMC, CL-AtSe) checked the key exchange
    with the 4 sessions of `maka_e.hlpsl`, and OFMC 2024 the AnB model with up to 3, with perfect
    cryptography, the PSK as an opaque secret and DH as the only algebra. The membership,
-   revocation and data layers are not modelled. Forward secrecy is not established symbolically
-   beyond 1 session (P3). The tools are 2006-era builds run on a modern host
+   revocation and data layers are not modelled. Forward secrecy is established symbolically for 1
+   session only; a Tamarin model is future work (P3). The tools are 2006-era builds run on a modern host
    (`formal/avispa/TOOLING.md` records how they were calibrated).
 3. **Key-compromise impersonation (KCI).** With a symmetric PSK, whoever holds `Pr_A` can
    impersonate any peer *to A*. This is accepted and demonstrated (V-CAP-02).

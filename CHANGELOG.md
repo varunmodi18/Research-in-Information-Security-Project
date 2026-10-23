@@ -6,6 +6,15 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 
 ## Unreleased — follow-up after review (2026-10-06)
 
+- **Owner decisions on the formal results** (2026-10-23, E-13):
+  - The OFMC TIMEOUTs on RP9's repaired models are not rerun and stay recorded as TIMEOUT.
+  - The 2-session forward-secrecy result is accepted as a modelling limitation: forward secrecy is
+    established symbolically for 1 session only; a Tamarin model is future work.
+  - The untyped CL-AtSe result on MAKA-E is a field-boundary artefact, not an attack on the
+    implementation.
+  - `formal/avispa/README.md`, `docs/SECURITY_ARGUMENT.md` and the Evaluation page use this
+    wording, and a test checks that they agree.
+
 - **Part A**: CI fixed (the workflow lacked the `server` extra); a web job runs tsc, the build and
   the Playwright journeys. The owner's working documents are git-ignored.
 - **Part B**: Docker dropped by owner decision (E-07). `deploy/` removed, `.env.example` at the root,
@@ -13,8 +22,8 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 - **Part C**: the real AVISPA tools, obtained without root and calibrated (`formal/avispa/TOOLING.md`).
   - Every HLPSL model was run with OFMC and CL-AtSe, with executability probes.
   - RP9's Fig. 9 is reproduced exactly (SAFE, 1501 nodes, depth 7), and is vacuous (OB-11). The
-    our minimally repaired version of RP9's model (fixes D1–D6, D8, D9) is UNSAFE (OB-12).
-  - MAKA-E: SAFE (typed), with its negative control attacked. An untyped boundary-shift attack is
+    minimally repaired version of RP9's model (fixes D1–D6, D8, D9) is UNSAFE (OB-12).
+  - MAKA-E: SAFE (typed), with its negative control attacked. An untyped field-boundary artefact is
     excluded by the encoding, and a test shows this.
   - A forward-secrecy AnB model was added.
   - The Evaluation page has two formal tables. OB-09 is corrected and OB-10 reworded. Errata E-08;

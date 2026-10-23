@@ -110,23 +110,31 @@ RP9 prints one OFMC result (Fig. 9): **SAFE, 1501 visited nodes, depth 7 plies**
     claims to exclude.
   - *Does not show*: anything beyond these 4 sessions, about the SOK-derived PSK (modelled as a
     constant), or about the membership, revocation and data layers (not modelled).
-- **MAKA-E, AVISPA untyped.** OFMC (untyped) finds no attack. **CL-AtSe (untyped) reports an attack
-  on `n_r`.** This is recorded as a finding, not hidden.
-  - It is a field-boundary ambiguity of the symbolic model: the intruder appends `Sid.R.I.X` to `X`
-    in HS1, and the initiator then parses `N_R` as `X.Sid.R.I.N_R`. Both sides agree on the
-    flattened transcript but disagree on `n_r`.
-  - The implementation excludes it: every field is length-prefixed, and `N_R` and `X` have fixed
-    widths. Both shifted messages are rejected, `BAD_POINT` for HS1 and `DECODE_ERROR` for HS2
+- **MAKA-E, AVISPA untyped.** OFMC (untyped) finds no attack. CL-AtSe (untyped) reports UNSAFE on
+  `n_r`. **This is a field-boundary artefact excluded by the length-prefixed, fixed-width encoding.
+  Not an attack on the implementation** (owner decision, `docs/PLAN_ERRATA.md` E-13).
+  - In the symbolic model the intruder appends `Sid.R.I.X` to `X` in HS1, and the initiator then
+    parses `N_R` as `X.Sid.R.I.N_R`. Both sides agree on the flattened transcript but disagree on
+    `n_r`.
+  - On the wire every field is length-prefixed, and `N_R` and `X` have fixed widths. Both shifted
+    messages are rejected, `BAD_POINT` for HS1 and `DECODE_ERROR` for HS2
     (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`).
-  - This depends on the encoding, which the HLPSL model does not capture.
+  - The HLPSL model does not capture the encoding, so the tool output stays recorded as UNSAFE.
 - **MAKA-E forward secrecy, AnB (OFMC 2024).** The PSK is published after the session; the goal is
   secrecy of that session's keys.
-  - **Result: no attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.**
-  - Detail of the 2-session trace: the keys that leak belong to a responder session that the
-    intruder itself opened (with `X = g`) and completed after the PSK had leaked from the other
-    session. The result is recorded as OFMC reported it; the model is unchanged.
+  - **Accepted as a modelling limitation** (owner decision, `docs/PLAN_ERRATA.md` E-13): no attack
+    at 1 session; at 2 sessions the leaked keys belong to a session the intruder opened after the PSK
+    leaked, i.e. impersonation after compromise, which AnB cannot exclude from the goal. **Forward
+    secrecy is established symbolically for 1 session only; a Tamarin model is future work.**
+  - Detail of the 2-session trace: the intruder opened the responder session itself (with `X = g`)
+    and completed it after the PSK had leaked from the other session. The result is recorded as
+    OFMC reported it; the model is unchanged.
   - The no-DH control is attacked at 1 and 2 sessions: there the keys of a completed honest session
     do leak.
+- **OFMC TIMEOUTs on RP9's repaired models** (`rp9_executable` secrecy goals, `rp9_insider`
+  secrecy goals and `auth-em3`, one goal at a time). **Not rerun** (owner decision,
+  `docs/PLAN_ERRATA.md` E-13): CL-AtSe answers most of them, and they concern RP9's repaired model,
+  not MAKA-E. They stay recorded as TIMEOUT.
 
 ## Executability probes
 

@@ -31,9 +31,14 @@ evidence (IMPLEMENTATION_PLAN.md §5 rules, §6.6, §7.3). Newest at the bottom 
 - **Recorded, not hidden:**
   - Runs that hit the 30-minute limit are recorded as TIMEOUT, and CL-AtSe crashes as ERROR, with
     their raw output.
-  - CL-AtSe's untyped attack on MAKA-E's `n_r` is a field-boundary ambiguity. The implementation
-    excludes it, and a test shows this.
-  - Forward secrecy (OFMC 2024, AnB): no attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.
+  - CL-AtSe's untyped result on MAKA-E's `n_r` is a field-boundary artefact excluded by the
+    length-prefixed, fixed-width encoding (tested). Not an attack on the implementation.
+  - Forward secrecy (OFMC 2024, AnB) is accepted as a modelling limitation: no attack at 1 session;
+    at 2 sessions the leaked keys belong to a session the intruder opened after the PSK leaked, i.e.
+    impersonation after compromise, which AnB cannot exclude from the goal. Forward secrecy is
+    established symbolically for 1 session only; a Tamarin model is future work.
+  - The OFMC TIMEOUTs on RP9's repaired models are not rerun and stay recorded as TIMEOUT.
+- **Owner decisions on these three results (2026-10-23):** `docs/PLAN_ERRATA.md` E-13.
 
 ### OI-01 · Docker acceptance (M3-T7, M5-T7, M8-T4): closed by owner decision
 

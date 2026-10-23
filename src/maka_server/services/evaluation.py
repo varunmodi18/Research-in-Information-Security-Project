@@ -41,6 +41,14 @@ AVISPA_MODELS = {
     "maka_e": "MAKA-E key exchange",
     "maka_e_nopsk_control": "MAKA-E without PSK (negative control)",
 }
+# The owner's characterisations of the two non-SAFE MAKA-E model results (docs/PLAN_ERRATA.md E-13). The
+# README, SECURITY_ARGUMENT.md and EvaluationPage.tsx use the same words (tests/test_formal.py checks).
+UNTYPED_SENTENCE = ("The untyped CL-AtSe result is a field-boundary artefact excluded by the length-prefixed, "
+                    "fixed-width encoding (tested). Not an attack on the implementation.")
+FS_SENTENCE = ("Accepted as a modelling limitation: no attack at 1 session; at 2 sessions the leaked keys belong to a "
+               "session the intruder opened after the PSK leaked, i.e. impersonation after compromise, which AnB "
+               "cannot exclude from the goal. Forward secrecy is established symbolically for 1 session only; a "
+               "Tamarin model is future work.")
 # What a row's verdict means where the verdict alone would mislead (formal/avispa/README.md).
 AVISPA_NOTES = {
     "rp9_transcribed": "OFMC reproduces Fig. 9 exactly (SAFE, 1501 nodes, depth 7), but only 3 of 8 transitions can "
@@ -51,8 +59,7 @@ AVISPA_NOTES = {
                       "not by itself evidence of P-01 (OB-12).",
     "rp9_insider": "An insider holding S, in our minimally repaired version of RP9's model. P-01 itself is shown by "
                    "OFMC 2024 on the AnB model, which models the scalar multiplication.",
-    "maka_e": "Every transition can run. The untyped CL-AtSe attack is a field-boundary ambiguity the "
-              "length-prefixed encoding excludes (tested).",
+    "maka_e": "Every transition can run. " + UNTYPED_SENTENCE,
     "maka_e_nopsk_control": "Negative control: must be, and is, attacked.",
 }
 # The OFMC 2024 (AnB) models, for the summary table.
@@ -65,8 +72,6 @@ ANB_MODELS = {
     "rp9_auth_honest_ch": "RP9 authentication, insider CM (P-01; AnB)",
     "rp9_auth_outsider": "RP9 authentication, outsiders only (AnB)",
 }
-FS_SENTENCE = ("No attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which "
-               "the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.")
 # One plain-language sentence per model for the summary table (follow-up cleanup, item 4).
 SUMMARY_SENTENCES = {
     "rp9_transcribed": "RP9's model as printed: OFMC gives Fig. 9's SAFE exactly, but only 3 of its 8 steps can ever "
@@ -78,7 +83,7 @@ SUMMARY_SENTENCES = {
     "rp9_insider": "In our minimally repaired version, a legitimate member learns the cluster secret sec1 and defeats "
                    "authentication; RP9's specific insider forgery needs the AnB model.",
     "maka_e": "No attack on authentication or key secrecy in 4 sessions with the intruder in either role, and every "
-              "step runs. Untyped, CL-AtSe finds a field-boundary trick that the real encoding rejects.",
+              "step runs. " + UNTYPED_SENTENCE,
     "maka_e_nopsk_control": "Without the PSK the same exchange is attacked by every tool, so the model can see the "
                             "attacks it is meant to exclude.",
     "maka_e_ake": "No attack in 1, 2 or 3 sessions.",

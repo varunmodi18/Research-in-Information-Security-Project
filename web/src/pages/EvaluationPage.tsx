@@ -74,7 +74,8 @@ const FORMAL_MODELS: Record<string, string> = {
 // What a row's result means where the verdict alone would mislead (follow-up Part C3/C4).
 const FORMAL_NOTES: Record<string, string> = {
   "rp9_auth_outsider/2": "Without a receiver-side nonce record, replay succeeds; RP9's replay protection rests entirely on that record, which RP9 does not specify.",
-  "maka_e_ake_fs/2": "No attack at 1 session; the 2-session trace is impersonation after long-term key compromise, which the AnB language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.",
+  // the owner's wording (docs/PLAN_ERRATA.md E-13); the same as FS_SENTENCE in maka_server/services/evaluation.py
+  "maka_e_ake_fs/2": "Accepted as a modelling limitation: no attack at 1 session; at 2 sessions the leaked keys belong to a session the intruder opened after the PSK leaked, i.e. impersonation after compromise, which AnB cannot exclude from the goal. Forward secrecy is established symbolically for 1 session only; a Tamarin model is future work.",
 };
 
 interface AvispaRow {
@@ -465,6 +466,10 @@ export function EvaluationPage() {
                   </table>
                   </div>
                   <h4 className="mb-1 mt-3 text-xs font-semibold uppercase tracking-wide text-slate-500">Each goal checked alone (hlpsl2if --split)</h4>
+                  <p className="mb-2 text-xs text-slate-600" data-testid="formal-timeouts">
+                    The OFMC TIMEOUTs (RP9 secrecy goals, rp9_insider auth-em3) are not rerun: CL-AtSe answers most of them, and
+                    they concern RP9&apos;s repaired model, not MAKA-E. They stay recorded as TIMEOUT.
+                  </p>
                   <div className="overflow-x-auto">
                   <table className="tbl text-sm" data-testid="formal-goal-grid">
                     <thead><tr><th>model</th><th>goal</th><th>OFMC (2006/02/13)</th><th>CL-AtSe 2.2-5</th></tr></thead>

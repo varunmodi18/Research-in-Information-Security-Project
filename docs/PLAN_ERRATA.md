@@ -138,8 +138,8 @@ intruder capability was weakened; every change is marked in the files.
 5. **Executability probes** (`formal/avispa/probes.py`) are added for every model: a SAFE verdict
    on a model whose transitions cannot fire is not evidence. They are part of V-FORMAL now.
 6. **Untyped runs** are recorded for the MAKA-E models in addition to AVISPA's default typed model.
-   CL-AtSe's untyped attack on `n_r` is a field-boundary ambiguity that the implementation
-   excludes; the exclusion is tested (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`).
+   CL-AtSe's untyped result on `n_r` is a field-boundary artefact that the implementation
+   excludes (characterised by the owner in E-13); the exclusion is tested (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`).
 
 **Register.** OB-09 corrected, OB-10 reworded, OB-11 and OB-12 added. OI-02 updated.
 ## E-09 · §4.6.5–§4.6.7, §4.8 and §6.6: protocol fixes after review (follow-up Part D, 2026-10-06)
@@ -266,7 +266,29 @@ intruder capability was weakened; every change is marked in the files.
    of RP9's model (fixes D1–D6, D8, D9)". The forward-secrecy result is stated as: no attack at 1
    session; the 2-session trace is impersonation after long-term key compromise, which the AnB
    language cannot exclude, so forward secrecy is not established symbolically beyond 1 session.
+   (Superseded by the owner's wording in E-13.)
 6. **Device page.** "Epoch" becomes "Status changed in registry epoch", with a tooltip contrasting it
    with the session epoch. At 1366 px the peer and Sent/recv cells stay on one line; the State
    column takes the wrap.
 7. `docs/demo_assets/` is refreshed from the latest demo run.
+
+## E-13 · §6 V-FORMAL-01..03: owner decisions on three formal results (2026-10-23)
+
+These close items 2 and 3 of the follow-up's "Needed from you" and fix the wording used for each
+result in `formal/avispa/README.md`, `docs/SECURITY_ARGUMENT.md` and the Evaluation page
+(`maka_server/services/evaluation.py`, `web/src/pages/EvaluationPage.tsx`; `tests/test_formal.py`
+checks that they agree).
+
+1. **The OFMC TIMEOUTs are not rerun.** This covers the OFMC (2006/02/13) runs on the secrecy goals
+   of `rp9_executable` and `rp9_insider` and on `rp9_insider`'s `auth-em3`, each checked alone. CL-AtSe
+   answers most of them, and they concern RP9's repaired model, not MAKA-E. They stay recorded as
+   TIMEOUT, with their raw output.
+2. **The 2-session OFMC 2024 forward-secrecy result is accepted as a modelling limitation.** In
+   `anb/maka_e_ake_fs.AnB`, the leaked keys belong to a session the intruder opened after the PSK
+   leaked. That is impersonation after compromise, which AnB cannot exclude from the goal. Forward
+   secrecy is established symbolically for 1 session only. A Tamarin model, which can state
+   "compromise after the session", is future work. The model and its recorded output are unchanged.
+3. **The untyped CL-AtSe result on MAKA-E** (`maka_e`, CL-AtSe 2.2-5 untyped, UNSAFE on `n_r`) is a
+   field-boundary artefact. The length-prefixed, fixed-width encoding excludes it
+   (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`). It is not an attack on the
+   implementation. The tool's verdict stays recorded as UNSAFE.

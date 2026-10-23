@@ -29,11 +29,13 @@ test("V-E2E-05 J5 evaluate", async ({ page }) => {
   // cleanup item 4: a summary first (one row per model); detailed tables collapsed below it
   await expect(page.getByTestId("summary-rp9_transcribed")).toContainText("3/8");
   await expect(page.getByTestId("summary-maka_e")).toContainText("SAFE (untyped: UNSAFE)");
-  await expect(page.getByTestId("summary-maka_e_ake_fs")).toContainText("forward secrecy is not established symbolically beyond 1 session");
+  await expect(page.getByTestId("summary-maka_e")).toContainText("field-boundary artefact excluded by the length-prefixed, fixed-width encoding (tested). Not an attack on the implementation.");
+  await expect(page.getByTestId("summary-maka_e_ake_fs")).toContainText("Forward secrecy is established symbolically for 1 session only; a Tamarin model is future work.");
   await expect(page.getByTestId("formal-avispa")).toBeHidden();
   await page.getByTestId("formal-details-avispa").locator("summary").click();
   await page.getByTestId("formal-details-anb").locator("summary").click();
   await expect(page.getByTestId("formal-goal-grid")).toContainText("secrecy-sec1");
+  await expect(page.getByTestId("formal-timeouts")).toContainText("They stay recorded as TIMEOUT.");
   const avispa = page.getByTestId("avispa-rp9_transcribed").filter({ hasText: "OFMC (2006/02/13)" });
   await expect(avispa).toContainText("1501 nodes, depth 7");
   await expect(avispa).toContainText("results/avispa/runs/rp9_transcribed.ofmc2006.txt");
