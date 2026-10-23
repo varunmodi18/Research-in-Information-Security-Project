@@ -1,11 +1,11 @@
-.PHONY: setup test demo demo-seed demo-reset eval formal report clean all ci ci-slow bench web web-build openapi serve dev e2e
+.PHONY: setup test demo demo-seed demo-reset eval formal report clean all ci ci-slow bench behaviour web web-build openapi serve dev e2e
 
 # Prefer the project virtualenv when it exists (IMPLEMENTATION_PLAN.md M0-T1).
 PYTHON ?= $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 PARAMS ?= demo
 
 setup:
-	$(PYTHON) -m pip install -e ".[dev,server]"
+	$(PYTHON) -m pip install -e ".[dev,server,ml]"
 
 test:
 	$(PYTHON) -m pytest -q
@@ -32,7 +32,7 @@ report: eval
 
 # M0-T5: what CI runs on every commit.
 # NFR-MNT-01: strict typing on the packages added by IMPLEMENTATION_PLAN.md.
-TYPED = src/maka/codec.py src/maka/kdf.py src/maka/runtime src/maka/original_rt src/maka/enhanced src/maka/lab src/maka_server
+TYPED = src/maka/codec.py src/maka/kdf.py src/maka/runtime src/maka/original_rt src/maka/enhanced src/maka/lab src/maka/behaviour src/maka_server
 
 ci:
 	$(PYTHON) -m ruff check .
@@ -46,6 +46,10 @@ ci-slow: ci
 bench:
 	$(PYTHON) -m eval.bench.primitives --out docs/baseline/primitives
 	$(PYTHON) -m eval.bench.legacy --out docs/baseline/legacy_run
+
+# Experimental behaviour monitor (docs/BEHAVIOUR.md): dataset, detectors and results, regenerated
+behaviour:
+	$(PYTHON) -m maka.behaviour all
 
 # -- console (IMPLEMENTATION_PLAN.md M3) -------------------------------------------
 openapi:

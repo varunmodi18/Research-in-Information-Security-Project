@@ -154,6 +154,61 @@ def test_ia01_pure_python_core() -> None:
                 assert not any(a.name in banned for a in node.names)
 
 
+# IA-18: IA-01's pure-Python rule covers the cryptographic core. The optional [ml] extra's native
+# libraries may be imported only by the experimental behaviour monitor's detector/evaluation modules.
+ML_LIBRARIES = {"numpy", "scipy", "sklearn", "joblib", "pandas"}
+ML_ALLOWED = {"src/maka/behaviour/detectors.py", "src/maka/behaviour/evaluate.py"}
+
+
+def _top_level_imports(path: object) -> set[str]:
+    import ast
+    from pathlib import Path
+
+    tree = ast.parse(Path(str(path)).read_text(encoding="utf-8"))
+    names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names |= {a.name.split(".")[0] for a in node.names}
+        elif isinstance(node, ast.ImportFrom) and node.module and node.level == 0:
+            names.add(node.module.split(".")[0])
+    return names
+
+
+def test_ia18_ml_libraries_only_in_the_behaviour_monitor() -> None:
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent.parent
+    users = {str(f.relative_to(root)) for f in (root / "src").rglob("*.py") if _top_level_imports(f) & ML_LIBRARIES}
+    assert users == ML_ALLOWED
+    # positive control: the scan sees both import forms
+    sample = root / "src" / "maka" / "behaviour" / "detectors.py"
+    assert {"numpy", "sklearn"} <= _top_level_imports(sample)
+    # the pure-Python behaviour modules (and so the whole core) import without the extra
+    for name in ("traffic", "features", "dataset"):
+        assert not _top_level_imports(root / "src" / "maka" / "behaviour" / f"{name}.py") & ML_LIBRARIES
+
+
+def test_ia19_behaviour_monitor_is_alert_only_and_labelled_experimental() -> None:
+    import ast
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent.parent
+    pkg = root / "src" / "maka" / "behaviour"
+    # alert-only: nothing in the monitor issues an operator action on a network
+    actions = {"revoke", "rekey", "reprovision", "designate", "provision_device"}
+    for f in pkg.glob("*.py"):
+        if f.name == "traffic.py":
+            continue  # the simulator's driver issues the benign and faulty workload itself
+        calls = {n.func.attr for n in ast.walk(ast.parse(f.read_text(encoding="utf-8")))
+                 if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)}
+        assert not calls & actions, (f.name, calls & actions)
+    latest = max((root / "artifacts" / "behaviour").glob("results_*.json"))
+    res = json.loads(latest.read_text(encoding="utf-8"))
+    assert res["experimental"] is True and "only raises alerts" in res["framing"]
+    assert "do not transfer to real deployments" in res["framing"]
+
+
 def test_ia02_scalars_from_r_group() -> None:
     p = params.get("toy")
     r = rng.current().below(p.curve.r_group)

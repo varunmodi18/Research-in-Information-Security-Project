@@ -1,0 +1,2921 @@
+{
+ "config": {
+  "benign_seeds": 40,
+  "fault_seeds": 10,
+  "topologies": [
+   "small",
+   "net"
+  ],
+  "variants": [
+   "excessive_rekey/default",
+   "excessive_rekey/near_normal",
+   "lossy_forwarding/default"
+  ],
+  "traffic": {
+   "params": "toy",
+   "window": 20,
+   "observe_steps": 600,
+   "reading_interval": 30,
+   "reading_jitter": 10,
+   "rekey_rate": 0.0033333333333333335,
+   "onboarding_stagger": 10,
+   "fault_start": 200,
+   "fault_duration": 300
+  }
+ },
+ "features": [
+  "frames_sent",
+  "frames_received",
+  "handshakes_initiated",
+  "handshakes_completed",
+  "rekeys",
+  "rejections",
+  "readings_accepted_at_bs",
+  "seq_gaps_at_bs",
+  "batch_items_forwarded"
+ ],
+ "columns": [
+  "run_id",
+  "topology",
+  "seed",
+  "kind",
+  "variant",
+  "device",
+  "role",
+  "window",
+  "label",
+  "frames_sent",
+  "frames_received",
+  "handshakes_initiated",
+  "handshakes_completed",
+  "rekeys",
+  "rejections",
+  "readings_accepted_at_bs",
+  "seq_gaps_at_bs",
+  "batch_items_forwarded"
+ ],
+ "rows": 33600,
+ "positive_rows": 900,
+ "runs": [
+  {
+   "run_id": "small/benign/1000",
+   "topology": "small",
+   "seed": 1000,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 44,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1001",
+   "topology": "small",
+   "seed": 1001,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 49,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1002",
+   "topology": "small",
+   "seed": 1002,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 42,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1003",
+   "topology": "small",
+   "seed": 1003,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 42,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1004",
+   "topology": "small",
+   "seed": 1004,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 45,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1005",
+   "topology": "small",
+   "seed": 1005,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 49,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1006",
+   "topology": "small",
+   "seed": 1006,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 42,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1007",
+   "topology": "small",
+   "seed": 1007,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1008",
+   "topology": "small",
+   "seed": 1008,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 49,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1009",
+   "topology": "small",
+   "seed": 1009,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 49,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1010",
+   "topology": "small",
+   "seed": 1010,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 42,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1011",
+   "topology": "small",
+   "seed": 1011,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 41,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1012",
+   "topology": "small",
+   "seed": 1012,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1013",
+   "topology": "small",
+   "seed": 1013,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 45,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1014",
+   "topology": "small",
+   "seed": 1014,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 42,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1015",
+   "topology": "small",
+   "seed": 1015,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 45,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1016",
+   "topology": "small",
+   "seed": 1016,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 43,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1017",
+   "topology": "small",
+   "seed": 1017,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 42,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1018",
+   "topology": "small",
+   "seed": 1018,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1019",
+   "topology": "small",
+   "seed": 1019,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1020",
+   "topology": "small",
+   "seed": 1020,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1021",
+   "topology": "small",
+   "seed": 1021,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1022",
+   "topology": "small",
+   "seed": 1022,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 45,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1023",
+   "topology": "small",
+   "seed": 1023,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 43,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1024",
+   "topology": "small",
+   "seed": 1024,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 41,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1025",
+   "topology": "small",
+   "seed": 1025,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 49,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1026",
+   "topology": "small",
+   "seed": 1026,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 48,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1027",
+   "topology": "small",
+   "seed": 1027,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1028",
+   "topology": "small",
+   "seed": 1028,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 42,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1029",
+   "topology": "small",
+   "seed": 1029,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1030",
+   "topology": "small",
+   "seed": 1030,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 46,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1031",
+   "topology": "small",
+   "seed": 1031,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 47,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1032",
+   "topology": "small",
+   "seed": 1032,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 43,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1033",
+   "topology": "small",
+   "seed": 1033,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 49,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1034",
+   "topology": "small",
+   "seed": 1034,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 41,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1035",
+   "topology": "small",
+   "seed": 1035,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 49,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1036",
+   "topology": "small",
+   "seed": 1036,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 41,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1037",
+   "topology": "small",
+   "seed": 1037,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1038",
+   "topology": "small",
+   "seed": 1038,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 51,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/benign/1039",
+   "topology": "small",
+   "seed": 1039,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 50,
+   "fault_windows": []
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5000",
+   "topology": "small",
+   "seed": 5000,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    242,
+    542
+   ],
+   "observe_start": 42,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5001",
+   "topology": "small",
+   "seed": 5001,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    241,
+    541
+   ],
+   "observe_start": 41,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5002",
+   "topology": "small",
+   "seed": 5002,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0102",
+   "fault_steps": [
+    250,
+    550
+   ],
+   "observe_start": 50,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5003",
+   "topology": "small",
+   "seed": 5003,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    246,
+    546
+   ],
+   "observe_start": 46,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5004",
+   "topology": "small",
+   "seed": 5004,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    245,
+    545
+   ],
+   "observe_start": 45,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5005",
+   "topology": "small",
+   "seed": 5005,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    247,
+    547
+   ],
+   "observe_start": 47,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5006",
+   "topology": "small",
+   "seed": 5006,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0102",
+   "fault_steps": [
+    248,
+    548
+   ],
+   "observe_start": 48,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5007",
+   "topology": "small",
+   "seed": 5007,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    248,
+    548
+   ],
+   "observe_start": 48,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5008",
+   "topology": "small",
+   "seed": 5008,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    247,
+    547
+   ],
+   "observe_start": 47,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/default/5009",
+   "topology": "small",
+   "seed": 5009,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    247,
+    547
+   ],
+   "observe_start": 47,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5100",
+   "topology": "small",
+   "seed": 5100,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    248,
+    548
+   ],
+   "observe_start": 48,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5101",
+   "topology": "small",
+   "seed": 5101,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0102",
+   "fault_steps": [
+    248,
+    548
+   ],
+   "observe_start": 48,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5102",
+   "topology": "small",
+   "seed": 5102,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    246,
+    546
+   ],
+   "observe_start": 46,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5103",
+   "topology": "small",
+   "seed": 5103,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    245,
+    545
+   ],
+   "observe_start": 45,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5104",
+   "topology": "small",
+   "seed": 5104,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0102",
+   "fault_steps": [
+    249,
+    549
+   ],
+   "observe_start": 49,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5105",
+   "topology": "small",
+   "seed": 5105,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    245,
+    545
+   ],
+   "observe_start": 45,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5106",
+   "topology": "small",
+   "seed": 5106,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    242,
+    542
+   ],
+   "observe_start": 42,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5107",
+   "topology": "small",
+   "seed": 5107,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    245,
+    545
+   ],
+   "observe_start": 45,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5108",
+   "topology": "small",
+   "seed": 5108,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0102",
+   "fault_steps": [
+    248,
+    548
+   ],
+   "observe_start": 48,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/excessive_rekey/near_normal/5109",
+   "topology": "small",
+   "seed": 5109,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    249,
+    549
+   ],
+   "observe_start": 49,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5200",
+   "topology": "small",
+   "seed": 5200,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    249,
+    549
+   ],
+   "observe_start": 49,
+   "readings_left_out": 10,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5201",
+   "topology": "small",
+   "seed": 5201,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    242,
+    542
+   ],
+   "observe_start": 42,
+   "readings_left_out": 13,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5202",
+   "topology": "small",
+   "seed": 5202,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    246,
+    546
+   ],
+   "observe_start": 46,
+   "readings_left_out": 9,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5203",
+   "topology": "small",
+   "seed": 5203,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    250,
+    550
+   ],
+   "observe_start": 50,
+   "readings_left_out": 11,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5204",
+   "topology": "small",
+   "seed": 5204,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    244,
+    544
+   ],
+   "observe_start": 44,
+   "readings_left_out": 10,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5205",
+   "topology": "small",
+   "seed": 5205,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    249,
+    549
+   ],
+   "observe_start": 49,
+   "readings_left_out": 10,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5206",
+   "topology": "small",
+   "seed": 5206,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    247,
+    547
+   ],
+   "observe_start": 47,
+   "readings_left_out": 6,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5207",
+   "topology": "small",
+   "seed": 5207,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    246,
+    546
+   ],
+   "observe_start": 46,
+   "readings_left_out": 11,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5208",
+   "topology": "small",
+   "seed": 5208,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    246,
+    546
+   ],
+   "observe_start": 46,
+   "readings_left_out": 7,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "small/lossy_forwarding/default/5209",
+   "topology": "small",
+   "seed": 5209,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    245,
+    545
+   ],
+   "observe_start": 45,
+   "readings_left_out": 7,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/benign/1000",
+   "topology": "net",
+   "seed": 1000,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 135,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1001",
+   "topology": "net",
+   "seed": 1001,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 132,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1002",
+   "topology": "net",
+   "seed": 1002,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 135,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1003",
+   "topology": "net",
+   "seed": 1003,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 132,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1004",
+   "topology": "net",
+   "seed": 1004,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 135,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1005",
+   "topology": "net",
+   "seed": 1005,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1006",
+   "topology": "net",
+   "seed": 1006,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 135,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1007",
+   "topology": "net",
+   "seed": 1007,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1008",
+   "topology": "net",
+   "seed": 1008,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 138,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1009",
+   "topology": "net",
+   "seed": 1009,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1010",
+   "topology": "net",
+   "seed": 1010,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1011",
+   "topology": "net",
+   "seed": 1011,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1012",
+   "topology": "net",
+   "seed": 1012,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1013",
+   "topology": "net",
+   "seed": 1013,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 129,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1014",
+   "topology": "net",
+   "seed": 1014,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1015",
+   "topology": "net",
+   "seed": 1015,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1016",
+   "topology": "net",
+   "seed": 1016,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1017",
+   "topology": "net",
+   "seed": 1017,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1018",
+   "topology": "net",
+   "seed": 1018,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1019",
+   "topology": "net",
+   "seed": 1019,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1020",
+   "topology": "net",
+   "seed": 1020,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 132,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1021",
+   "topology": "net",
+   "seed": 1021,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 137,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1022",
+   "topology": "net",
+   "seed": 1022,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1023",
+   "topology": "net",
+   "seed": 1023,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1024",
+   "topology": "net",
+   "seed": 1024,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1025",
+   "topology": "net",
+   "seed": 1025,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1026",
+   "topology": "net",
+   "seed": 1026,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1027",
+   "topology": "net",
+   "seed": 1027,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1028",
+   "topology": "net",
+   "seed": 1028,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1029",
+   "topology": "net",
+   "seed": 1029,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1030",
+   "topology": "net",
+   "seed": 1030,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1031",
+   "topology": "net",
+   "seed": 1031,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 133,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1032",
+   "topology": "net",
+   "seed": 1032,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 132,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1033",
+   "topology": "net",
+   "seed": 1033,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1034",
+   "topology": "net",
+   "seed": 1034,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1035",
+   "topology": "net",
+   "seed": 1035,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 132,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1036",
+   "topology": "net",
+   "seed": 1036,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 134,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1037",
+   "topology": "net",
+   "seed": 1037,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 132,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1038",
+   "topology": "net",
+   "seed": 1038,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 131,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/benign/1039",
+   "topology": "net",
+   "seed": 1039,
+   "fault": null,
+   "fault_device": null,
+   "fault_steps": null,
+   "observe_start": 135,
+   "fault_windows": []
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5000",
+   "topology": "net",
+   "seed": 5000,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0203",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5001",
+   "topology": "net",
+   "seed": 5001,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5002",
+   "topology": "net",
+   "seed": 5002,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0303",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5003",
+   "topology": "net",
+   "seed": 5003,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5004",
+   "topology": "net",
+   "seed": 5004,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0203",
+   "fault_steps": [
+    338,
+    638
+   ],
+   "observe_start": 138,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5005",
+   "topology": "net",
+   "seed": 5005,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    332,
+    632
+   ],
+   "observe_start": 132,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5006",
+   "topology": "net",
+   "seed": 5006,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    333,
+    633
+   ],
+   "observe_start": 133,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5007",
+   "topology": "net",
+   "seed": 5007,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0201",
+   "fault_steps": [
+    334,
+    634
+   ],
+   "observe_start": 134,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5008",
+   "topology": "net",
+   "seed": 5008,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0303",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/default/5009",
+   "topology": "net",
+   "seed": 5009,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5100",
+   "topology": "net",
+   "seed": 5100,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0301",
+   "fault_steps": [
+    332,
+    632
+   ],
+   "observe_start": 132,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5101",
+   "topology": "net",
+   "seed": 5101,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0301",
+   "fault_steps": [
+    333,
+    633
+   ],
+   "observe_start": 133,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5102",
+   "topology": "net",
+   "seed": 5102,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0301",
+   "fault_steps": [
+    332,
+    632
+   ],
+   "observe_start": 132,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5103",
+   "topology": "net",
+   "seed": 5103,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0303",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5104",
+   "topology": "net",
+   "seed": 5104,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5105",
+   "topology": "net",
+   "seed": 5105,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0303",
+   "fault_steps": [
+    332,
+    632
+   ],
+   "observe_start": 132,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5106",
+   "topology": "net",
+   "seed": 5106,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0101",
+   "fault_steps": [
+    333,
+    633
+   ],
+   "observe_start": 133,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5107",
+   "topology": "net",
+   "seed": 5107,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0302",
+   "fault_steps": [
+    335,
+    635
+   ],
+   "observe_start": 135,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5108",
+   "topology": "net",
+   "seed": 5108,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0103",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/excessive_rekey/near_normal/5109",
+   "topology": "net",
+   "seed": 5109,
+   "fault": {
+    "kind": "excessive_rekey",
+    "variant": "near_normal",
+    "rekey_interval": 150,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CM-0102",
+   "fault_steps": [
+    332,
+    632
+   ],
+   "observe_start": 132,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5200",
+   "topology": "net",
+   "seed": 5200,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-03",
+   "fault_steps": [
+    333,
+    633
+   ],
+   "observe_start": 133,
+   "readings_left_out": 12,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5201",
+   "topology": "net",
+   "seed": 5201,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-03",
+   "fault_steps": [
+    334,
+    634
+   ],
+   "observe_start": 134,
+   "readings_left_out": 11,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5202",
+   "topology": "net",
+   "seed": 5202,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-03",
+   "fault_steps": [
+    333,
+    633
+   ],
+   "observe_start": 133,
+   "readings_left_out": 11,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5203",
+   "topology": "net",
+   "seed": 5203,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-03",
+   "fault_steps": [
+    336,
+    636
+   ],
+   "observe_start": 136,
+   "readings_left_out": 9,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5204",
+   "topology": "net",
+   "seed": 5204,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-03",
+   "fault_steps": [
+    332,
+    632
+   ],
+   "observe_start": 132,
+   "readings_left_out": 12,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5205",
+   "topology": "net",
+   "seed": 5205,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-01",
+   "fault_steps": [
+    335,
+    635
+   ],
+   "observe_start": 135,
+   "readings_left_out": 6,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5206",
+   "topology": "net",
+   "seed": 5206,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-03",
+   "fault_steps": [
+    334,
+    634
+   ],
+   "observe_start": 134,
+   "readings_left_out": 9,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5207",
+   "topology": "net",
+   "seed": 5207,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-02",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "readings_left_out": 10,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5208",
+   "topology": "net",
+   "seed": 5208,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-02",
+   "fault_steps": [
+    331,
+    631
+   ],
+   "observe_start": 131,
+   "readings_left_out": 8,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  },
+  {
+   "run_id": "net/lossy_forwarding/default/5209",
+   "topology": "net",
+   "seed": 5209,
+   "fault": {
+    "kind": "lossy_forwarding",
+    "variant": "default",
+    "rekey_interval": 5,
+    "forward_fraction": 0.7
+   },
+   "fault_device": "CH-02",
+   "fault_steps": [
+    332,
+    632
+   ],
+   "observe_start": 132,
+   "readings_left_out": 8,
+   "fault_windows": [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24
+   ]
+  }
+ ]
+}

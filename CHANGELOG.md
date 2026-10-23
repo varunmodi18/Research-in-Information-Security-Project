@@ -4,6 +4,25 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 §2.3 protocol weaknesses P-*, deployment limits D-*). Errata to the plan are in
 `docs/PLAN_ERRATA.md`; anything not closed is in `docs/OPEN_ISSUES.md`.
 
+## Unreleased — behavioural monitoring (experimental, 2026-10-23)
+
+- New package `src/maka/behaviour/` (`docs/BEHAVIOUR.md`, register IA-18, IA-19). It is experimental and
+  alert-only: it never revokes, rekeys or blocks a device.
+  - Traffic driver with benign variation (random onboarding order, jittered readings, occasional
+    rekeys) and per-device injected faults: `excessive_rekey` (with a `near_normal` variant) and
+    `lossy_forwarding`.
+  - Per-device, per-window features from frames and security events; dataset builder (140 runs,
+    CSV + manifest); z-score baseline and Isolation Forest per role; split-by-run evaluation.
+  - `python -m maka.behaviour build|train|evaluate|all` (`make behaviour`). Results committed in
+    `artifacts/behaviour/results_2026-10-23.{json,md}`:
+    - the simple z-score baseline is clearly better on lossy forwarding;
+    - the two are about even on excessive rekeying;
+    - neither detects the near-normal variant.
+- Optional `[ml]` extra (numpy, scikit-learn pinned to 1.9.x). CI installs it in both jobs. IA-18
+  scopes IA-01's pure-Python rule to the cryptographic core, with a test.
+- Evaluation page: a collapsible "Behavioural monitoring (experimental)" section reading the committed
+  results, with a Playwright test. `docs/RESIDUAL_RISKS.md` R-07 and R-12 cross-reference it.
+
 ## Unreleased — follow-up after review (2026-10-06)
 
 - **Owner decisions on the formal results** (2026-10-23, E-13):

@@ -38,6 +38,7 @@ decision, `docs/PLAN_ERRATA.md` E-07).
 | [`docs/API.md`](docs/API.md) | HTTP API |
 | [`docs/SECURITY_ARGUMENT.md`](docs/SECURITY_ARGUMENT.md), [`docs/RESIDUAL_RISKS.md`](docs/RESIDUAL_RISKS.md) | What MAKA-E claims, why, and what it does not |
 | [`artifacts/eval/`](artifacts/eval/) | Original-vs-enhanced comparison, benchmarks |
+| [`docs/BEHAVIOUR.md`](docs/BEHAVIOUR.md) | Behavioural monitoring (experimental, alerts only): injected faults, detectors, results |
 | [`docs/OPEN_ISSUES.md`](docs/OPEN_ISSUES.md), [`CHANGELOG.md`](CHANGELOG.md) | What is not done, and what was |
 
 **Limitations.**

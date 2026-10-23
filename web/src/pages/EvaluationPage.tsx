@@ -52,6 +52,78 @@ interface Reference {
   security_levels: Record<string, string>;
   limitations: string[];
   latest_comparison: Comparison | null;
+  behaviour: Behaviour | null;
+}
+interface BehaviourRow {
+  fault: string; variant: string; detector: string; precision: number; recall: number; f1: number;
+  false_alarms_per_1000_other_windows: number; detected_runs: number; runs: number; median_delay_windows: number | null;
+}
+interface Behaviour {
+  file: string; date: string; experimental: boolean; framing: string; limitations: string[]; results: BehaviourRow[];
+  benign_false_alarms: Record<string, { per_1000: number; flagged: number; windows: number; by_topology: Record<string, { per_1000: number; windows: number }> }>;
+  explanation_feature_counts: Record<string, Record<string, number>>;
+  split: { runs: Record<string, number>; test_windows: number };
+  config: { target_false_alarm_rate: number; sigma_floor: number; isolation_forest: { n_estimators: number; seed: number } };
+  dataset: { benign_seeds: number; fault_seeds: number; topologies: string[] };
+  window: number; explained_windows: number;
+}
+// Injected faults in our simulator (docs/BEHAVIOUR.md), not attacks.
+const FAULT_LABEL: Record<string, string> = {
+  "excessive_rekey/default": "Excessive rekeying (one CM, interval far below normal)",
+  "excessive_rekey/near_normal": "Excessive rekeying, near-normal variant (interval slightly below normal)",
+  "lossy_forwarding/default": "Lossy forwarding (one CH forwards 70 % of member readings)",
+};
+
+function BehaviourSection({ b }: { b: Behaviour }) {
+  return (
+    <section className="card p-4" aria-labelledby="ev-behaviour-h" data-testid="ev-behaviour">
+      <details data-testid="behaviour-details">
+        <summary className="cursor-pointer">
+          <h2 id="ev-behaviour-h" className="inline text-base font-semibold">Behavioural monitoring (experimental)</h2>
+          <span className="ml-2 rounded border border-amber-400 bg-amber-50 px-1.5 py-0.5 text-[11px] font-semibold uppercase text-amber-800">experimental · alerts only</span>
+        </summary>
+        <p className="mt-3 text-sm text-slate-700" data-testid="behaviour-framing">{b.framing}</p>
+        <p className="mt-2 text-xs text-slate-600">
+          Each device is scored per window of {b.window} scheduler steps from counts the base station already has (frames,
+          handshakes, rekeys, rejections, accepted readings, sequence gaps, batch sizes). Data: {b.dataset.benign_seeds} benign
+          runs and {b.dataset.fault_seeds} runs per injected-fault variant on each of the {b.dataset.topologies.join(" and ")} topologies,
+          split by run; thresholds set for {Math.round(b.config.target_false_alarm_rate * 100)} % false alarms on benign validation windows.
+        </p>
+        <div className="mt-3 overflow-x-auto">
+          <table className="tbl text-sm" data-testid="behaviour-results">
+            <thead><tr><th>injected fault</th><th>detector</th><th className="text-right">precision</th><th className="text-right">recall</th>
+              <th className="text-right" title="False alarms per 1,000 windows of the other (non-faulty) device-windows in these runs">false alarms /1k</th>
+              <th className="text-right" title="Runs with at least one alert on the faulty device during the fault">detected runs</th>
+              <th className="text-right" title="Median windows from the start of the fault to the first alert on the faulty device">median delay (windows)</th></tr></thead>
+            <tbody>{b.results.map((r) => (
+              <tr key={`${r.fault}-${r.variant}-${r.detector}`}>
+                <td className="text-xs">{FAULT_LABEL[`${r.fault}/${r.variant}`] ?? `${r.fault}/${r.variant}`}</td>
+                <td className="text-xs">{r.detector}</td>
+                <td className="text-right font-mono text-xs">{r.precision.toFixed(2)}</td>
+                <td className="text-right font-mono text-xs">{r.recall.toFixed(2)}</td>
+                <td className="text-right font-mono text-xs">{r.false_alarms_per_1000_other_windows.toFixed(1)}</td>
+                <td className="text-right font-mono text-xs">{r.detected_runs}/{r.runs}</td>
+                <td className="text-right font-mono text-xs">{r.median_delay_windows ?? "—"}</td></tr>
+            ))}</tbody>
+          </table>
+        </div>
+        <p className="mt-2 text-xs text-slate-600" data-testid="behaviour-benign-fa">
+          False alarms on benign test runs:{" "}
+          {Object.entries(b.benign_false_alarms).map(([d, fa]) => `${d} ${fa.per_1000.toFixed(1)} per 1,000 device-windows (${fa.flagged}/${fa.windows})`).join("; ")}.
+        </p>
+        <p className="mt-1 text-xs text-slate-600">
+          Isolation Forest alerts are explained by the three features with the largest z-scores
+          ({b.explained_windows} flagged test windows listed in {b.file}). Most frequent in correct alerts:{" "}
+          {Object.entries(b.explanation_feature_counts).map(([k, c]) => `${k}: ${Object.keys(c).slice(0, 2).join(", ")}`).join("; ")}.
+        </p>
+        <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900" data-testid="behaviour-limitations">
+          <div className="mb-1 font-semibold">Limitations</div>
+          <ul className="list-disc pl-5">{b.limitations.map((l) => <li key={l}>{l}</li>)}</ul>
+        </div>
+        <p className="mt-2 text-[11px] text-slate-500">Source: {b.file} ({b.date}); regenerate with python -m maka.behaviour all (docs/BEHAVIOUR.md).</p>
+      </details>
+    </section>
+  );
 }
 
 type Variant = "original+secure" | "original+clear" | "enhanced";
@@ -516,6 +588,8 @@ export function EvaluationPage() {
               )}
               </details>
             </Section>
+
+            {ref.data.behaviour && <BehaviourSection b={ref.data.behaviour} />}
 
             <Section title="Parameter security levels" id="ev-levels">
               <table className="tbl text-sm">

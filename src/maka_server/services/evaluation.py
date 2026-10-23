@@ -194,7 +194,24 @@ def reference() -> dict[str, Any]:
         "formal": formal, "formal_avispa": avispa_rows(), "formal_summary": formal_summary(formal),
         "security_levels": SECURITY_LEVELS, "limitations": LIMITATIONS,
         "latest_comparison": latest,
+        "behaviour": behaviour_results(),
     }
+
+
+def behaviour_results() -> dict[str, Any] | None:
+    """The latest committed results of the experimental behaviour monitor (docs/BEHAVIOUR.md),
+    without the per-window explanation list. Read from the artefact: no numpy or scikit-learn."""
+    files = sorted((REPO_ROOT / "artifacts" / "behaviour").glob("results_*.json"))
+    if not files:
+        return None
+    res = json.loads(files[-1].read_text(encoding="utf-8"))
+    keep = ("date", "experimental", "framing", "limitations", "results", "benign_false_alarms",
+            "explanation_feature_counts", "split", "thresholds")
+    return {"file": str(files[-1].relative_to(REPO_ROOT)), **{k: res[k] for k in keep},
+            "config": {k: res["config"][k] for k in ("target_false_alarm_rate", "sigma_floor", "isolation_forest")},
+            "dataset": {k: res["config"]["dataset"][k] for k in ("benign_seeds", "fault_seeds", "topologies")},
+            "window": res["config"]["dataset"]["traffic"]["window"],
+            "explained_windows": len(res["explanations"])}
 
 
 def avispa_rows() -> dict[str, Any]:

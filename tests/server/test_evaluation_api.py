@@ -44,3 +44,21 @@ def test_reference_material(api: Api) -> None:
     assert ref["formal"]["results"] or ref["formal"].get("hlpsl") == "not obtained"
     # nothing secret-looking in reference material (§4.4)
     assert "Pr_" not in json.dumps(ref["table2"])
+
+
+def test_reference_serves_the_committed_behaviour_results(api: Api) -> None:
+    """docs/BEHAVIOUR.md: the Evaluation page's experimental section reads the latest committed
+    results artefact (without the per-window explanation list), and it is labelled as such."""
+    from pathlib import Path
+
+    api.login("viewer")
+    b = api.get("/api/evaluation/reference").json()["behaviour"]
+    root = Path(__file__).resolve().parents[2]
+    latest = max((root / "artifacts" / "behaviour").glob("results_*.json"))
+    committed = json.loads(latest.read_text())
+    assert b["file"] == str(latest.relative_to(root)) and b["date"] == committed["date"]
+    assert b["experimental"] is True and b["results"] == committed["results"]
+    assert b["benign_false_alarms"] == committed["benign_false_alarms"]
+    assert "explanations" not in b and b["explained_windows"] == len(committed["explanations"])
+    assert {r["detector"] for r in b["results"]} == {"z-score baseline", "Isolation Forest"}
+    assert any("Alerts only" in line for line in b["limitations"])

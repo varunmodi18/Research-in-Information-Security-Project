@@ -3,8 +3,8 @@
 Five-way classification of every place this implementation had to make a decision RP9 does not
 make for it, per `PLAN.md` §0 rule 3 and §5. Each entry: exact passage at issue, class, resolution,
 and a runnable demonstration under `tests/register/`. Finalised at P13.6 with 32 entries; extended
-by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries, by M7 to 42, and by the follow-up review (Part C)
-to 44 (5 ER, 9 AM, 17 IA, 12 OB, 1 SD).
+by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries, by M7 to 42, by the follow-up review (Part C)
+to 44, and by the experimental behaviour monitor to 46 (5 ER, 9 AM, 19 IA, 12 OB, 1 SD).
 Corrections to IMPLEMENTATION_PLAN.md itself are in `docs/PLAN_ERRATA.md`, not here.
 
 ## ER — genuine errata (5)
@@ -27,9 +27,9 @@ Corrections to IMPLEMENTATION_PLAN.md itself are in `docs/PLAN_ERRATA.md`, not h
 - [x] AM-08 — ICMDS coefficients delegated to [26] (resolved by SD-01)
 - [x] AM-09 — `x_i` unresolved G_2 -> scalar type (`src/icmds/session_key.py::encryption_setup`; IA-11)
 
-## IA — implementation assumptions (17)
+## IA — implementation assumptions (19)
 
-- [x] IA-01 — language/dependency policy (`pyproject.toml`)
+- [x] IA-01 — language/dependency policy (`pyproject.toml`); scoped to the cryptographic core by IA-18
 - [x] IA-02 — pairing instantiation, scalar domain Z_r (`src/maka/curve.py`, `src/maka/pairing.py`, `src/maka/params.py`)
 - [x] IA-03 — Enc/Dec instantiation (BF-IBE hybrid) (`src/maka/ibe.py`)
 - [x] IA-04 — "sent securely" instantiation: IBE encryption to the recipient (`H(ID_CH)` for PSEUDO_BS_CH, `Pu_CM` for PSEUDO_CH_CM) when the `secure_pseudo_ids` flag is on, which is the default since IMPLEMENTATION_PLAN.md M1-T4. With `--no-secure-pseudo-ids` (paper-table reproduction) they are sent in clear. Before M1 they were always sent in clear despite this entry (I-02) (`src/maka/protocol/p3_node_registration.py`)
@@ -46,6 +46,8 @@ Corrections to IMPLEMENTATION_PLAN.md itself are in `docs/PLAN_ERRATA.md`, not h
 - [x] IA-15 — `r_CH`, `A1`, `A2`, `N_auth_CH` drawn once per CH round, one EM1 per member and a single EM2, as RP9 §5.4 describes; the previous per-member regeneration (I-08) is retired (`src/maka/protocol/p4_node_authentication.py`)
 - [x] IA-17 — **MAKA-E v1** (enhanced mode, the default on product networks) replaces RP9 §5.1–§5.5 apart from the key material `Pr_i = k·H(ID_i)`: provisioning without `k` on devices (C1), pairwise PSKs `HKDF(ê(Pr_A, H(ID_B)))` (C2), a PSK-authenticated ephemeral-DH key exchange modelled on TLS 1.3 `psk_dhe_ke` (C3), and BS-authorised membership, designation, revocation and authenticated batching (C4). Specified in IMPLEMENTATION_PLAN.md §4.6 with the clarifications in `docs/PLAN_ERRATA.md` E-05. RP9 as published remains available as original mode on lab networks (`src/maka/enhanced/`; `tests/enhanced/`)
 - [x] IA-16 — DATA_CM: AES-256-GCM with associated data `LP(ID_CM, ID_BS, seq)` and nonce `0^32 ‖ seq`, `seq` a per-sender counter (`src/maka/protocol/data_transmission.py`, `src/maka/aead.py`)
+- [x] IA-18 — **IA-01's pure-Python rule covers the cryptographic core only** (`src/maka` outside `behaviour/`, `src/icmds`, `src/maka_server`). The experimental behaviour monitor's detectors and evaluation use numpy and scikit-learn (native extensions) from the optional `[ml]` extra, imported only by `src/maka/behaviour/detectors.py` and `evaluate.py`; the traffic driver, features and dataset builder stay pure Python. CI installs `[ml]` in both jobs (`pyproject.toml`; `tests/register/test_all_entries.py::test_ia18_ml_libraries_only_in_the_behaviour_monitor`)
+- [x] IA-19 — **Behavioural monitoring (experimental), not part of RP9 or MAKA-E.** Per-device, per-window (W = 20 steps) features from frames and security events at the BS; a per-role z-score baseline (σ floored at 0.5) and per-role Isolation Forests, trained on benign windows and calibrated for 1 % false alarms on benign validation windows; labels from injected faults (excessive rekeying by one CM, lossy forwarding by one CH) in our own simulator. Alert-only: it never revokes, rekeys or blocks a device. Its results do not transfer to real deployments (`docs/BEHAVIOUR.md`, `src/maka/behaviour/`, `artifacts/behaviour/`; `tests/behaviour/`, `tests/register/test_all_entries.py::test_ia19_behaviour_monitor_is_alert_only_and_labelled_experimental`)
 
 ## OB — observations (12)
 

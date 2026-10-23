@@ -16,8 +16,9 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      # the server extra is needed: mypy --strict and the tests cover src/maka_server
-      - run: python -m pip install -e ".[dev,server]"
+      # the server extra is needed: mypy --strict and the tests cover src/maka_server; the ml extra
+      # for the experimental behaviour monitor's detectors and the Evaluation page's results (IA-18)
+      - run: python -m pip install -e ".[dev,server,ml]"
       - run: make ci PYTHON=python
 
   web:
@@ -32,7 +33,7 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: web/package-lock.json
-      - run: python -m pip install -e ".[server]"
+      - run: python -m pip install -e ".[server,ml]"
       - run: npm ci --no-audit --no-fund
         working-directory: web
       - run: npx playwright install --with-deps chromium

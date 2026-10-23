@@ -21,6 +21,12 @@ server = [
     "pydantic-settings>=2.2",
     "argon2-cffi>=23",
 ]
+# Experimental behavioural monitoring (docs/BEHAVIOUR.md, IA-18/IA-19): detectors, evaluation and the
+# Lab's monitor verdict. The cryptographic core never imports these (tests/register IA-18).
+ml = [
+    "numpy>=1.26",
+    "scikit-learn~=1.9.0",  # pinned to a minor: the committed model is a joblib pickle
+]
 dev = [
     "pytest>=8",
     "ruff>=0.5",
@@ -59,6 +65,11 @@ mypy_path = "src"
 # eval/ is research tooling outside the strict-typed scope (Makefile TYPED); the server imports it lazily
 module = ["eval.*"]
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+# the [ml] extra (maka.behaviour detectors/evaluate) ships without type stubs
+module = ["sklearn.*", "joblib.*"]
+ignore_missing_imports = true
 
 [tool.ruff.lint.flake8-bugbear]
 # FastAPI's dependency-injection idiom (IMPLEMENTATION_PLAN.md §4.1)
