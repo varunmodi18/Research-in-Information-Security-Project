@@ -41,3 +41,6 @@ web/e2e/shots/
 
 # OFMC 2024 writes an empty attack-trace SVG next to its input
 attracktrace.svg
+
+# Local copy of a CI log, kept for reference only
+/ci_failure.txt
