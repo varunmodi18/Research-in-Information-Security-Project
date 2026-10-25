@@ -5,7 +5,7 @@ from __future__ import annotations
 from maka_server import models
 from maka_server.errors import ApiError
 
-LAB_ONLY = {"lab_scenario", "evaluation"}
+LAB_ONLY = {"lab_scenario", "evaluation", "inject_fault"}
 ADMIN_ONLY: set[str] = set()
 
 

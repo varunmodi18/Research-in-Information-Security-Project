@@ -11,17 +11,22 @@ from __future__ import annotations
 
 import csv
 import json
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
 from maka.behaviour import features, traffic
+from maka.rng import Rng
 
 TOPOLOGIES = ("small", "net")
 BENIGN = "benign"
 META = ("run_id", "topology", "seed", "kind", "variant", "device", "role", "window", "label")
 COLUMNS = META + features.FEATURES
 BENIGN_SEED_BASE, FAULT_SEED_BASE = 1000, 5000
+SPLIT_SEED = 20261023
+FRACTIONS = (0.6, 0.2, 0.2)
+TRAIN, VALIDATION, TEST = "train", "validation", "test"
 
 
 @dataclass(frozen=True)
@@ -96,3 +101,23 @@ def _jsonable(value: Any) -> Any:
     if isinstance(value, (list, tuple)):
         return [_jsonable(v) for v in value]
     return value
+
+
+def split_runs(run_ids: Sequence[str], seed: int = SPLIT_SEED) -> dict[str, str]:
+    """run_id -> split. Benign runs per topology 60/20/20 by a seeded shuffle; fault runs -> test."""
+    out: dict[str, str] = {}
+    benign: dict[str, list[str]] = {}
+    for rid in sorted(set(run_ids)):
+        topo, kind = rid.split("/")[:2]  # <topology>/benign/<seed> or <topology>/<fault>/<variant>/<seed>
+        if kind == BENIGN:
+            benign.setdefault(topo, []).append(rid)
+        else:
+            out[rid] = TEST
+    for topo in sorted(benign):
+        ids = benign[topo]
+        traffic.shuffle(Rng(seed=seed).spawn(f"behaviour-split/{topo}"), ids)
+        n_train = round(len(ids) * FRACTIONS[0])
+        n_val = round(len(ids) * FRACTIONS[1])
+        for i, rid in enumerate(ids):
+            out[rid] = TRAIN if i < n_train else VALIDATION if i < n_train + n_val else TEST
+    return out

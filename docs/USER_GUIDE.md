@@ -71,8 +71,20 @@ seed (lab only). Creating a network provisions every device.
   name to confirm). Recorded frames, events and readings are kept.
 - **Delete network…** (admin only) deletes the network and everything recorded for it. Type the
   network name to confirm.
-- The subtitle shows the network's current **registry epoch**: it goes up at every revocation and
-  designation.
+- **Cluster-head replacement** (MAKA-E networks; `docs/RECOVERY.md`):
+  - A cluster head's node shows **⚠ CH suspected** when the behaviour monitor has flagged it in 2 of
+    the last 3 windows of 20 steps. This is an alert only: nothing happens automatically.
+  - Click a cluster head to see its recent flags and the recommended replacement.
+  - **Recover cluster…** (operator) opens the ranked candidates: the cluster's active, non-revoked
+    members, each with its trust, reliability, rejections and score. The recommended one is
+    preselected. Type the cluster label to confirm.
+  - The base station then revokes the current cluster head and promotes the chosen member with its
+    existing keys. The other members follow it, and the cluster is redrawn under the new cluster head,
+    with the replaced one beside it.
+  - Viewers see the alert and the panel, but the button is disabled for them.
+  - Recovery has been tested, not statistically evaluated.
+- The subtitle shows the network's current **registry epoch**: it goes up at every revocation,
+  designation and promotion.
 - Click a node for its summary, then **Device details →**.
 - Links: **Frames**, **Timeline**, **Readings** (operator).
 
@@ -152,6 +164,7 @@ Typical types:
 | `REPLAY_REJECTED` | A replayed handshake or reading |
 | `UNAUTHENTICATED_PEER` | Traffic from a device that is not authorised, e.g. a revoked one |
 | `DEVICE_REVOKED` | A device was revoked |
+| `CH_PROMOTED` | A member was promoted to cluster head, replacing the revoked one (`docs/RECOVERY.md`) |
 | `KEY_ROTATED` | A session was rekeyed |
 | `DATA_ACCEPTED` | A reading was accepted at the BS |
 

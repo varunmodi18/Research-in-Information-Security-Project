@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from collections import Counter
 from collections.abc import AsyncIterator
+from typing import Any
 
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import StreamingResponse
@@ -105,6 +106,10 @@ def submit_job(network_id: int, body: JobCreate, principal: Principal = Depends(
     with ctx.db.session() as db:
         net = _get_network(db, network_id)
         check_job_allowed(net, body.type, principal.role)
+    if body.type in ("recover_cluster", "inject_fault"):  # validated now: docs/RECOVERY.md
+        from maka_server.services import recovery
+
+        recovery.precheck(ctx.registry.get(network_id), body.type, body.args)
     job, created = ctx.jobs.submit(network_id, body.type, body.args, body.idempotency_key, principal.user_id)
     return JobAccepted(job_id=job.id, created=created)
 
@@ -125,6 +130,17 @@ def get_device(network_id: int, ident: str, _: Principal = Depends(viewer),
     return DeviceDetail(device=devices_out(designated)[0],
                         sessions=[SessionOut.model_validate(s) for s in sessions],
                         status_history=list(dev.status_history))
+
+
+@router.get("/{network_id}/recovery")
+def get_recovery(network_id: int, _: Principal = Depends(viewer), ctx: AppContext = Depends(get_ctx)) -> dict[str, Any]:
+    """Cluster-head replacement (docs/RECOVERY.md): per live CH, the behaviour monitor's flags, the
+    "CH suspected" alert and the ranked replacement candidates. Read-only; the alert never acts."""
+    from maka_server.services import recovery
+
+    with ctx.db.session() as db:
+        _get_network(db, network_id)
+    return recovery.status(ctx.registry.get(network_id))
 
 
 @router.get("/{network_id}/frames", response_model=Page[FrameOut])

@@ -23,6 +23,14 @@ import numpy as np
 import sklearn
 
 from maka.behaviour import dataset
+from maka.behaviour.dataset import (  # pure Python: the recovery monitor uses it without [ml]
+    FRACTIONS,
+    SPLIT_SEED,
+    TEST,
+    TRAIN,
+    VALIDATION,
+    split_runs,
+)
 from maka.behaviour.detectors import (
     SIGMA_FLOOR,
     TARGET_FA,
@@ -31,13 +39,8 @@ from maka.behaviour.detectors import (
     ZScoreDetector,
     ZStats,
 )
-from maka.behaviour.traffic import shuffle
-from maka.rng import Rng
 
-SPLIT_SEED = 20261023
 MODEL_SEED = 0
-FRACTIONS = (0.6, 0.2, 0.2)
-TRAIN, VALIDATION, TEST = "train", "validation", "test"
 
 FRAMING = ("Experimental. MAKA-E establishes who a device is; this monitor looks for authenticated devices that "
            "behave abnormally, which cryptography cannot rule out (docs/RESIDUAL_RISKS.md R-07, R-12). It runs at "
@@ -53,26 +56,6 @@ LIMITATIONS = [
     ("Small samples (20 fault runs per variant, 16 benign test runs): a different random stream during development "
     "gave noticeably different numbers, so differences of a few points between the detectors are not meaningful."),
 ]
-
-
-def split_runs(run_ids: Sequence[str], seed: int = SPLIT_SEED) -> dict[str, str]:
-    """run_id -> split. Benign runs per topology 60/20/20 by a seeded shuffle; fault runs -> test."""
-    out: dict[str, str] = {}
-    benign: dict[str, list[str]] = {}
-    for rid in sorted(set(run_ids)):
-        topo, kind = rid.split("/")[:2]  # <topology>/benign/<seed> or <topology>/<fault>/<variant>/<seed>
-        if kind == dataset.BENIGN:
-            benign.setdefault(topo, []).append(rid)
-        else:
-            out[rid] = TEST
-    for topo in sorted(benign):
-        ids = benign[topo]
-        shuffle(Rng(seed=seed).spawn(f"behaviour-split/{topo}"), ids)
-        n_train = round(len(ids) * FRACTIONS[0])
-        n_val = round(len(ids) * FRACTIONS[1])
-        for i, rid in enumerate(ids):
-            out[rid] = TRAIN if i < n_train else VALIDATION if i < n_train + n_val else TEST
-    return out
 
 
 def train(rows: Sequence[dict[str, Any]], seed: int = MODEL_SEED) -> dict[str, Any]:

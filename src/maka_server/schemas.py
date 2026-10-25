@@ -139,7 +139,8 @@ class DeviceDetail(BaseModel):
 
 
 JobType = Literal["onboard", "step", "send_readings", "start_periodic", "stop_periodic", "rekey", "revoke",
-                  "reprovision", "designate", "lab_scenario", "evaluation", "reset_network"]
+                  "reprovision", "designate", "lab_scenario", "evaluation", "reset_network", "recover_cluster",
+                  "inject_fault"]
 
 
 class JobCreate(BaseModel):

@@ -49,6 +49,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     from maka_server.services import demo as demo_jobs  # noqa: F401
     from maka_server.services import enhanced_jobs, lab_jobs  # noqa: F401 -- registers job handlers
     from maka_server.services import evaluation as evaluation_jobs  # noqa: F401
+    from maka_server.services import recovery as recovery_jobs  # noqa: F401
 
     app = FastAPI(title="MAKA Secure IoT Console", version="1.0.0", lifespan=lifespan,
                   docs_url="/api/docs", openapi_url="/api/openapi.json", redoc_url=None)

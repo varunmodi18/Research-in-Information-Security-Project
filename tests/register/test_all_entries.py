@@ -209,6 +209,37 @@ def test_ia19_behaviour_monitor_is_alert_only_and_labelled_experimental() -> Non
     assert "do not transfer to real deployments" in res["framing"]
 
 
+
+def test_ia20_promotion_keeps_k_at_the_bs() -> None:
+    from maka.enhanced import network as en
+
+    net = en.build("toy", "small", seed=77)
+    net.onboard()
+    pr_before = net.device("CM-0101").keystore.get("pr")
+    net.promote("CH-01", "CM-0101")
+    net.run()
+    assert net.device("CM-0101").role == "CH" and net.device("CM-0101").status == "active"
+    assert net.device("CM-0101").keystore.get("pr") == pr_before  # no new key: same identity, same Pr
+    assert [i for i, d in net.scheduler.devices.items() if d.keystore.has("k")] == ["BS-01"]
+    assert net.bs().registry["CH-01"].status == "revoked"
+
+
+def test_ia21_alert_only_and_pure_ranking() -> None:
+    import ast
+    from pathlib import Path
+
+    from maka.recovery import ranking
+
+    root = Path(__file__).resolve().parent.parent.parent / "src" / "maka" / "recovery"
+    actions = {"promote", "revoke", "rekey", "reprovision", "designate", "provision_device"}
+    for f in root.glob("*.py"):
+        calls = {n.func.attr for n in ast.walk(ast.parse(f.read_text(encoding="utf-8")))
+                 if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute)}
+        assert not calls & actions, (f.name, calls & actions)  # the alert never acts
+    ev = [ranking.Evidence("CM-2", (0.0,), 1, 0, 0), ranking.Evidence("CM-1", (0.0,), 1, 0, 0)]
+    assert ranking.rank(ev) == ranking.rank(list(reversed(ev)))  # pure, deterministic, ties by identity
+    assert [c.ident for c in ranking.rank(ev)] == ["CM-1", "CM-2"]
+
 def test_ia02_scalars_from_r_group() -> None:
     p = params.get("toy")
     r = rng.current().below(p.curve.r_group)

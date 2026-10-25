@@ -100,10 +100,34 @@ export function useJob(jobId: number | null) {
     qc.invalidateQueries({ queryKey: ["networks"] });
     qc.invalidateQueries({ queryKey: ["events"] });
     if (nid != null) {
-      for (const k of ["network", "frames", "readings", "device"]) qc.invalidateQueries({ queryKey: [k, nid] });
+      for (const k of ["network", "frames", "readings", "device", "recovery"]) qc.invalidateQueries({ queryKey: [k, nid] });
     }
   }, [state, nid, qc]);
   return query;
+}
+
+// docs/RECOVERY.md: per live cluster head, the behaviour monitor's flags, the "CH suspected" alert and
+// the ranked replacement candidates. Read-only; the alert never acts.
+export interface RecoveryCandidate {
+  ident: string; trust: number; reliability: number; rejections: number; rejections_norm: number; score: number;
+}
+export interface ClusterRecovery {
+  cluster: string; ch: string; flags: boolean[]; suspected: boolean; candidates: RecoveryCandidate[];
+  recommended: string | null; trigger_detector: string; trust_detector: string;
+}
+export interface RecoveryStatus {
+  available: boolean; reason?: string; step?: number; monitor_start?: number; windows_scored?: number; window?: number;
+  trigger?: string; trigger_detector?: string; trust_detector?: string; clusters?: ClusterRecovery[];
+}
+
+export function useRecovery(id: number, enabled: boolean) {
+  return useQuery({
+    queryKey: ["recovery", id],
+    queryFn: () => api.get<RecoveryStatus>(`/networks/${id}/recovery`),
+    enabled,
+    refetchInterval: 3000,
+    retry: false,
+  });
 }
 
 /** True while a job is being submitted, or the latest submitted job has not yet reported a final

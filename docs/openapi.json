@@ -479,7 +479,9 @@
        "designate",
        "lab_scenario",
        "evaluation",
-       "reset_network"
+       "reset_network",
+       "recover_cluster",
+       "inject_fault"
       ],
       "title": "Type",
       "type": "string"
@@ -2659,6 +2661,51 @@
      }
     },
     "summary": "List Readings",
+    "tags": [
+     "networks"
+    ]
+   }
+  },
+  "/api/networks/{network_id}/recovery": {
+   "get": {
+    "description": "Cluster-head replacement (docs/RECOVERY.md): per live CH, the behaviour monitor's flags, the\n\"CH suspected\" alert and the ranked replacement candidates. Read-only; the alert never acts.",
+    "operationId": "get_recovery_api_networks__network_id__recovery_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "network_id",
+      "required": true,
+      "schema": {
+       "title": "Network Id",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "title": "Response Get Recovery Api Networks  Network Id  Recovery Get",
+         "type": "object"
+        }
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Recovery",
     "tags": [
      "networks"
     ]

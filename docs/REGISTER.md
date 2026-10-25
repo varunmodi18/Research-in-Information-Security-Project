@@ -4,7 +4,8 @@ Five-way classification of every place this implementation had to make a decisio
 make for it, per `PLAN.md` §0 rule 3 and §5. Each entry: exact passage at issue, class, resolution,
 and a runnable demonstration under `tests/register/`. Finalised at P13.6 with 32 entries; extended
 by IMPLEMENTATION_PLAN.md M1 and M4 to 40 entries, by M7 to 42, by the follow-up review (Part C)
-to 44, and by the experimental behaviour monitor to 46 (5 ER, 9 AM, 19 IA, 12 OB, 1 SD).
+to 44, by the experimental behaviour monitor to 46, and by cluster-head replacement to 48 (5 ER, 9 AM,
+21 IA, 12 OB, 1 SD).
 Corrections to IMPLEMENTATION_PLAN.md itself are in `docs/PLAN_ERRATA.md`, not here.
 
 ## ER — genuine errata (5)
@@ -27,7 +28,7 @@ Corrections to IMPLEMENTATION_PLAN.md itself are in `docs/PLAN_ERRATA.md`, not h
 - [x] AM-08 — ICMDS coefficients delegated to [26] (resolved by SD-01)
 - [x] AM-09 — `x_i` unresolved G_2 -> scalar type (`src/icmds/session_key.py::encryption_setup`; IA-11)
 
-## IA — implementation assumptions (19)
+## IA — implementation assumptions (21)
 
 - [x] IA-01 — language/dependency policy (`pyproject.toml`); scoped to the cryptographic core by IA-18
 - [x] IA-02 — pairing instantiation, scalar domain Z_r (`src/maka/curve.py`, `src/maka/pairing.py`, `src/maka/params.py`)
@@ -48,6 +49,12 @@ Corrections to IMPLEMENTATION_PLAN.md itself are in `docs/PLAN_ERRATA.md`, not h
 - [x] IA-16 — DATA_CM: AES-256-GCM with associated data `LP(ID_CM, ID_BS, seq)` and nonce `0^32 ‖ seq`, `seq` a per-sender counter (`src/maka/protocol/data_transmission.py`, `src/maka/aead.py`)
 - [x] IA-18 — **IA-01's pure-Python rule covers the cryptographic core only** (`src/maka` outside `behaviour/`, `src/icmds`, `src/maka_server`). The experimental behaviour monitor's detectors and evaluation use numpy and scikit-learn (native extensions) from the optional `[ml]` extra, imported only by `src/maka/behaviour/detectors.py` and `evaluate.py`; the traffic driver, features and dataset builder stay pure Python. CI installs `[ml]` in both jobs (`pyproject.toml`; `tests/register/test_all_entries.py::test_ia18_ml_libraries_only_in_the_behaviour_monitor`)
 - [x] IA-19 — **Behavioural monitoring (experimental), not part of RP9 or MAKA-E.** Per-device, per-window (W = 20 steps) features from frames and security events at the BS; a per-role z-score baseline (σ floored at 0.5) and per-role Isolation Forests, trained on benign windows and calibrated for 1 % false alarms on benign validation windows; labels from injected faults (excessive rekeying by one CM, lossy forwarding by one CH) in our own simulator. Alert-only: it never revokes, rekeys or blocks a device. Its results do not transfer to real deployments (`docs/BEHAVIOUR.md`, `src/maka/behaviour/`, `artifacts/behaviour/`; `tests/behaviour/`, `tests/register/test_all_entries.py::test_ia19_behaviour_monitor_is_alert_only_and_labelled_experimental`)
+- [x] IA-20 — **Promotion of a member to cluster head without new keys** (cluster-head replacement, `docs/RECOVERY.md`). Keys are bound to identities and the CH role is an authorisation in the BS registry. `EnhancedBS.promote(cluster, member)` checks that the member is a registered, non-revoked CM of that cluster with a current CM–BS session. It revokes the current CH by the existing path, closes the member's CM-role sessions, changes its registry role CM → CH, designates it and emits `CH_PROMOTED`. The node then runs CH software with its own keystore (only `Pr`; its CM-role session keys destroyed), and the cluster onboards by the existing §4.6.5 steps. This extends §4.6.7's re-designation, which required a newly provisioned CH identity (`docs/PLAN_ERRATA.md` E-14) (`src/maka/enhanced/lifecycle.py`, `src/maka/enhanced/network.py`; `tests/recovery/test_promote.py`, `tests/register/test_all_entries.py::test_ia20_promotion_keeps_k_at_the_bs`)
+- [x] IA-21 — **"CH suspected" alert and ranked replacement recommendation; operator-approved, tested but not statistically evaluated.**
+  - The alert fires when the behaviour monitor's z-score baseline (pure Python, fitted on the committed behaviour dataset) flags a CH in 2 of the last 3 windows of 20 steps, counted from the end of the last lifecycle job. It never acts.
+  - Candidates are the cluster's active, non-revoked members, scored 0.5·trust + 0.4·reliability − 0.1·normalised rejections over the last 10 windows, with ties broken by identity. Trust comes from the Isolation Forest with `[ml]`, else the z-score baseline.
+  - The console's `recover_cluster` job (operator, typed confirmation) promotes the chosen member. A lab-only `inject_fault` job demonstrates the alert.
+  - (`src/maka/recovery/`, `src/maka_server/services/recovery.py`; `tests/recovery/test_ranking_alert.py`, `tests/server/test_recovery_api.py`, `tests/register/test_all_entries.py::test_ia21_alert_only_and_pure_ranking`)
 
 ## OB — observations (12)
 

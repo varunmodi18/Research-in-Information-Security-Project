@@ -61,6 +61,7 @@ the code by `tools/gen_api_doc.py`. Do not edit them by hand.
 | `GET` | `/api/networks/{network_id}/frames` | viewer | List frames |
 | `POST` | `/api/networks/{network_id}/jobs` | operator | Submit job |
 | `GET` | `/api/networks/{network_id}/readings` | operator | List readings. FR-07: decrypted readings at the BS -- Operator and Admin only (V-WEB-08). |
+| `GET` | `/api/networks/{network_id}/recovery` | viewer | Get recovery. Cluster-head replacement (docs/RECOVERY.md): per live CH, the behaviour monitor's flags, the |
 | `GET` | `/api/networks/{network_id}/stream` | viewer | Stream. SSE: frame, security_event, device_status, job_progress. Resumes after Last-Event-ID. |
 
 ## Job types
@@ -69,8 +70,10 @@ the code by `tools/gen_api_doc.py`. Do not edit them by hand.
 |---|---|---|
 | `designate` | any | `maka_server.services.enhanced_jobs.job_designate` |
 | `evaluation` | lab only | `maka_server.services.evaluation.job_evaluation` |
+| `inject_fault` | lab only | `maka_server.services.recovery.job_inject_fault` |
 | `lab_scenario` | lab only | `maka_server.services.lab_jobs.job_lab_scenario` |
 | `onboard` | any | `maka_server.services.networks.job_onboard` |
+| `recover_cluster` | any | `maka_server.services.recovery.job_recover_cluster` |
 | `rekey` | any | `maka_server.services.enhanced_jobs.job_rekey` |
 | `reprovision` | any | `maka_server.services.enhanced_jobs.job_reprovision` |
 | `reset_demo` | none (global) | `maka_server.services.demo.job_reset_demo` |

@@ -198,6 +198,7 @@ def job_onboard(ctx: JobContext) -> dict[str, Any]:
         if ctx.args.get("step_mode"):
             return {"mode": "step", "pending_frames": rt.scheduler.bus.pending()}
         steps = run_to_quiescence(ctx, rt, "onboarding")
+        rt.monitor_start = rt.scheduler.step_no
         return {"steps": steps, "statuses": rt.device_statuses()}
 
 
@@ -208,6 +209,7 @@ def job_step(ctx: JobContext) -> dict[str, Any]:
     with rt.lock:
         if ctx.args.get("until") == "quiescent":
             steps = run_to_quiescence(ctx, rt, "run to end")
+            rt.monitor_start = rt.scheduler.step_no
         else:
             count = int(ctx.args.get("count", 1))
             if not 1 <= count <= 1000:

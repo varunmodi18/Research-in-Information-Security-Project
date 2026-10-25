@@ -3,19 +3,20 @@ import "@xyflow/react/dist/style.css";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api as http, ApiProblem } from "../api/client";
-import { jobInProgress, useJob, useNetwork, useSubmitJob } from "../api/hooks";
+import { jobInProgress, useJob, useNetwork, useRecovery, useSubmitJob } from "../api/hooks";
 import { TERMINAL_JOB_STATES, type Device, type JobType, type NetworkDetail } from "../api/types";
 import { useAuth } from "../auth/AuthContext";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { PageHeader } from "../components/Layout";
 import { AWAITING, AWAITING_LABEL, DesignationBanner } from "../components/DesignationNotice";
 import { ModeBanner } from "../components/ModeBanner";
+import { RecoveryDialog } from "../components/RecoveryDialog";
 import { ErrorPanel, Loading, StreamIndicator } from "../components/States";
 import { SeverityBadge, STATUS_COLOURS, StatusBadge } from "../components/StatusBadge";
 import { useJobToast, useToast } from "../components/Toast";
 import { useNetworkStream, type StreamMessage } from "../hooks/useNetworkStream";
 
-type DeviceNodeData = { device: Device; selected: boolean };
+type DeviceNodeData = { device: Device; selected: boolean; suspected: boolean };
 
 function DeviceNode({ data }: NodeProps<Node<DeviceNodeData>>) {
   const d = data.device;
@@ -34,6 +35,12 @@ function DeviceNode({ data }: NodeProps<Node<DeviceNodeData>>) {
       <div className="mt-1">
         <StatusBadge status={d.status} />
       </div>
+      {data.suspected && (
+        <div className="mt-1 rounded bg-red-100 px-1 text-[10px] font-semibold text-red-800" data-testid={`suspected-${d.ident}`}
+          title="The behaviour monitor flagged this cluster head in 2 of the last 3 windows. An alert only: nothing is done automatically.">
+          ⚠ CH suspected
+        </div>
+      )}
       {d.designation_state === AWAITING && d.status !== "revoked" && (
         <div className="mt-1 rounded bg-amber-100 px-1 text-[10px] font-semibold text-amber-900" title={AWAITING_LABEL}>
           ⚠ CH revoked
@@ -46,30 +53,35 @@ function DeviceNode({ data }: NodeProps<Node<DeviceNodeData>>) {
 
 const nodeTypes = { device: DeviceNode };
 
-function layout(net: NetworkDetail, selected: string | null): { nodes: Node<DeviceNodeData>[]; edges: Edge[] } {
+// Members are grouped by cluster label under the cluster's live CH; CHs it replaced (revoked) are
+// drawn beside it without member edges (designation and promotion keep the label; docs/RECOVERY.md).
+function layout(net: NetworkDetail, selected: string | null, suspected: Set<string>): { nodes: Node<DeviceNodeData>[]; edges: Edge[] } {
   const bs = net.devices.find((d) => d.role === "BS");
   const chs = net.devices.filter((d) => d.role === "CH");
-  const cmsOf = (ch: string) => net.devices.filter((d) => d.role === "CM" && d.cluster === ch);
+  const labels = [...new Set(chs.map((d) => d.cluster ?? d.ident))];
   const colW = 150;
   const nodes: Node<DeviceNodeData>[] = [];
   const edges: Edge[] = [];
+  const node = (d: Device, x: number, y: number) =>
+    nodes.push({ id: d.ident, type: "device", position: { x, y }, data: { device: d, selected: selected === d.ident, suspected: suspected.has(d.ident) } });
   let x = 0;
-  const chX: Record<string, number> = {};
-  for (const ch of chs) {
-    const n = Math.max(1, cmsOf(ch.ident).length);
-    chX[ch.ident] = x + ((n - 1) * colW) / 2;
-    cmsOf(ch.ident).forEach((cm, i) => {
-      nodes.push({ id: cm.ident, type: "device", position: { x: x + i * colW, y: 320 }, data: { device: cm, selected: selected === cm.ident } });
-      edges.push({ id: `${ch.ident}-${cm.ident}`, source: ch.ident, target: cm.ident, style: { stroke: "#94a3b8" } });
+  for (const label of labels) {
+    const heads = chs.filter((d) => (d.cluster ?? d.ident) === label);
+    const live = [...heads].reverse().find((d) => d.status !== "revoked") ?? heads[heads.length - 1];
+    const order = [live, ...heads.filter((d) => d !== live)];
+    const members = net.devices.filter((d) => d.role === "CM" && d.cluster === label);
+    const n = Math.max(1, members.length, order.length);
+    members.forEach((cm, i) => {
+      node(cm, x + i * colW, 320);
+      edges.push({ id: `${live.ident}-${cm.ident}`, source: live.ident, target: cm.ident, style: { stroke: "#94a3b8" } });
     });
+    order.forEach((ch, i) => node(ch, x + ((Math.max(1, members.length) - 1) * colW) / 2 + i * colW, i === 0 ? 160 : 175));
     x += n * colW + 40;
   }
-  chs.forEach((ch) =>
-    nodes.push({ id: ch.ident, type: "device", position: { x: chX[ch.ident], y: 160 }, data: { device: ch, selected: selected === ch.ident } }),
-  );
   if (bs) {
-    nodes.push({ id: bs.ident, type: "device", position: { x: (x - 40 - colW) / 2, y: 0 }, data: { device: bs, selected: selected === bs.ident } });
-    chs.forEach((ch) => edges.push({ id: `${bs.ident}-${ch.ident}`, source: bs.ident, target: ch.ident, style: { stroke: "#64748b", strokeWidth: 2 } }));
+    node(bs, (x - 40 - colW) / 2, 0);
+    chs.forEach((ch) => edges.push({ id: `${bs.ident}-${ch.ident}`, source: bs.ident, target: ch.ident,
+      style: ch.status === "revoked" ? { stroke: "#cbd5e1", strokeDasharray: "4 4" } : { stroke: "#64748b", strokeWidth: 2 } }));
   }
   return { nodes, edges };
 }
@@ -81,7 +93,7 @@ export function TopologyPage() {
   const trackJob = useJobToast();
   const navigate = useNavigate();
   const network = useNetwork(id);
-  const [dialog, setDialog] = useState<"reset" | "delete" | "designate" | null>(null);
+  const [dialog, setDialog] = useState<"reset" | "delete" | "designate" | "recover" | null>(null);
   const [desCluster, setDesCluster] = useState("");
   const [desCh, setDesCh] = useState("");
   const submit = useSubmitJob(id);
@@ -100,7 +112,11 @@ export function TopologyPage() {
     else toast(`${job.data?.type} ${s}: ${job.data?.error ?? ""}`, "error");
   }, [job.data?.state]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const graph = useMemo(() => (network.data ? layout(network.data, selected) : { nodes: [], edges: [] }), [network.data, selected]);
+  const recovery = useRecovery(id, network.data?.mode === "enhanced");
+  const clusterStatus = recovery.data?.clusters ?? [];
+  const suspectedKey = clusterStatus.filter((c) => c.suspected).map((c) => c.ch).join(",");
+  const graph = useMemo(() => (network.data ? layout(network.data, selected, new Set(suspectedKey ? suspectedKey.split(",") : []))
+    : { nodes: [], edges: [] }), [network.data, selected, suspectedKey]);
 
   if (network.isLoading) return <Loading />;
   if (network.error || !network.data) return <ErrorPanel error={network.error} onRetry={() => void network.refetch()} />;
@@ -108,6 +124,7 @@ export function TopologyPage() {
   const running = jobInProgress(submit.isPending, jobId, job);
   const jobActive = !!job.data && !TERMINAL_JOB_STATES.includes(job.data.state);  // the shown job's own state
   const sel = net.devices.find((d) => d.ident === selected) ?? null;
+  const selRecovery = sel ? clusterStatus.find((c) => c.ch === sel.ident) ?? null : null;
 
   const run = async (type: JobType, args?: Record<string, unknown>, track?: [string, string]) => {
     try {
@@ -207,6 +224,14 @@ export function TopologyPage() {
           </div>
         </ConfirmDialog>
       )}
+      {dialog === "recover" && selRecovery && (
+        <RecoveryDialog status={selRecovery} busy={!!running} onCancel={() => setDialog(null)}
+          onConfirm={(member) => {
+            setDialog(null);
+            void run("recover_cluster", { cluster: selRecovery.cluster, member },
+              [`Promoting ${member} to cluster head of ${selRecovery.cluster}…`, `${member} is the cluster head of ${selRecovery.cluster}`]);
+          }} />
+      )}
       <DesignationBanner devices={net.devices} />
       {job.data && (
         <div className="mx-6 mb-3" data-testid="job-status">
@@ -253,6 +278,27 @@ export function TopologyPage() {
                     <dt className="text-slate-500">Readings lost</dt><dd>{sel.undelivered ?? 0}</dd>
                   </>}
                 </dl>
+                {selRecovery && (
+                  <div className="mt-3 rounded-md border border-slate-200 p-2 text-sm" data-testid="recovery-panel">
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">Cluster-head replacement</span>
+                      {selRecovery.suspected
+                        ? <span className="rounded bg-red-100 px-1.5 text-xs font-semibold text-red-800">⚠ CH suspected</span>
+                        : <span className="text-xs text-slate-500">no alert</span>}
+                    </div>
+                    <p className="mt-1 text-xs text-slate-600" data-testid="recovery-flags">
+                      Behaviour monitor ({selRecovery.trigger_detector}), last windows:{" "}
+                      {selRecovery.flags.length ? selRecovery.flags.map((f) => (f ? "■" : "□")).join(" ") : "none scored yet"}.
+                      An alert only; replacing the cluster head is your decision.
+                    </p>
+                    <p className="mt-1 text-xs text-slate-600">Recommended: <span className="font-mono">{selRecovery.recommended ?? "—"}</span></p>
+                    <button type="button" className="btn-secondary mt-2" data-testid="btn-recover" disabled={!can("operator") || !!running || !selRecovery.candidates.length}
+                      title={can("operator") ? "Promote a member to cluster head" : "Operator role required (read-only for viewers)"}
+                      onClick={() => setDialog("recover")}>
+                      Recover cluster…
+                    </button>
+                  </div>
+                )}
                 <Link className="btn-secondary mt-3" to={`/networks/${id}/devices/${sel.ident}`}>Device details →</Link>
               </>
             ) : (

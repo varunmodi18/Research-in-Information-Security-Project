@@ -292,3 +292,26 @@ checks that they agree).
    field-boundary artefact. The length-prefixed, fixed-width encoding excludes it
    (`tests/enhanced/test_ake.py::test_untyped_boundary_shift_*`). It is not an attack on the
    implementation. The tool's verdict stays recorded as UNSAFE.
+
+## E-14 · §4.6.7 re-designation: promotion of an existing member to cluster head (2026-10-25)
+
+**Extension.** §4.6.7 re-designates a cluster by provisioning a new CH identity (`designate`, FR-03, or
+`reprovision` of a revoked CH). Cluster-head replacement (`docs/RECOVERY.md`, IA-20) adds a second
+way: the operator promotes an active, non-revoked member of the same cluster.
+
+1. **No new keys.** Keys are bound to identities, and the CH role is an authorisation in the BS
+   registry. The member keeps `Pr`. Its CM-role session keys, ephemerals and cached PSK with the old
+   CH are destroyed. `k` stays at the BS, and the master-key invariant check runs on every step.
+2. **BS side.** In one operation the BS:
+   - checks the member (registered CM of that cluster, not revoked, current CM–BS session);
+   - revokes the current CH by the existing path;
+   - closes the member's CM-role sessions and removes it from every grant;
+   - changes its registry role CM → CH and designates it (each step advances the registry epoch);
+   - emits `CH_PROMOTED`.
+
+   A refused promotion changes nothing.
+3. **Cluster side.** The cluster onboards by the existing steps. Members switch on the `DESIGNATION`
+   relayed by the new CH, as with any re-designation (E-09 item 6).
+4. **The console's trigger is an alert only** (2 of the last 3 windows flagged by the behaviour
+   monitor's z-score baseline). Promotion is always confirmed by an operator. Recovery has been
+   tested, not statistically evaluated.

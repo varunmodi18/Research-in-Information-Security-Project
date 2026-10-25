@@ -9,6 +9,12 @@ grant_refresh_steps steps over the sealed CH-BS session (MAKA_GRANT_REFRESH_STEP
 follow-up D3, V-LIFE-03). The revoked device itself is not told (E-09, D7).
 Residual (documented): a revoked device's Pr stays mathematically valid; exclusion relies on
 the authorisation lists, not on cryptography.
+
+Promote(cluster, member) at the BS (cluster-head recovery, docs/RECOVERY.md, IA-20, E-14): revoke the
+cluster's current CH by the path above, close the member's CM-role sessions, change its registry role
+CM -> CH and designate it. No key changes: keys are bound to identities, and the CH role is an
+authorisation in the BS registry. The driver then gives the node CH software and onboards the cluster
+by the existing steps (CH-BS AKE, claim, grant, DESIGNATION relayed by the new CH, CM-CH AKEs).
 """
 
 from __future__ import annotations
@@ -18,6 +24,7 @@ from typing import Any
 from maka import codec, hashing, ledger
 from maka.codec import DecodeError
 from maka.enhanced import messages as m
+from maka.enhanced import states as st
 from maka.enhanced.data import BSData, CHData, CMData
 from maka.enhanced.device import Rejected, guarded
 from maka.enhanced.membership import REVOKED, RegistryEntry
@@ -85,6 +92,35 @@ class EnhancedBS(BSData):
                 s = self.current_session(ch, m.CH_BS)
                 if s is not None:
                     out.append(self.send_to(ch, self.seal(s, m.REVOKE_NOTICE, m.encode_epoch_id(self.epoch, ident))))
+        return out
+
+    # -- cluster-head recovery (IA-20) -------------------------------------------------------------
+
+    @guarded
+    def promote(self, cluster: str, member: str) -> list[Frame]:
+        """Operator-approved: `member` (an authenticated, non-revoked CM of `cluster`) becomes its CH."""
+        reg = self.registry.get(member)
+        if cluster not in self.cluster_ch:
+            return self.reject("UNAUTHORISED_PEER", peer=member, reason=f"unknown cluster {cluster}")
+        if reg is None or reg.role != dv.CM or reg.status == REVOKED or reg.cluster != cluster:
+            return self.reject("UNAUTHORISED_PEER", peer=member, reason="not a non-revoked member of this cluster")
+        if self.current_session(member, m.CM_BS) is None:
+            return self.reject("UNAUTHORISED_PEER", peer=member, reason="member is not authenticated (no CM-BS session)")
+        old = self.cluster_ch.get(cluster)
+        out = self.revoke(old) if old is not None and self.registry[old].status != REVOKED else []
+        with ledger.LedgerScope(self.identity, "lifecycle"):
+            for s in list(self.sessions.values()):
+                if s.peer == member and s.purpose == m.CM_BS and s.state not in (st.FAILED, st.SUPERSEDED, st.CLOSED,
+                                                                                 st.ABORTED):
+                    self._destroy_session_material(s)
+                    s.state = st.CLOSED
+            self.current.pop((member, m.CM_BS), None)
+            for granted in self.grants.values():
+                granted.discard(member)
+            self.epoch += 1
+            reg.role, reg.epoch = dv.CH, self.epoch
+            self.cluster_ch[cluster] = member
+        self.emit("CH_PROMOTED", peer=member, cluster=cluster, replaced=old, epoch=self.epoch)
         return out
 
     def _on_ack(self, payload: bytes, link: str) -> list[Frame]:

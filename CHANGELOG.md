@@ -4,6 +4,32 @@ Milestones of IMPLEMENTATION_PLAN.md, each mapped to the gap IDs it closes (§2.
 §2.3 protocol weaknesses P-*, deployment limits D-*). Errata to the plan are in
 `docs/PLAN_ERRATA.md`; anything not closed is in `docs/OPEN_ISSUES.md`.
 
+## Unreleased — cluster-head replacement (2026-10-25)
+
+- **Operator-approved cluster-head replacement with a ranked recommendation** (`docs/RECOVERY.md`,
+  register IA-20, IA-21, errata E-14). It has been tested, not statistically evaluated.
+  - `EnhancedBS.promote` / `EnhancedNetwork.promote` make an active, non-revoked member of a cluster its
+    CH without new keys. The BS revokes the old CH, closes the member's CM-role sessions, changes its
+    registry role and designates it, and emits the new `CH_PROMOTED` event. The cluster then onboards
+    by the existing steps.
+  - `src/maka/recovery/`:
+    - a "CH suspected" alert (2 of the last 3 windows flagged by a pure-Python z-score baseline fitted
+      on the committed behaviour dataset), which never acts;
+    - the candidate ranking (0.5·trust + 0.4·reliability − 0.1·rejections), pure and unit-tested.
+  - Console:
+    - `GET /api/networks/{id}/recovery` (viewer);
+    - the `recover_cluster` job (operator), validated when it is submitted;
+    - the lab-only `inject_fault` job;
+    - on the Topology page, the "CH suspected" badge, a recovery panel and the dialog with the ranked
+      candidates and a typed confirmation. Viewers are read-only.
+  - The Topology graph now groups members by cluster label under the cluster's live CH, with replaced
+    CHs beside it. This also fixes the drawing after Designate CH.
+  - Stored device rows follow a role change.
+  - `split_runs` moved to the pure-Python `maka.behaviour.dataset` (re-exported from `evaluate`).
+  - Tests: promotion on `small` and `net`, `k` only at the BS, no session keys left for the old CH,
+    refusals, the old CH's later frames rejected, members active with readings flowing; ranking,
+    baseline agreement, the alert; the API; one Playwright test for the dialog.
+
 ## Unreleased — behavioural monitoring (experimental, 2026-10-23)
 
 - New package `src/maka/behaviour/` (`docs/BEHAVIOUR.md`, register IA-18, IA-19). It is experimental and

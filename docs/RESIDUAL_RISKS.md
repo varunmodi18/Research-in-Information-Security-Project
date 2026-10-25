@@ -17,7 +17,7 @@ scenario that shows the behaviour.
 | R-09 | **BS / provisioning authority compromise** | Total: the BS holds `k` and can derive every key | The BS is trusted by assumption (§2.1 assumption 1) | — |
 | R-10 | **Secrets at rest under one environment KEK (D-05)** | Whoever reads `.env` and the database can decrypt the long-term keys | Local demo deployment; session keys and ephemerals are never persisted | V-LEAK-04; `docs/OPERATIONS.md` (KEK handling) |
 | R-11 | **Console exposure (D-04)** | The console has no TLS, is single-host, and binds to localhost by default | Internet-facing deployment is excluded (§3.5) | V-WEB-01..08 |
-| R-12 | **The CH sees metadata and can drop data** | A cluster head learns which member sends when and how much, and can delay or drop readings (it cannot read or forge them) | Inherent to relaying; batching hides payloads, not traffic patterns | V-POS-04; experimental behaviour monitor (alerts only): injected fault `lossy_forwarding`, `docs/BEHAVIOUR.md` |
+| R-12 | **The CH sees metadata and can drop data** | A cluster head learns which member sends when and how much, and can delay or drop readings (it cannot read or forge them) | Inherent to relaying; batching hides payloads, not traffic patterns | V-POS-04; experimental behaviour monitor (alerts only): injected fault `lossy_forwarding`, `docs/BEHAVIOUR.md`; operator-approved cluster-head replacement, `docs/RECOVERY.md` |
 | R-13 | **Unauthenticated hints** | Forged `CLUSTER_OPEN` / `SESSION_UNKNOWN` messages make a device start an extra handshake | Each costs at most one rate-limited, authenticated handshake (within that handshake's retry budget); nothing is trusted from them. Once a member is designated, a forged `CLUSTER_OPEN` can no longer move its relay CH (E-10) (`docs/PLAN_ERRATA.md` E-05, E-10) | V-ADV-07; `tests/enhanced/test_review_e3.py::test_forged_cluster_open_from_another_ch_changes_nothing`, `::test_forged_cluster_open_naming_another_sender_is_rejected`, `::test_fifty_forged_session_unknown_spaced_cost_exactly_one_handshake`, `::test_fifty_forged_session_unknown_in_a_burst_cost_one_rekey` |
 | R-14 | **Simulation only (D-03)** | No radio loss model, timing realism or energy measurement; one frame is delivered per scheduler step | The product demonstrates protocol behaviour, not field performance; IoT cost figures are labelled estimates | §6.7 limitations on the Evaluation page |
 | R-15 | **Seeded mode repeats randomness across runs** | Lab and test networks with a seed reproduce keys and nonces across runs | Required for reproducibility (NFR-REL-02); product networks use OS randomness | OB-08; `docs/PLAN_ERRATA.md` E-01 |
@@ -26,3 +26,10 @@ scenario that shows the behaviour.
 monitor at the BS that flags authenticated devices behaving abnormally, from frames and security events
 already recorded. It only raises alerts, never acts on a device, and was evaluated on faults injected into
 our own simulator, so it does not change the status of either risk.
+
+**Cluster-head replacement (operator-approved).** For R-12, `docs/RECOVERY.md` lets an operator replace a
+suspected cluster head by promoting one of its members, picked from a ranked recommendation. It needs no
+new keys. The "CH suspected" alert never acts on its own. Replacement does not prevent dropping; it
+limits how long a CH flagged as abnormal stays in place, once an operator decides. The approach has been
+tested, not statistically evaluated. An attacker able to make an honest CH look abnormal could provoke
+unnecessary replacements, which is why each one needs confirmation.

@@ -96,6 +96,15 @@ class LossyForwardingCH(EnhancedCH):
         self.left_out = 0
         self._fault_rng = Rng(seed=fault_seed)
 
+    @classmethod
+    def convert(cls, ch: EnhancedCH, forward_fraction: float, fault_seed: int) -> LossyForwardingCH:
+        """Lab-only, on a running network: give an existing CH this forwarding fault in place,
+        keeping its sessions and grant (the console's inject_fault job; docs/RECOVERY.md)."""
+        ch.__class__ = cls
+        lossy = cast(LossyForwardingCH, ch)
+        lossy.forward_fraction, lossy.left_out, lossy._fault_rng = forward_fraction, 0, Rng(seed=fault_seed)
+        return lossy
+
     def _flush_batch(self) -> list[Frame]:
         if self.forward_fraction < 1.0 and self.batch:
             kept = [item for item in self.batch if uniform(self._fault_rng) < self.forward_fraction]

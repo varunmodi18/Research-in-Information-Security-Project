@@ -180,6 +180,41 @@ class EnhancedNetwork:
         self.provision_device(new, dv.CH, cast(str, reg.cluster), members)
         return self.designate(cast(str, reg.cluster), new)
 
+    def promote(self, cluster: str, member: str) -> list[StepResult]:
+        """Cluster-head recovery (docs/RECOVERY.md, IA-20): promote an active, non-revoked member of
+        `cluster` to its CH without new keys. The BS revokes the current CH, closes the member's
+        CM-role sessions and changes its registry role; the node then runs CH software with its own
+        keystore (only Pr; its CM-role session keys are destroyed) and onboards the cluster by the
+        existing steps. Raises ValueError for a member the BS refuses."""
+        dev = self.scheduler.devices.get(member)
+        if dev is None or dev.role != dv.CM or dev.status != dv.ACTIVE:
+            raise ValueError(f"{member} is not an active cluster member")
+        old_ch = self.bs().cluster_ch.get(cluster)
+        result = self._command(self.bs_id, "promote", cluster, member)
+        if result.verdict == "REJECT":
+            raise ValueError(f"the base station refused to promote {member}: {result.reason}")
+        out = [result]
+        if old_ch is not None and old_ch in self.scheduler.devices:  # as revoke(): the old CH is not told
+            old = self.device(old_ch)
+            old.set_status(dv.REVOKED)
+            old.fall_silent()
+            self.scheduler.cancel_device_timers(old_ch)
+        cm = cast(EnhancedCM, dev)
+        with self.context():
+            cm.abort_all_sessions()  # CM-role session keys and ephemerals destroyed; Pr stays
+            if old_ch is not None:
+                cm.keystore.destroy(f"psk:{old_ch}")
+        self.scheduler.cancel_device_timers(member)
+        members = [d.identity for d in self.cms() if d.identity != member
+                   and self.bs().registry[d.identity].cluster == cluster
+                   and self.bs().registry[d.identity].status != REVOKED]
+        ch = EnhancedCH(member, cluster, cm.keystore, cm.rng, self.cfg, member_config=members)
+        ch.known_epoch = self.bs().epoch
+        self.scheduler.remove_device(member)
+        self.scheduler.add_device(ch)
+        out.append(self._command(member, "start_onboarding"))
+        return out
+
     def designate(self, cluster: str, ch_id: str) -> list[StepResult]:
         """FR-03: designate an existing CH (provision it first with provision_device)."""
         out = [self._command(self.bs_id, "designate", cluster, ch_id)]

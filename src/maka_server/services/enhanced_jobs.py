@@ -60,6 +60,7 @@ def job_rekey(ctx: JobContext) -> dict[str, Any]:
             raise ApiError(422, "REVOKED_IDENTITY", "Device revoked", f"{ident} is revoked")
         net.rekey(ident, peer)
         steps = run_to_quiescence(ctx, rt, "rekey")
+        rt.monitor_start = rt.scheduler.step_no
     return {"steps": steps}
 
 
@@ -77,6 +78,7 @@ def job_revoke(ctx: JobContext) -> dict[str, Any]:
         if result.verdict == "REJECT":
             raise ApiError(422, "REVOKED_IDENTITY", "Already revoked", f"{ident} is already revoked")
         steps = run_to_quiescence(ctx, rt, "revocation")
+        rt.monitor_start = rt.scheduler.step_no
     return {"revoked": ident, "steps": steps}
 
 
@@ -97,6 +99,7 @@ def job_reprovision(ctx: JobContext) -> dict[str, Any]:
         except ValueError as exc:
             raise ApiError(422, "VALIDATION_FAILED", "Cannot reprovision", str(exc)) from exc
         steps = run_to_quiescence(ctx, rt, "reprovisioning")
+        rt.monitor_start = rt.scheduler.step_no
     return {"old": old, "new": new, "steps": steps}
 
 
@@ -117,6 +120,7 @@ def job_designate(ctx: JobContext) -> dict[str, Any]:
             net.provision_device(ch, "CH", cluster, members)
         net.designate(cluster, ch)
         steps = run_to_quiescence(ctx, rt, "designation")
+        rt.monitor_start = rt.scheduler.step_no
     return {"cluster": cluster, "ch": ch, "steps": steps}
 
 

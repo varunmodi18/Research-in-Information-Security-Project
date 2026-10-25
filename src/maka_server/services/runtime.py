@@ -66,6 +66,9 @@ class NetworkRuntime:
     kind: str
     lock: threading.RLock = field(default_factory=threading.RLock)
     job_id: int | None = None
+    # First step the behaviour monitor scores (docs/RECOVERY.md): set after every lifecycle job, since
+    # onboarding, rekeys and revocations are bursts the monitor's steady-state baseline has never seen.
+    monitor_start: int = 0
     _log_cursor: int = 0
     _transcript_cursor: int = 0
     _event_cursor: int = 0
@@ -114,6 +117,8 @@ class NetworkRuntime:
             dev_row = dev_rows.get(ident)
             if dev_row is None:
                 continue
+            if dev_row.role != dev.role:  # a member promoted to cluster head (docs/RECOVERY.md)
+                dev_row.role = dev.role
             if dev_row.status != dev.status:
                 dev_row.status_history = [*dev_row.status_history, {"step": sched.step_no, "status": dev.status}]
                 dev_row.status = dev.status
@@ -241,7 +246,8 @@ class RuntimeRegistry:
                                   .order_by(models.Device.id)))
         adapter = EncryptedKeystoreAdapter(self.kek, network_id)
         net = self.builders[row.mode](row, devices, adapter, db)
-        rt = NetworkRuntime(network_id=network_id, net=net, adapter=adapter, kind=row.kind)
+        rt = NetworkRuntime(network_id=network_id, net=net, adapter=adapter, kind=row.kind,
+                            monitor_start=int(net.scheduler.step_no))
 
         def hook(result: StepResult, rt: NetworkRuntime = rt) -> None:
             publish_step(self.broker, network_id, result)
